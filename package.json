@@ -17,6 +17,10 @@
   },
   "homepage": "https://github.com/ovo1234/stock#readme",
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "mysql": "^2.18.1",
+    "path": "^0.12.7",
+    "session": "^0.1.0"
   }
 }
