@@ -20,9 +20,8 @@ app.get('/', function(req, res) {
     res.send("안녕");
 });
 
-const check = require("./route/check");
-
-app.use('/check', check);
+const stockprice = require("./route/stockprice");
+app.use('/stockprice', stockprice);
 
 app.listen(3001, function(){
     console.log('연결되었습니다.');
