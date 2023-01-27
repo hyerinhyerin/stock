@@ -1,5 +1,6 @@
 const express = require("express");
 const random_price = require('./random_price');
+const situation = require('./situation');
 const router = express.Router();
 
 router.get('/', function (req, res, next) {

@@ -24,7 +24,7 @@ function randomPrice() {
         })
         .then(() => {
             for (let i = 0; i < afterPrice.length; i++) {
-                Company.update({ stockprice: afterPrice[i] }, { where: { num: i + 1 } });
+                //Company.update({ stockprice: afterPrice[i] }, { where: { num: i + 1 } });
             }
         })
         .catch((err) => {
