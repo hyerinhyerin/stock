@@ -95,7 +95,6 @@ function randStock(sitNum) { // 상황 때문에 주가 변동되는 회사빼�
         .then((result) => {
             for (let i in result) {
                 afterPrice.push(eval(result[i].stockprice + random.startOp() + random.startNum()));
-                console.log(i);
             }
             console.log("sitNum : ", sitNum, afterPrice);
         })
