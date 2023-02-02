@@ -1,6 +1,7 @@
 const express = require("express");
 const session = require("express-session");
 const { sequelize } = require('./models');
+const cp = require('cookie-parser');
 //const path = require("path");
 
 const app = express();
@@ -17,12 +18,17 @@ app.use(
     })
 );
 
+app.use(cp());
+
 app.get('/', function (req, res) {
     res.send("안녕");
 });
 
 const stockprice = require("./route/stockprice");
 app.use('/stockprice', stockprice);
+
+const startGame = require("./route/startGame");
+app.use('/startGame', startGame);
 
 app.listen(3001, function () {
     console.log('연결되었습니다.');
