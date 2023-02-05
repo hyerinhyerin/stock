@@ -1,6 +1,6 @@
 const Sequelize = require("sequelize");
 
-// 닉네임, 아이디, 비밀번호, 이메일
+// 닉네임, 아이디, 비밀번호, 이메일, snsId, 돈
 module.exports = class User extends (
   Sequelize.Model
 ) {
@@ -12,25 +12,28 @@ module.exports = class User extends (
           allowNull: false,
         },
         id: {
-          type: Sequelize.STRING(20),
+          type: Sequelize.STRING(100),
           allowNull: false,
-          unique: true,
-          primaryKey: true,
         },
         pw: {
           type: Sequelize.STRING,
-          allowNull: false,
         },
         email: {
           type: Sequelize.STRING(100),
           allowNull: false,
         },
+        money: {
+          type: Sequelize.INTEGER(),
+          allowNull: false,
+          defaultValue: 1000000,
+        },
         snsId: {
           type: Sequelize.STRING(100),
           allowNull: false,
+          primaryKey: true,
         },
-        money: {
-          type: Sequelize.INTEGER(),
+        provider: {
+          type: Sequelize.STRING(100),
           allowNull: false,
         },
       },

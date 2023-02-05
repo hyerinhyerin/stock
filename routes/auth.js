@@ -9,26 +9,25 @@ const userController = require("../contoroller/userController");
 
 const router = express.Router();
 
-router.get("/", isNotLoggedIn, (req, res, next) => {
-  // 만든 프론트 페이지 렌더 해줘야함
-  return res.sendFile(path.join(__dirname, "../react/main.html"));
-});
-
 // 회원가입 라우터
 router.post("/join", isNotLoggedIn, async (req, res, next) => {
   const { nickname, id, pw, email } = req.body; // email = req.body.email
   try {
     const exUser = await User.findOne({ where: { id } });
     if (exUser) {
-      return res.status(200).json({ already: true });
-      return res.redirect("/auth");
+      alert("이미 존재하는 유저입니다.");
+      return res.redirect("/auth"); // 회원가입페이지로 리로드
     } else {
       const hash = await bcrypt.hash(pw, 12);
+      const random = Math.floor(Math.random() * 100000000);
       await User.create({
         nickname,
         id,
         pw: hash,
         email,
+        money: 1000000,
+        snsId: random,
+        provider: "local",
       });
       return res.redirect("/");
     }
@@ -38,13 +37,26 @@ router.post("/join", isNotLoggedIn, async (req, res, next) => {
   }
 });
 
-// 로그인 라우터
+router.get("/", isNotLoggedIn, (req, res, next) => {
+  // 만든 프론트 페이지 렌더 해줘야함
+  return res.sendFile(path.join(__dirname, "../react/main.html"));
+});
+
+// local 로그인 라우터
 router
   .route("/login")
   .get(userController.getLogin)
   .post(isNotLoggedIn, userController.postLogin);
 // req.login()메서드가 호출되어 성공을 하게되면, passport/index.js 안의 serializeUser라는 것이 실행
 
+// 로그아웃 라우터
+router.get("/logout", isLoggedIn, (req, res) => {
+  req.logout();
+  req.session.destroy();
+  res.redirect("/"); // 로그아웃시 보낼 주소
+});
+
+// 카카오 로그인 라우터
 router.get("/kakao", passport.authenticate("kakao"));
 router.get(
   "/kakao/callback",
@@ -59,17 +71,11 @@ router.get(
   }
 );
 
-// 로그아웃 라우터
-router.get("/logout", isLoggedIn, (req, res) => {
-  req.logout();
-  req.session.destroy();
-  res.redirect("/"); // 로그아웃시 보낼 주소
-});
-
 // 카카오 로그아웃
-// auth//kakao/logout
+// /auth/kakao/logout
 router.get("/kakao/logout", async (req, res, next) => {
   try {
+    console.log("nickname위치", req.session.passport.user.nickname);
     const ACCESS_TOKEN = req.user.accessToken;
 
     let logout = await axios({
@@ -87,6 +93,28 @@ router.get("/kakao/logout", async (req, res, next) => {
   req.logout();
   req.session.destroy();
 
+  res.redirect("/");
+});
+
+// 구글 로그인
+// /auth/google
+router.get(
+  "/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+); // 프로파일과 이메일 정보를 받는다.
+
+//? 위에서 구글 서버 로그인이 되면, 네이버 redirect url 설정에 따라 이쪽 라우터로 오게 된다. 인증 코드를 박게됨
+router.get(
+  "/google/callback",
+  passport.authenticate("google", { failureRedirect: "/" }), //? 그리고 passport 로그인 전략에 의해 googleStrategy로 가서 구글계정 정보와 DB를 비교해서 회원가입시키거나 로그인 처리하게 한다.
+  (req, res) => {
+    res.redirect("/");
+  }
+);
+
+router.get("/google/logout", function (req, res) {
+  req.logout();
+  req.session.destroy();
   res.redirect("/");
 });
 

@@ -5,7 +5,6 @@ module.exports.getLogin = async (req, res) => {
 };
 
 module.exports.postLogin = async (req, res, next) => {
-  console.log("h1");
   // 첫 번째 인자로 'local'이 들어갔습니다. 이 local 부분을 만나면 위에서 만들었던 ../passport/localStrategy.js가 실행됩니다.
   passport.authenticate("local", (authError, user, info) => {
     // localStrategy.js에서 done으로 나온 결과가 passport.authenticate의 두 번째 인자로 들어가게 되는 것입니다.

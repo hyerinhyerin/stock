@@ -3,13 +3,10 @@ const bcrypt = require("bcrypt");
 const LocalStrategy = require("passport-local").Strategy;
 const { User } = require("../models");
 const passport = require("passport");
-const express = require("express");
-const app = express();
 
 // local 로그인 전략
 // done : 첫번째인자 - 서버 에러 / 두번째인자 - 응답 실패,성공 유무 / 세번째인자 - 실패 시 나타낼 문구(reason: XXXX);
 module.exports = () => {
-  console.log("h2");
   passport.use(
     new LocalStrategy(
       {
@@ -21,7 +18,7 @@ module.exports = () => {
         try {
           const user = await User.findOne({
             // 로그인 시도에서 이메일 있는 조건으로 찾아보기.
-            where: { id },
+            where: { id, provider: "local" },
           });
           if (user) {
             // 비밀번호 비교 체크
@@ -31,6 +28,7 @@ module.exports = () => {
             if (result) {
               const exUser = {
                 user: user,
+                nickname: user.nickname,
                 accessToken: "none",
               };
               // 비밀번호 일치할 경우

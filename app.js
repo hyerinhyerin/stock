@@ -25,6 +25,11 @@ const cors = require("cors");
 app.use(cors());
 // 이 코드 넣고 시작하셔야 리액트와 nodejs 서버간 ajax 요청 잘됩니다.
 
+// async () => {
+//   await sequelize.sync();
+//   console.log("데이터베이스 연결 성공");
+// };
+
 sequelize
   .sync({ force: false })
   .then(() => {
