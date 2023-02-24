@@ -29,7 +29,7 @@ module.exports = () => {
               const exUser = {
                 user: user,
                 nickname: user.nickname,
-                accessToken: "none",
+                accessToken: "",
               };
               // 비밀번호 일치할 경우
               return done(null, exUser); // 두번째 user는 성공의 의미

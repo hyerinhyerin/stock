@@ -1,6 +1,7 @@
 const local = require("./localStragegy");
 const kakao = require("./kakaoStragegy");
 const google = require("./googleStragegy");
+const github = require("./githubStragegy");
 const { User } = require("../models");
 const passport = require("passport");
 
@@ -35,4 +36,5 @@ module.exports = () => {
   local();
   kakao();
   google();
+  github();
 };

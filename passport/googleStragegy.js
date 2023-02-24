@@ -23,7 +23,7 @@ module.exports = () => {
             const tokenUser = {
               user: exUser,
               nickname: exUser.nickname,
-              accessToken: accessToken || "",
+              accessToken: "",
             };
             done(null, tokenUser); // 로그인 인증 완료
           } else {
@@ -40,7 +40,7 @@ module.exports = () => {
             const tokenUser = {
               user: newUser,
               nickname: newUser.nickname,
-              accessToken: accessToken || "",
+              accessToken: "",
             };
             done(null, tokenUser); // 회원가입하고 로그인 인증 완료
           }

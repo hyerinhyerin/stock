@@ -1,6 +1,8 @@
 const passport = require("passport");
+const path = require("path");
+const { User } = require("../models");
 
-module.exports.getLogin = async (req, res) => {
+module.exports.getLogin = (req, res) => {
   return res.redirect("/");
 };
 
@@ -31,4 +33,18 @@ module.exports.postLogin = async (req, res, next) => {
       return res.redirect("/"); // 로그인 성공시 날릴 라우터 부분
     });
   })(req, res, next);
+};
+
+module.exports.getMypage = (req, res) => {
+  return res.sendFile(path.join(__dirname, "../react/mypage.html"));
+};
+
+module.exports.postMypage = async (req, res) => {
+  const nickname = req.session.passport.user.nickname;
+  const exUser = await User.findOne({
+    where: nickname,
+  });
+  if (exUser) {
+    return exUser;
+  }
 };

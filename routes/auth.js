@@ -9,13 +9,43 @@ const userController = require("../contoroller/userController");
 
 const router = express.Router();
 
+// 아이디 중복검사 라우터
+router.post("/checkid", async (req, res) => {
+  const id = req.id;
+  try {
+    const idUser = await User.findOne({ where: { id } });
+    if (idUser) {
+      alert("이미 존재하는 아이디입니다.");
+    } else {
+      alert("사용 가능한 아이디입니다.");
+    }
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+// 닉네임 중복검사 라우터
+router.post("/checknickname", async (req, res) => {
+  const nickname = req.nickname;
+  try {
+    const idUser = await User.findOne({ where: { nickname } });
+    if (idUser) {
+      alert("이미 존재하는 닉네임입니다.");
+    } else {
+      alert("사용 가능한 닉네임입니다.");
+    }
+  } catch (err) {
+    console.log(err);
+  }
+});
+
 // 회원가입 라우터
 router.post("/join", isNotLoggedIn, async (req, res, next) => {
   const { nickname, id, pw, email } = req.body; // email = req.body.email
   try {
     const exUser = await User.findOne({ where: { id } });
     if (exUser) {
-      alert("이미 존재하는 유저입니다.");
+      alert("이미 존재하는 유저 아이디 입니다.");
       return res.redirect("/auth"); // 회원가입페이지로 리로드
     } else {
       const hash = await bcrypt.hash(pw, 12);
@@ -42,19 +72,22 @@ router.get("/", isNotLoggedIn, (req, res, next) => {
   return res.sendFile(path.join(__dirname, "../react/main.html"));
 });
 
+// 깃허브 로그인
+// /auth/github
+router.post("/github", passport.authenticate("github"));
+
+router.get(
+  "/github/callback",
+  passport.authenticate("github", { failureRedirect: "/" }),
+  (req, res) => res.redirect("/")
+);
+
 // local 로그인 라우터
 router
   .route("/login")
   .get(userController.getLogin)
   .post(isNotLoggedIn, userController.postLogin);
 // req.login()메서드가 호출되어 성공을 하게되면, passport/index.js 안의 serializeUser라는 것이 실행
-
-// 로그아웃 라우터
-router.get("/logout", isLoggedIn, (req, res) => {
-  req.logout();
-  req.session.destroy();
-  res.redirect("/"); // 로그아웃시 보낼 주소
-});
 
 // 카카오 로그인 라우터
 router.get("/kakao", passport.authenticate("kakao"));
@@ -70,31 +103,6 @@ router.get(
     res.redirect("/");
   }
 );
-
-// 카카오 로그아웃
-// /auth/kakao/logout
-router.get("/kakao/logout", async (req, res, next) => {
-  try {
-    console.log("nickname위치", req.session.passport.user.nickname);
-    const ACCESS_TOKEN = req.user.accessToken;
-
-    let logout = await axios({
-      method: "post",
-      url: "https://kapi.kakao.com/v1/user/unlink",
-      headers: {
-        Authorization: `Bearer ${ACCESS_TOKEN}`,
-      },
-    });
-  } catch (error) {
-    console.error(error);
-    res.json(error);
-  }
-  // 세션 정리
-  req.logout();
-  req.session.destroy();
-
-  res.redirect("/");
-});
 
 // 구글 로그인
 // /auth/google
@@ -112,10 +120,30 @@ router.get(
   }
 );
 
-router.get("/google/logout", function (req, res) {
+// 로그아웃 라우터
+router.get("/logout", isLoggedIn, async (req, res) => {
+  try {
+    const ACCESS_TOKEN = req.user.accessToken;
+    if (ACCESS_TOKEN) {
+      console.log("nickname위치", req.session.passport.user.nickname);
+
+      let logout = await axios({
+        method: "post",
+        url: "https://kapi.kakao.com/v1/user/unlink",
+        headers: {
+          Authorization: `Bearer ${ACCESS_TOKEN}`,
+        },
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    res.json(error);
+  }
+  // 세션 정리
   req.logout();
   req.session.destroy();
-  res.redirect("/");
+
+  res.redirect("/"); // 로그아웃시 보낼 주소
 });
 
 module.exports = router;

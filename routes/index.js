@@ -1,5 +1,6 @@
 const express = require("express");
 const path = require("path");
+const userController = require("../contoroller/userController");
 const router = express.Router();
 
 router.get("/", (req, res, next) => {
@@ -13,5 +14,10 @@ router.get("/", (req, res, next) => {
     return res.sendFile(path.join(__dirname, "../react/main.html"));
   }
 });
+
+router
+  .route("/mypage")
+  .get(userController.getMypage)
+  .post(userController.postMypage);
 
 module.exports = router;
