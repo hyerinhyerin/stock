@@ -30,6 +30,12 @@ app.use('/stockprice', stockprice);
 const startGame = require("./route/startGame");
 app.use('/startGame', startGame);
 
+const find = require("./route/findPW");
+app.use('/find', find);
+
+const select = require("./route/selectPW");
+app.use('/select', select);
+
 app.listen(3001, function () {
     console.log('연결되었습니다.');
 });

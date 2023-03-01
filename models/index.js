@@ -6,6 +6,7 @@ const config = require(__dirname + '/../config/config.json')[env];
 const User = require("./User");
 const Company = require("./Company");
 const Situation = require("./Situation");
+const UserFindPw = require("./UserFindPw");
 
 const sequelize = new Sequelize(
   config.database,
@@ -20,12 +21,14 @@ db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
 db.User = User;
+db.UserFindPw = UserFindPw;
 db.Company = Company;
 db.Situation = Situation;
 
 User.init(sequelize);
 Company.init(sequelize);
 Situation.init(sequelize);
+UserFindPw.init(sequelize);
 
 // User.associate(db);
 
