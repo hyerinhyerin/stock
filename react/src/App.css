@@ -1,0 +1,11 @@
+body{
+    background-color: black;
+    font-family: mainfont;
+}
+button{
+    font-family: mainfont;
+}
+@font-face {
+    font-family: mainfont;
+    src: url('./font/Arita4.0_SB.ttf');
+  }

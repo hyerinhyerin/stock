@@ -1,0 +1,16 @@
+body {
+  margin: 0;
+  font-family: mainfont;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+@font-face {
+  font-family: mainfont;
+  src: url('./font/Arita4.0_B.ttf');
+}

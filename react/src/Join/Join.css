@@ -1,0 +1,48 @@
+body{
+  background-color: black;
+  font-family: mainfont;
+}
+
+.checkP{
+  display: inline-block;
+  /* width: 170px; */
+  color: white;
+  font-size: 11pt;
+  margin-left: 15px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+.nickP{
+  display: inline-block;
+  /* width: 170px; */
+  color: white;
+  font-size: 11pt;
+  margin-left: 15px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+.Join {
+  text-align: center;
+  margin-top: 150px;
+}
+
+input[type='checkbox']{
+  margin: 0px;
+  margin-left: 110px;
+  width: 15px;
+  accent-color: black;
+  /* color: white;
+  background: transparent;
+  outline: none;
+  border-left-width: 0;
+  border-top-width: 0;
+  border-right-width: 0;
+  border-bottom-width: 1;
+  border-color: white; */
+}
+
+
+@font-face {
+  font-family: mainfont;
+  src: url('../font/Arita4.0_SB.ttf');
+}
