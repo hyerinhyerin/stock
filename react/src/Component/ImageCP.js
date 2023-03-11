@@ -13,18 +13,9 @@ const ImageCP = (props) => {
         // border: '1px solid white',
 
     }
-    //이미지 하나 클릭하면 팝업창 사라지는 함수
-    const onClick=()=>{
-        console.log(props.imgClick);
-        if(props.imgClick=='1'){
-            props.getData(0);
-        }
-        //else{
-        //     props.getData(0);
-        // }
-    }
+
     return(
-        <div style={imgDivStyle} onClick={onClick}>
+        <div style={imgDivStyle} onClick={()=>{props.onView(props.id); props.getData(0);}}>
             <img style={props.imgstyle} src={props.imgsrc}></img>
         </div>
     );
