@@ -9,7 +9,7 @@ const App = () => {
   return (
   <div> 
     <LogoCP/>
-    <Join/>
+    <Mypage/>
   </div>
   );
 };
