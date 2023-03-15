@@ -22,8 +22,6 @@ router.get('/', async function (req, res, next) {
                 console.log(err);
             })
 
-
-
         res.send("findPW");
 
     } catch (err) {
