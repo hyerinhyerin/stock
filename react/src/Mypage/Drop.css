@@ -1,0 +1,10 @@
+.drop{
+    margin-left:125px;
+    margin-top:60px;
+    font-Size:15pt;
+    font-family: boldfont;
+}
+@font-face {
+    font-family: boldfont;
+    src: url('../font/Arita4.0_B.ttf');
+  }

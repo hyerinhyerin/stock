@@ -1,0 +1,74 @@
+/* 프로필 */
+.circle{
+    display: inline-block;
+    position:absolute;
+    z-index: 5;
+    height: 80px;
+    width: 80px;
+    /* top: 25px; */
+    right: 40px;
+    border-radius: 50%;
+    border: 1px solid white;
+}
+
+.profileImg{
+    position: relative;
+    width: 80px;
+    height: 80px;
+}
+
+/* 말풍선모양 */
+div .balloon{
+    position:absolute;
+    width: 280px;
+    height: 360px;
+    /* border: 1px solid white;*/
+    right: 60px;
+    top: 150px;
+    border-radius: 19px;
+    /* 모서리 18px일떄 */
+    background: white;
+}
+
+div .balloon::after{
+    border-top: 0px solid transparent;
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-bottom: 15px solid white;
+    content: "";
+    position:absolute;
+    top: -12px;
+    right: 10px;   
+    /* 모서리 18이면
+    top:-11px;
+    right:7px; */
+}
+
+/* 상세 정보 */
+.P1{
+    font-size: 18pt;
+    margin-top: 40px;
+    text-align: center;
+}
+
+.P2{
+    font-size: 15pt;
+    margin-left: 50px;
+    margin-top: 40px;
+    width: 80px;
+    text-align: center;
+}
+
+
+/* span{
+    text-decoration: underline;
+    margin-left: 25px;
+    width: 50px;
+} */
+
+pre{
+    text-decoration: underline;
+    margin: -20px 0px 0px 95px;
+    display: block;
+}
+

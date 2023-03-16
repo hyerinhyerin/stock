@@ -22,7 +22,7 @@ class JoinComponent extends Component{
         return (
              <div>
                 <p className="joinp">{JoinP}</p>
-                <input name={JoinP} type={ipType} ></input>
+                <input name={JoinP} type={ipType} required></input>
              </div>
         );
     }
