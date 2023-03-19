@@ -8,66 +8,87 @@ import {
   Tooltip,
   Cell,
 } from "recharts";
-import axios from "axios";
+
+const backfun = require("./random");
 
 function Chart() {
-  const [token, setToken] = useState("");
-  const [stockData, setStockData] = useState([]);
+  const [stockDataArr, setStockDataArr] = useState([
+    {
+      name: "handae",
+      stck_bsop_date: 0,
+      prdy_vrss_sign: 0,
+      stck_oprc: 52000, // 종가
+      stck_clpr: 50000, // 시가
+      acml_vol: 3000,
+    },
+  ]);
+  // 배열을 처음부터 30개로 하고 싶으면 데이터를 채워 놓던가
+  // 첨에 데이터를 비워두고는 예쁜 상태로 불가능하다
 
   useEffect(() => {
-    async function fetchStockData() {
-      const kisToken = await axios.post("/oauth2/tokenP", {
-        grant_type: "client_credentials",
-        appkey: process.env.REACT_APP_APPKEY,
-        appsecret: process.env.REACT_APP_APPSECRET,
-      });
-      setToken(kisToken.data.access_token);
+    const interval = setInterval(() => {
+      if (stockDataArr.length === 365) {
+        clearInterval(interval); // 1년 되면 종료
+      }
 
-      setInterval(async () => {
-        const kisData = await axios.get(
-          "/uapi/domestic-stock/v1/quotations/inquire-daily-price",
-          {
-            headers: {
-              authorization: `Bearer ${kisToken.data.access_token}`,
-              appkey: process.env.REACT_APP_APPKEY,
-              appsecret: process.env.REACT_APP_APPSECRET,
-              tr_id: "FHKST01010400",
-            },
-            params: {
-              FID_COND_MRKT_DIV_CODE: "J",
-              FID_INPUT_ISCD: "000660",
-              FID_PERIOD_DIV_CODE: "D",
-              FID_ORG_ADJ_PRC: "0000000000",
-            },
-          }
-        );
-        setStockData(kisData.data.output);
-        console.log("5초 마다 실행");
-      }, 5000); // 5초마다 데이터를 가져옴
-    }
-    fetchStockData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+      if (stockDataArr.length === 30) {
+        const newStockDataArr = [...stockDataArr].slice(1);
+        setStockDataArr(newStockDataArr);
+      }
+
+      let randomPr = backfun.startNum(); // 랜덤 숫자 생성
+      let randomPM = backfun.startOp(); // 랜덤 부호 생성 + -
+      let randomAcml = backfun.startNum(); // 거래량 나중에는 받아오자
+
+      let lastItem = stockDataArr.slice(-1)[0];
+      // 마지막 값 가져와서 새로운 데이터 계산에 활용
+
+      let newStockObj = {
+        name: "handae",
+        stck_bsop_date: lastItem.stck_bsop_date + 1,
+        prdy_vrss_sign: 0,
+        stck_oprc: lastItem.stck_oprc,
+        stck_clpr: lastItem.stck_oprc,
+        acml_vol: lastItem.acml_vol,
+      };
+
+      if (randomPM === "+") {
+        newStockObj.stck_oprc += randomPr;
+        newStockObj.acml_vol += randomAcml;
+        newStockObj.prdy_vrss_sign = 2;
+      } else if (randomPM === "-" && newStockObj.stck_oprc > randomPr) {
+        newStockObj.stck_oprc -= randomPr;
+        newStockObj.acml_vol -= randomAcml;
+        newStockObj.prdy_vrss_sign = 4;
+        // 거래량이 0 이하로 떨어지지 않도록 함
+        newStockObj.acml_vol = Math.max(newStockObj.acml_vol, 0);
+      }
+
+      setStockDataArr((prevState) => [...prevState, newStockObj]);
+      console.log("stockDataArr : ", stockDataArr);
+    }, 18000);
+    return () => clearInterval(interval);
+  }, [stockDataArr]);
 
   return (
     <div>
-      <BarChart data={stockData} width={500} height={300}>
+      <BarChart data={stockDataArr} width={500} height={300}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="stck_bsop_date" />
-        <YAxis />
+        <YAxis domain={[0, 3000]} />
         <Tooltip />
         <Bar
           dataKey={(data) => {
-            const range = [data.stck_hgpr, data.stck_lwpr];
+            const range = [data.stck_clpr, data.stck_oprc];
             return range;
           }}
           fill="#E94560"
         >
-          {stockData.map((data) => (
+          {stockDataArr.map((data) => (
             <Cell fill={data.prdy_vrss_sign > 3 ? "#006DEE" : "#E94560"} />
           ))}
         </Bar>
-        <Bar dataKey={(e) => e.acml_vol / 100} />
+        <Bar dataKey={(e) => e.acml_vol} />
       </BarChart>
     </div>
   );
