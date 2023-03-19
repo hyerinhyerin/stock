@@ -27,7 +27,8 @@ const Join = () => {
         <JoinComponent JoinP="비밀번호" ipType="text"/>
         <JoinComponent JoinP="비밀번호 확인" ipType="text"/>
         <JoinComponent JoinP="이메일" ipType="email"/>
-        <Button btnStyle={btnStyle} btnText={'확인'}/>
+        <button style={btnStyle}>확인</button>
+         {/* <Button btnStyle={btnStyle} btnText={'확인'}/> */}
       </div> 
   );
 }

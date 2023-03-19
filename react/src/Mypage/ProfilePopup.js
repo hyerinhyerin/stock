@@ -8,10 +8,10 @@ const ProfilePopup = (props) => {
     useEffect(()=>{
         setimgClick(props.imgShow);
         console.log(props.imgShow);
-        return()=>{
-            
-        };
-    },[props.imgShow]);
+        // return()=>{
+        //     props.getData(imgClick);
+        // };
+    },[props]);//props
 
     const divStyle={
         position:'fixed',
@@ -47,22 +47,22 @@ const ProfilePopup = (props) => {
 
     }
 
+    //이미지 컴포넌트에서 클릭 0을 받아 팝업창 사라짐을 ProfileImage.js에 밝힘
     const getData=(imgclick)=>{
         setimgClick(imgclick);
         console.log('팝업창',imgclick);
         props.getData(imgclick);
+        // props.imgroot=imgsrc;
     }
-    const click=()=>{
-        console.log(props.imgShow);
-    }
+
   return(
     <div style={divStyle} >
-        <p style={p1style} onClick={click}>프로필 변경</p>
+        <p style={p1style}>프로필 변경</p>
         <p style={p2style}>프로필 이미지를 선택하세요.</p>
-        <ImageCP imgstyle={imgListstyle} imgsrc={"profile_2.png"} imgClick={imgClick} getData={getData}/>
-        <ImageCP imgstyle={imgListstyle} imgsrc={"profile_3.png"} imgClick={imgClick} getData={getData}/>
-        <ImageCP imgstyle={imgListstyle} imgsrc={"profile_4.png"} imgClick={imgClick} getData={getData}/>
-        <ImageCP imgstyle={imgListstyle} imgsrc={"profile_5.png"} imgClick={imgClick} getData={getData}/>
+        <ImageCP imgstyle={imgListstyle} id={props.datas[0].id} imgsrc={props.datas[0].image} onView={props.onView} imgClick={imgClick} getData={getData}/>
+        <ImageCP imgstyle={imgListstyle} id={props.datas[1].id} imgsrc={props.datas[1].image} onView={props.onView} imgClick={imgClick} getData={getData}/>
+        <ImageCP imgstyle={imgListstyle} id={props.datas[2].id} imgsrc={props.datas[2].image} onView={props.onView} imgClick={imgClick} getData={getData}/>
+        <ImageCP imgstyle={imgListstyle} id={props.datas[3].id} imgsrc={props.datas[3].image} onView={props.onView} imgClick={imgClick} getData={getData}/>
     </div>
       
   );

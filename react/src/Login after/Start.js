@@ -1,7 +1,9 @@
-import React,{Component} from "react";
+import React,{useState,Component} from "react";
 import Button from "../Component/Button";
+import StartPopup from "../Component/StartPopup";
 import './Start.css';
 const Start = (props) => {
+    const [viewPopup,setViewPopup]=useState(false)
 
     const btnStyle={
         position:'absolute',
@@ -14,6 +16,18 @@ const Start = (props) => {
         color:'white',
         fontSize:'20pt',
     }
+
+    const btnlogout={
+        position:'relative',
+        left:'80px',
+        top:'13px',
+        width:'120px',
+        height:'40px',
+        backgroundColor:'white',
+        border:'1px solid black',
+        color:'black',
+        fontSize:'17pt',
+    }
     return(
         <div>
             <div className="circle">
@@ -24,8 +38,11 @@ const Start = (props) => {
                 <p className="P2">닉네임 <pre>        </pre></p>
                 <p className="P2">총 자산 <pre>        </pre></p>
                 <p className="P2">랭킹 순위 <pre>        </pre></p>
+                <Button btnText={'로그아웃'} btnStyle={btnlogout}/>
             </div>
-            <Button btnText={'게임 시작'} btnStyle={btnStyle}/>
+            <button style={btnStyle} onClick={()=>setViewPopup(true)}>게임 시작</button>
+            {/* <Button btnText={'게임 시작'} btnStyle={btnStyle}/> */}
+            {viewPopup?<StartPopup/> : ''}
         </div>
     );
 }
