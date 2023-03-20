@@ -1,5 +1,5 @@
 import React,{useState, useRef, useEffect} from 'react';
-import ImageCP from '../Component/ImageCP';
+import ImageCP from './ImageCP';
 
 const ProfilePopup = (props) => {
     const [imgClick, setimgClick]=useState(props.imgShow);

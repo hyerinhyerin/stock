@@ -1,6 +1,6 @@
 import React,{useState,Component} from "react";
 import Button from "../Component/Button";
-import StartPopup from "../Component/StartPopup";
+import StartPopup from "./StartPopup";
 import './Start.css';
 const Start = (props) => {
     const [viewPopup,setViewPopup]=useState(false)

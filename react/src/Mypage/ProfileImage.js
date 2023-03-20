@@ -1,6 +1,6 @@
 import React,{Component, useEffect,useState} from "react";
 import ProfilePopup from './ProfilePopup';
-import ImageCP from "../Component/ImageCP";
+import ImageCP from "./ImageCP";
 import PropTypes from 'prop-types';
 const ProfileImage =(props)=>{
     const [imgShow, setImgShow]=useState(0);

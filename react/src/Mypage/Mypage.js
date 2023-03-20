@@ -3,7 +3,7 @@ import JoinComponent from '../Component/JoinComponent';
 import ProfileImage from './ProfileImage';
 import Drop from './Drop';
 import Button from '../Component/Button';
-import StartPopup from '../Component/StartPopup';
+import StartPopup from '../Login after/StartPopup';
 
 const Mypage = () => {
   const [viewDrop, setViewDrop]=useState(false);
