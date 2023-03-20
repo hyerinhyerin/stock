@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Main</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  </head>
+  <body>
+    <form action="/auth/login" method="POST">
+      <input type="text" name="id" />
+      <input type="text" name="pw" />
+      <button>로그인</button>
+    </form>
+    <a href="/auth/logout"><button>로그아웃</button></a>
+    <a href="/auth/kakao"><button>카카오로그인</button></a>
+    <!-- <a href="/auth/kakao/logout"><button>카카오로그아웃</button></a> -->
+    <a href="/auth/google"><button>구글로그인</button></a>
+    <form action="/auth/github" method="POST">
+      <button>깃허브로그인</button>
+    </form>
+  </body>
+  <script src="/react/main.js"></script>
+</html>
