@@ -29,9 +29,9 @@ app.get('/', function (req, res) {
   res.send("완료");
 });
 
-app.get('/api/main', async (req, res) => {
-  res.send({ message: "안녕" });
-});
+// app.get('/api/main', async (req, res) => {
+//   res.send({ message: "안녕" });
+// });
 
 const stockprice = require("./route/stockprice");
 app.use('/stockprice', stockprice);
