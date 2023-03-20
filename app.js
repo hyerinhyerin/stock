@@ -4,6 +4,7 @@ const { sequelize } = require('./models');
 const cp = require('cookie-parser');
 const path = require("path");
 const bodyParser = require("body-parser");
+const cors = require('cors');
 
 const app = express();
 
@@ -22,9 +23,14 @@ app.use(
 );
 
 app.use(cp());
+//app.use(cors());
 
 app.get('/', function (req, res) {
-    res.send("안녕");
+    res.send("완료");
+});
+
+app.get('/api/main', async (req, res) => {
+    res.send({ message: "안녕" });
 });
 
 const stockprice = require("./route/stockprice");

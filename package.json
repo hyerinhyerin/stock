@@ -5,8 +5,8 @@
   "main": "app.js",
   "scripts": {
     "server": "nodemon app.js",
-    "client": "cd react && react-scripts start",
-    "start": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\""
+    "client": "cd react && npm start",
+    "start": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\""
   },
   "repository": {
     "type": "git",
