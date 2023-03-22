@@ -1,119 +1,97 @@
-import React, { PureComponent } from "react";
-import * as GraphsStyle from "./style";
+import React, { useEffect, useState } from "react";
 import {
-  ComposedChart,
-  LineChart,
-  Line,
   BarChart,
   Bar,
-  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
+  Cell,
 } from "recharts";
 
-export default class Chart extends PureComponent {
-  state = {
-    data: [
-      { name: "A회사", uv: 2100, pv: 800 },
-      { name: "A회사", uv: 1800, pv: 1000 },
-      { name: "A회사", uv: 1500, pv: 500 },
-      { name: "A회사", uv: 1700, pv: 300 },
-      { name: "A회사", uv: 1000, pv: 1200 },
-      { name: "A회사", uv: 1500, pv: 800 },
-    ],
-  };
+const backfun = require("./random");
 
-  dataUpdate() {
-    setInterval(() => {
-      let copyDataArr = [...this.state.data].splice(1); // state배껴와서 첫번째 인덱스 계속 짜르기
-      this.setState({
-        data: copyDataArr,
-      }); // 짜른 카피 배열 state에 넣기
+function Chart() {
+  const [stockDataArr, setStockDataArr] = useState([
+    {
+      name: "handae",
+      stck_bsop_date: 0,
+      prdy_vrss_sign: 0,
+      stck_oprc: 52000, // 종가
+      stck_clpr: 50000, // 시가
+      acml_vol: 3000,
+    },
+  ]);
+  // 배열을 처음부터 30개로 하고 싶으면 데이터를 채워 놓던가
+  // 첨에 데이터를 비워두고는 예쁜 상태로 불가능하다
 
-      console.log("copyDataArr : ", copyDataArr);
-      console.log("state : ", this.state.data);
-
-      let randomDefault = Math.floor(Math.random() * 1000); // 랜덤값 생성 0~999
-      let randomTradingVolume = Math.floor(Math.random() * 200); // 랜덤값 생성 0~199
-      let randomPlusMinus = ["+", "-"]; // 랜덤 부호
-      let randomIndex = Math.floor(Math.random() * 2); // 랜덤 부호 인덱스 1 or 2
-
-      let copyDataObj = { name: "A회사", uv: 2100, pv: 1000 }; // 배열에 계속 추가될 랜덤 객체 데이터
-
-      // 밑으로는 랜덤 부호와 -값 제어
-      if (randomPlusMinus[randomIndex] === "+") {
-        copyDataObj.uv = copyDataObj.uv + randomDefault;
-        copyDataObj.pv = copyDataObj.pv + randomTradingVolume;
-        copyDataArr.push(copyDataObj);
-        this.setState({
-          data: copyDataArr,
-        });
-      } else {
-        if (
-          copyDataObj.uv < 0 ||
-          copyDataObj.uv === 0 ||
-          copyDataObj.pv < 0 ||
-          copyDataObj.pv === 0
-        ) {
-          copyDataObj.uv = 0;
-          copyDataObj.pv = 0;
-          copyDataArr.push(copyDataObj);
-        }
-        if (copyDataObj.uv !== 0 && copyDataObj.pv !== 0) {
-          copyDataObj.uv = copyDataObj.uv - randomDefault;
-          copyDataObj.pv = copyDataObj.pv - randomTradingVolume;
-          if (
-            copyDataObj.uv < 0 ||
-            copyDataObj.uv === 0 ||
-            copyDataObj.pv < 0 ||
-            copyDataObj.pv === 0
-          ) {
-            copyDataObj.uv = 0;
-            copyDataObj.pv = 0;
-            copyDataArr.push(copyDataObj);
-          }
-          copyDataArr.push(copyDataObj);
-        }
-        this.setState({
-          data: copyDataArr,
-        });
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (stockDataArr.length === 365) {
+        clearInterval(interval); // 1년 되면 종료
       }
-      console.log("uv : ", copyDataObj.uv);
-    }, 2500);
-  }
 
-  componentDidMount() {
-    this.dataUpdate();
-  }
+      if (stockDataArr.length === 30) {
+        const newStockDataArr = [...stockDataArr].slice(1);
+        setStockDataArr(newStockDataArr);
+      }
 
-  render() {
-    return (
-      <div>
-        <GraphsStyle.Container>
-          <ComposedChart
-            width={500}
-            height={300}
-            data={this.state.data}
-            margin={{
-              top: 5,
-              right: 30,
-              left: 20,
-              bottom: 5,
-            }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="pv" fill="blue" />
-            <Line type="monotone" dataKey="uv" stroke="magenta" />
-          </ComposedChart>
-        </GraphsStyle.Container>
-      </div>
-    );
-  }
+      let randomPr = backfun.startNum(); // 랜덤 숫자 생성
+      let randomPM = backfun.startOp(); // 랜덤 부호 생성 + -
+      let randomAcml = backfun.startNum(); // 거래량 나중에는 받아오자
+
+      let lastItem = stockDataArr.slice(-1)[0];
+      // 마지막 값 가져와서 새로운 데이터 계산에 활용
+
+      let newStockObj = {
+        name: "handae",
+        stck_bsop_date: lastItem.stck_bsop_date + 1,
+        prdy_vrss_sign: 0,
+        stck_oprc: lastItem.stck_oprc,
+        stck_clpr: lastItem.stck_oprc,
+        acml_vol: lastItem.acml_vol,
+      };
+
+      if (randomPM === "+") {
+        newStockObj.stck_oprc += randomPr;
+        newStockObj.acml_vol += randomAcml;
+        newStockObj.prdy_vrss_sign = 2;
+      } else if (randomPM === "-" && newStockObj.stck_oprc > randomPr) {
+        newStockObj.stck_oprc -= randomPr;
+        newStockObj.acml_vol -= randomAcml;
+        newStockObj.prdy_vrss_sign = 4;
+        // 거래량이 0 이하로 떨어지지 않도록 함
+        newStockObj.acml_vol = Math.max(newStockObj.acml_vol, 0);
+      }
+
+      setStockDataArr((prevState) => [...prevState, newStockObj]);
+      console.log("stockDataArr : ", stockDataArr);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [stockDataArr]);
+
+  return (
+    <div>
+      <BarChart data={stockDataArr} width={800} height={500}>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="stck_bsop_date" />
+        <YAxis domain={[0, 3000]} />
+        <Tooltip />
+        <Bar
+          dataKey={(data) => {
+            const range = [data.stck_clpr, data.stck_oprc];
+            return range;
+          }}
+          fill="#E94560"
+        >
+          {stockDataArr.map((data) => (
+            <Cell fill={data.prdy_vrss_sign > 3 ? "#006DEE" : "#E94560"} />
+          ))}
+        </Bar>
+        <Bar dataKey={(e) => e.acml_vol} />
+      </BarChart>
+    </div>
+  );
 }
+
+export default Chart;

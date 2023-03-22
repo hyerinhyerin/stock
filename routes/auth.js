@@ -45,7 +45,7 @@ router.post("/join", isNotLoggedIn, async (req, res, next) => {
   try {
     const exUser = await User.findOne({ where: { id } });
     if (exUser) {
-      alert("이미 존재하는 유저 아이디 입니다.");
+      window.alert("이미 존재하는 유저 아이디 입니다.");
       return res.redirect("/auth"); // 회원가입페이지로 리로드
     } else {
       const hash = await bcrypt.hash(pw, 12);

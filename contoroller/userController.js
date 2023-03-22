@@ -40,11 +40,17 @@ module.exports.getMypage = (req, res) => {
 };
 
 module.exports.postMypage = async (req, res) => {
-  const nickname = req.session.passport.user.nickname;
+  // const nickname = req.session.passport.user.nickname;
+  const session = req.session;
+  session.nickname = "kimjeyoun";
+  const nickname = session.nickname;
+
   const exUser = await User.findOne({
-    where: nickname,
+    where: { nickname },
   });
   if (exUser) {
-    return exUser;
+    return res.send({ test: exUser });
+  } else {
+    console.log("유저를 찾을수 없습니다.");
   }
 };

@@ -39,7 +39,7 @@ sequelize
     console.log(err);
   });
 
-app.set("port", process.env.PORT || 3000);
+app.set("port", process.env.PORT || 3001);
 
 app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: false }));
@@ -67,13 +67,8 @@ app.use(passport.initialize()); // passport 초기화 미들웨어
 app.use(passport.session()); // 앱에서 영구 로그인을 사용한다면 추가하자
 
 // router
-
-app.use("/", indexRouter);
+app.use("/api", indexRouter);
 app.use("/auth", authRouter);
-
-// app.get("/", function (req, res) {
-//   res.send("안녕");
-// });
 
 const stockprice = require("./route/stockprice");
 app.use("/stockprice", stockprice);
