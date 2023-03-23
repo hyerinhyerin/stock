@@ -1,5 +1,5 @@
 import React,{useState,Component} from "react";
-import Button from "../Component/Button";
+import Button from "../components/Button";
 import StartPopup from "./StartPopup";
 import './Start.css';
 const Start = (props) => {

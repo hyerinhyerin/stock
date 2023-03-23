@@ -18,11 +18,11 @@ class JoinComponent extends Component{
     
     
     render() {
-        const {JoinP, ipType}=this.props;
+        const {JoinP, ipType, name, readTF}=this.props;
         return (
              <div>
                 <p className="joinp">{JoinP}</p>
-                <input name={JoinP} type={ipType} required></input>
+                <input name={name} type={ipType} required readOnly={readTF}></input>
              </div>
         );
     }
