@@ -1,5 +1,10 @@
 const express = require("express");
 const session = require("express-session");
+const { sequelize } = require('./models');
+const cp = require('cookie-parser');
+const path = require("path");
+const bodyParser = require("body-parser");
+const cors = require('cors');
 const path = require("path");
 const morgan = require("morgan"); // 작업 수행시 로깅
 const passport = require("passport"); // passport 미들웨어 가져오기
@@ -20,6 +25,9 @@ const app = express();
 
 app.use(express.static(__dirname + "/"));
 
+app.use(bodyParser.urlencoded({ extended: false }));
+
+// 세션(미들웨어)
 app.use(express.json());
 const cors = require("cors");
 app.use(cors());
@@ -51,39 +59,45 @@ app.use(cookieParser(process.env.COOKIE_SECRET));
 // session 설정
 app.use(
   session({
-    // 메모리 세션을 활성화하는 코드
-    resave: false, // 세션 객체에 수정사항이 없어도 저장할까를 정하는 코드
-    saveUninitialized: false, // 처음의 빈 세션 객체라도 저장을 할지말지 정하는 코드
-    secret: process.env.COOKIE_SECRET,
-    cookie: {
-      httpOnly: true,
-      secure: false, // https를 쓸것인가?
-    },
+    secret: "loginData",
+    resave: false,
+    saveUninitialized: true,
+    // store : new FileStore(),
   })
 );
 
-// 아래 2개는 session 아래로 적어주자
-app.use(passport.initialize()); // passport 초기화 미들웨어
-app.use(passport.session()); // 앱에서 영구 로그인을 사용한다면 추가하자
+app.use(cp());
+//app.use(cors());
 
-// router
+app.get('/', function (req, res) {
+  res.send("완료");
+});
 
-app.use("/", indexRouter);
-app.use("/auth", authRouter);
-
-// app.get("/", function (req, res) {
-//   res.send("안녕");
+// app.get('/api/main', async (req, res) => {
+//   res.send({ message: "안녕" });
 // });
 
 const stockprice = require("./route/stockprice");
-app.use("/stockprice", stockprice);
+app.use('/stockprice', stockprice);
 
-// 에러 처리 미들웨어
-app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(err.status || 500).send(err.message);
+const startGame = require("./route/startGame");
+app.use('/startGame', startGame);
+
+const find = require("./route/findPW");
+app.use('/find', find);
+
+const select = require("./route/selectPW");
+app.use('/select', select);
+
+const sell = require("./route/sellStock");
+app.use('/sell', sell);
+
+const buy = require("./route/buyStock");
+app.use('/buy', buy);
+
+app.listen(3001, function () {
+  console.log('연결되었습니다.');
 });
-
 app.listen(app.get("port"), () => {
   console.log(`Example app listening on port ${process.env.PORT}`);
 });
