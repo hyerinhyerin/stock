@@ -20,17 +20,19 @@ const Join = () => {
   }
   return(
       <div className="Join">
-        <JoinComponent name="nickname" JoinP="닉네임" ipType="text"/>
-        <input type='checkbox'/><p className='nickP'>닉네임 중복 확인</p>
-        <JoinComponent name="id" JoinP="아이디" ipType="text"/>
-        <input type='checkbox'/><p className='checkP'>아이디 중복 확인</p>
-        <JoinComponent name="pw" JoinP="비밀번호" ipType="password"/>
-        <JoinComponent name="pwcheck" JoinP="비밀번호 확인" ipType="password"/>
-        <JoinComponent name="email" JoinP="이메일" ipType="email"/>
-        <button style={btnStyle}>확인</button>
-         {/* <Button btnStyle={btnStyle} btnText={'확인'}/> */}
-      </div> 
+        <form action="/auth/join" method="POST">
+          <JoinComponent name="nickname" JoinP="닉네임" ipType="text"/>
+          <input type='checkbox'/><p className='nickP'>닉네임 중복 확인</p>
+          <JoinComponent name="id" JoinP="아이디" ipType="text"/>
+          <input type='checkbox'/><p className='checkP'>아이디 중복 확인</p>
+          <JoinComponent name="pw" JoinP="비밀번호" ipType="password"/>
+          <JoinComponent name="pwcheck" JoinP="비밀번호 확인" ipType="password"/>
+          <JoinComponent name="email" JoinP="이메일" ipType="email"/>
+          <button style={btnStyle}>확인</button>
+          {/* <Button btnStyle={btnStyle} btnText={'확인'}/> */}
+      </form>
+    </div>
   );
-}
+};
 
 export default Join;

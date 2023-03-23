@@ -4,6 +4,7 @@ import ProfileImage from './ProfileImage';
 import Drop from './Drop';
 // import {Mobile, PC} from '../components/Responsive';
 import StartPopup from '../Login after/StartPopup';
+import axios from "axios";
 
 const Mypage = () => {
   //탈퇴창 view 여부
@@ -40,16 +41,32 @@ const Mypage = () => {
 const getData=(v)=>{
   setViewDrop(v);
 }
+const [userData, setUserData] = useState({});
 
+const getUserData = async () => {
+  const res = await axios.get("/api/mypage");
+  setUserData(res.data.test);
+};
+
+useEffect(() => {
+  getUserData();
+}, []);
+
+const nickname = userData?.nickname;
+const email = userData?.email;
+
+if (nickname) {
+  console.log("nickname : ", nickname);
+}
   return(
     <div>  
       {/* <PC> */}
         <ProfileImage/>
         <div style={divStyle}>
-          <JoinComponent name="nickname" JoinP="닉네임" ipType="text" readTF={editType}/>
+          <JoinComponent name="nickname" JoinP="닉네임" ipType="text" readTF={editType} Udata={nickname}/>
           {/* <JoinComponent JoinP="아이디" ipType="text"/> */}
           {/* <JoinComponent JoinP="비밀번호" ipType="password"/> */}
-          <JoinComponent name="email" JoinP="이메일" ipType="email" readTF={editType}/>
+          <JoinComponent name="email" JoinP="이메일" ipType="email" readTF={editType} Udata={nickname}/>
         </div> 
         <div style={editStyle}>
           <button style={btnStyle} onClick={()=>{setEditType(!editType)}}>수정</button>
@@ -62,8 +79,7 @@ const getData=(v)=>{
         {viewDrop?<Drop view={viewDrop} getData={getData}/>:''}
       {/* </PC>     */}
     </div>
-      
   );
-}
+};
 
 export default Mypage;
