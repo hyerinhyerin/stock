@@ -15,7 +15,7 @@ const ImageCP = (props) => {
     }
 
     return(
-        <div style={imgDivStyle} onClick={()=>{props.onView(props.id); props.getData(0);}}>
+        <div style={imgDivStyle} onClick={()=>{props.onView(props.id); props.getData(!props.popShow);}}>
             <img style={props.imgstyle} src={props.imgsrc}></img>
         </div>
     );

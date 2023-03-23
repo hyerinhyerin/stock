@@ -1,7 +1,6 @@
 import React,{useEffect, useState} from 'react';
 import './Drop.css';
 const Drop = (props) => {
-    const [view, setView]=useState(props.view);
     // useEffect(()=>{
     //     setView(props.view);
     //     console.log(props.view);
@@ -50,8 +49,7 @@ const Drop = (props) => {
     }
     //마이페이지에 팝업창 사라짐을 넘김. 
     const clickBack=()=>{
-        // document.location.href('./Mypage.js');
-        props.getData(!view);
+        props.getData(!props.view);
     }
   return(
     <div style={divStyle}>
