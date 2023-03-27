@@ -33,24 +33,25 @@ app.get('/', function (req, res) {
 //   res.send({ message: "안녕" });
 // });
 
-const stockprice = require("./route/stockprice");
+const stockprice = require("./Router/stockprice");
 app.use('/stockprice', stockprice);
 
-const startGame = require("./route/startGame");
+const startGame = require("./Router/startGame");
 app.use('/startGame', startGame);
 
-const find = require("./route/findPW");
+const find = require("./Router/findPW");
 app.use('/find', find);
 
-const select = require("./route/selectPW");
+const select = require("./Router/selectPW");
 app.use('/select', select);
 
-const sell = require("./route/sellStock");
+const sell = require("./Router/sellStock");
 app.use('/sell', sell);
 
-const buy = require("./route/buyStock");
+const buy = require("./Router/buyStock");
 app.use('/buy', buy);
 
 app.listen(3001, function () {
   console.log('연결되었습니다.');
+  console.log(__dirname + "/");
 });

@@ -1,11 +1,10 @@
 {
   "name": "stock",
   "version": "1.0.0",
-  "description": "",
   "main": "app.js",
   "scripts": {
-    "server": "nodemon app.js",
-    "client": "cd react && npm start",
+    "server": "cd server && nodemon app.js",
+    "client": "cd client && cd react && npm start",
     "start": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\""
   },
   "repository": {
@@ -43,5 +42,7 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.20"
-  }
+  },
+  "keywords": [],
+  "description": ""
 }
