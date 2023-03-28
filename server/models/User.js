@@ -16,7 +16,7 @@ module.exports = class User extends (
           allowNull: false,
         },
         pw: {
-          type: Sequelize.STRING,
+          type: Sequelize.STRING(100),
         },
         email: {
           type: Sequelize.STRING(100),
@@ -53,4 +53,7 @@ module.exports = class User extends (
   //   static associate(db) {
   // User가 다른 모델과의 관계를 정의하는게 필요해지면 씀
   //   }
+
+  //   User.hasMany(Post);
+  // Post.belongsTo(User);
 };

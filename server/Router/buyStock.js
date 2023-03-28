@@ -1,31 +1,23 @@
 const express = require("express");
+const { INTEGER } = require("sequelize");
 const router = express.Router();
 const Company = require('../models/Company');
+const sequelize = require('../models').sequelize;
 const GameTable = require('../models/GameTable');
 
-var result;
+var res_com;
 
-
-// join(user, company) -> 해당 내용 result에 값을 담아서 update 같이 해주기.
+// 회사 주가 불러옴.
 router.get('/:num', async (req, res) => {
     try {
         const num = req.params.num;
-        result = await Company.findOne({ where: { num } });
-
-        res.send(result);
+        res_com = await Company.findOne({ where: { num } });
+        res.send(res_com);
     } catch (err) {
         console.log(err);
         res.send(404);
     }
 });
-
-// SELECT c.num, c.stockprice, c.companystock, u.usernickname, u.money, u.havestock
-
-// FROM gametable u
-
-// JOIN gamecompany c
-
-// where u.usernickname = "ovo" && c.num = 1;
 
 // 주식 사는 기능
 router.post('/:usernick', async (req, res) => {
@@ -33,21 +25,24 @@ router.post('/:usernick', async (req, res) => {
     const usernick = req.params.usernick;
 
     try {
-        const buyresult = GameTable.update(
-            { havestock: { ...havestock, [company]: stock }, money: result.money - (price * stock) },
-            { where: { usernickname: usernick } }
-        ).catch(err => {
+        var res_user = await GameTable.findOne({ where: { usernickname: usernick } });
+
+        const buyresult = await GameTable.update({
+            havestock: sequelize.fn('JSON_MERGE_PATCH', sequelize.col("havestock"), JSON.stringify({ [company]: Number(res_user.havestock[company]) + Number(stock) })),
+            money: res_user.money - (price * stock)
+        }, {
+            where: { usernickname: usernick }
+        }).catch(err => {
             console.log(err);
             res.send(404);
         });
+
         res.send("test");
     } catch (err) {
         console.log(err);
         res.send(404);
     }
 });
-
-
 
 module.exports = router;
 
