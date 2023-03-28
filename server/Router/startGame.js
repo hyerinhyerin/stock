@@ -1,21 +1,27 @@
 const express = require("express");
 const router = express.Router();
-const sequelize = require('../models').sequelize;
-const Sequelize = require("sequelize");
+const User = require('../models/User');
+const GameTable = require('../models/GameTable');
 
-var se_nickname = "";
-var se_gameDB = "";
+// 게임 시작할 때
 router.get('/', async function (req, res, next) {
     try {
-        // const session = req.session;
+        const session = req.session;
+        session.usernick = 'hello';
 
-        // session.nickname = "ovo";
-        // session.gameDB = "1";
+        const startTime = await new Date(new Date() * 1 + 3600000 * 9).toISOString().replace("T", " ").replace(/\..*/, "");
 
-        // se_nickname = session.nickname;
-        // se_gameDB = session.gameDB;
-
-        //createTable();
+        await User.findOne({
+            raw: true, where: { nickname: session.usernick }
+        }).then(result => {
+            GameTable.create({
+                usernickname: result.nickname,
+                money: result.money,
+                created_at: startTime
+            });
+        }).catch(err => {
+            console.log(err);
+        });
 
         res.send("startGame");
 
@@ -24,48 +30,5 @@ router.get('/', async function (req, res, next) {
         res.send(404);
     }
 });
-
-const createTable = async () => { // 테이블 생성
-    var i = 1;
-
-    sequelize.define('GameTable', {
-        nickname: { type: Sequelize.STRING(45), allowNull: false, primaryKey: true },
-        money: { type: Sequelize.INTEGER, allowNull: false },
-        userStock: { type: Sequelize.JSON },
-        created_at: {
-            type: Sequelize.DATE,
-            allowNull: false,
-            defalutValue: Sequelize.NOW,
-        }
-    }, {
-        tableName: 'gametable' + i,
-        freezeTableName: true,
-        timestamps: false,
-    });
-
-    await sequelize.sync();
-    await createCompanyTable(i);
-    await insertUser(i);
-    //await i++;
-}
-
-const deleteTable = async (i) => { // 테이블 삭제
-    var query = 'drop table gametable' + i + '';
-    var query2 = 'drop table gamestock' + i + '';
-    await sequelize.query(query);
-    await sequelize.query(query2);
-}
-
-const createCompanyTable = async (i) => { // 주식 테이블 복사
-    const query = 'create table gamestock' + i + ' as select * from gamecompany ';
-    await sequelize.query(query);
-}
-
-const insertUser = async (i) => { // 테이블에 user 정보 넣기
-    await sequelize.query('insert into gametable' + i + '(nickname, money, created_at) values (?, ?, NOW())', [se_nickname, se_gameDB]);
-}
-
-
-
 
 module.exports = router;
