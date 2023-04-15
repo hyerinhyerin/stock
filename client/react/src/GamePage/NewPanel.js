@@ -5,10 +5,11 @@ const NewPanel = () => {
   const divStyle = {
     textAlign: "center",
     border: "1px solid white",
-    width: "1075px",
+    width: "1123px",
     height: "100px",
     lineHeight: "100px",
     position: "relative",
+    marginLeft: "35px",
   };
   const newsFlashStyle = {
     color: "white",
@@ -38,8 +39,6 @@ const NewPanel = () => {
     const situationData = await axios.get("/api/situation");
     setSituation(situationData.data.situation);
   };
-
-  console.log("teest : ", situation[randomIdx]?.situation);
 
   useEffect(() => {
     getSituation();

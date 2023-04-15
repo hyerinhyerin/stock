@@ -6,24 +6,32 @@ const Company = require("./Company");
 const User = require("./User");
 const Situation = require("./Situation");
 
+const UserFindPw = require("./UserFindPw");
+const GameTable = require("./GameTable");
+
 const sequelize = new Sequelize(
   config.database,
   config.username,
   config.password,
   config
 );
-
 const db = {};
 
 db.sequelize = sequelize;
+db.Sequelize = Sequelize;
+
 db.User = User;
 db.Company = Company;
 db.Situation = Situation;
+db.UserFindPw = UserFindPw;
+db.GameTable = GameTable;
 
 User.init(sequelize);
 Company.init(sequelize);
 Situation.init(sequelize);
+UserFindPw.init(sequelize);
+GameTable.init(sequelize);
 
-// User.associate(db); // 관계 정의가 필요하면 사용
+// User.associate(db);
 
 module.exports = db;

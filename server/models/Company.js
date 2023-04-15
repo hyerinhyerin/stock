@@ -9,7 +9,6 @@ module.exports = class Company extends (
         companyname: {
           type: Sequelize.STRING(45),
           allowNull: false,
-          primaryKey: true,
         },
         companystock: {
           type: Sequelize.INTEGER,
@@ -21,6 +20,7 @@ module.exports = class Company extends (
         },
         num: {
           type: Sequelize.INTEGER,
+          primaryKey: true,
           allowNull: false,
         },
       },

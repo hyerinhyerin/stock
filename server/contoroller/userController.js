@@ -5,6 +5,7 @@ const { User } = require("../models");
 const { Company } = require("../models");
 const { Situation } = require("../models");
 const { Op } = require("sequelize");
+const { default: axios } = require("axios");
 
 module.exports.getLogin = (req, res) => {
   return res.redirect("/");
@@ -84,4 +85,27 @@ module.exports.situation = async (req, res) => {
   } else {
     console.log("상황이 찾아지지 않습니다.");
   }
+};
+
+let companiesObjArr = null;
+
+module.exports.getCurrentPrice = async (req, res) => {
+  companiesObjArr = req.body;
+
+  for (let i = 0; i < companiesObjArr.length; i++) {
+    const row = await Company.findOne({
+      where: {
+        companyname: companiesObjArr[i][29].name,
+      },
+    });
+
+    if (!row) {
+      res.status(404).send("Not found");
+    } else {
+      row.stockprice = companiesObjArr[i][29].stck_oprc;
+      row.save();
+      console.log("데이터베이스 업데이트 완료");
+    }
+  }
+  return res.status(200).send("Data received successfully");
 };
