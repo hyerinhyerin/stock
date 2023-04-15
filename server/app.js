@@ -17,6 +17,7 @@ const passportConfig = require("./passport");
 passportConfig(passport);
 
 const app = express();
+app.use(express.json());
 
 app.use(express.static(__dirname + "/"));
 
@@ -64,6 +65,19 @@ app.use(passport.session()); // 앱에서 영구 로그인을 사용한다면 �
 // router
 app.use("/api", indexRouter);
 app.use("/auth", authRouter);
+// app.use('/', (req, res, next) => { // url에서 /api 빼줌.
+//   req.url = req.url.slice(4);
+//   next();
+// });
+
+// app.get('/', function (req, res) {
+//   console.log(req.url);
+//   res.send("완료");
+// });
+
+// app.get('/api/main', async (req, res) => {
+//   res.send({ message: "안녕" });
+// });
 
 const stockprice = require("./Router/stockprice");
 app.use("/stockprice", stockprice);
@@ -73,6 +87,24 @@ app.use((err, req, res, next) => {
   console.error(err);
   res.status(err.status || 500).send(err.message);
 });
+
+const findPW = require("./Router/findPW");
+app.use("/findPW", findPW);
+
+const select = require("./Router/selectPW");
+app.use("/select", select);
+
+const sell = require("./Router/sellStock");
+app.use("/sell", sell);
+
+const buy = require("./Router/buyStock");
+app.use("/buy", buy);
+
+const mypage = require("./Router/mypage");
+app.use("/mypage", mypage);
+
+// const findStock = require("./Router/findStock");
+// app.use('/findStock', findStock);
 
 app.listen(app.get("port"), () => {
   console.log(`Example app listening on port ${process.env.PORT}`);
