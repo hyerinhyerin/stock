@@ -27,6 +27,11 @@ router.route("/situation").get(userController.situation);
 
 router.route("/curentdata").post(userController.getCurrentPrice); // 2. 받은거
 
+router
+  .route("/session")
+  .get(userController.postSession)
+  .post(userController.postSession);
+
 // router.get("/mypage", (req, res) => {
 //   res.send({ mypage: "ok!" });
 // });

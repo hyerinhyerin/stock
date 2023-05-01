@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import btnImg from "../img/btn.png";
 import upImg from "../img/up.png";
 import downImg from "../img/down.png";
+import { CSSTransition } from "react-transition-group";
+import "./cssTransition.css";
 import {
   BarChart,
   Bar,
@@ -19,7 +21,23 @@ const GraphCpt = () => {
   const [selectedCompany, setSelectedCompany] = useState(Array(30).fill({})); // 선택한 회사
   const [realGroupedCompanies, setRealGroupedCompanies] = useState([]); // 2차원 배열로 회사의 정보를 관리
   const [selectedCompanyName, setSelectedCompanyName] = useState(null); // 선택한 회사 이름을 담을 state 변수
+  const [userInfo, setUserInfo] = useState(null);
+  const [count, setCount] = useState(0);
+  const [price, setPrice] = useState(0);
+  const [isDiv1Visible, setIsDiv1Visible] = useState(false);
   const [isDiv2Visible, setIsDiv2Visible] = useState(false);
+  const [isDiv3Visible, setIsDiv3Visible] = useState(false);
+
+  const formatter = new Intl.NumberFormat("en-US");
+
+  useEffect(() => {
+    const sessionAxios = async () => {
+      const sessionData = await axios.get("/api/session");
+      console.log("session 정보 : ", sessionData.data.sessionUser);
+      setUserInfo(sessionData.data.sessionUser);
+    };
+    sessionAxios();
+  }, []);
 
   useEffect(() => {
     const axiosData = async () => {
@@ -124,14 +142,7 @@ const GraphCpt = () => {
         return newDataArray;
       });
       const companyPriceUpdate = async () => {
-        await axios
-          .post("/api/curentdata", newCompanies)
-          .then((res) => {
-            console.log(res);
-          })
-          .catch((err) => {
-            console.error(err);
-          });
+        await axios.post("/api/curentdata", newCompanies).then((res) => {});
       };
       companyPriceUpdate();
       return newCompanies;
@@ -140,7 +151,7 @@ const GraphCpt = () => {
 
   // 새로운 데이터를 일정시간마다 realGroupedCompanies state에 추가
   useEffect(() => {
-    const intervalId = setInterval(updateCompanies, 4000);
+    const intervalId = setInterval(updateCompanies, 18000);
     return () => clearInterval(intervalId);
   }, [updateCompanies]);
 
@@ -173,7 +184,6 @@ const GraphCpt = () => {
     background: "black",
     position: "relative",
     right: "4px",
-    bottom: "485px",
     border: "1px solid white",
   };
 
@@ -199,14 +209,15 @@ const GraphCpt = () => {
     margin: 0,
     border: "1px solid white",
     zIndex: 1,
-    width: "982px",
+    width: "1000px",
     background: "black",
   };
 
   const graphDiv = {
     display: "inline-block",
-    position: "relative",
-    top: "29px",
+    position: "absolute",
+    top: "150px",
+    width: "808px",
     margin: "0",
     borderRight: "1px dotted white",
   };
@@ -238,14 +249,97 @@ const GraphCpt = () => {
     display: "inline-block",
     height: "551px",
     marginTop: "0",
-    position: "relative",
-    top: "29px",
+    position: "absolute",
+    left: "845px",
+    top: "150px",
     overflow: "auto",
+  };
+
+  const userInfoCurrentStock = {
+    display: "inline-block",
+    border: "1px solid white",
+    width: "317px",
+    height: "590px",
+    marginLeft: "20px",
+    marginTop: "0",
+    position: "absolute",
+    left: "1161px",
+    top: "20px",
+    color: "white",
+  };
+
+  const userInfoDiv = {
+    fontSize: "20px",
+    borderBottom: "1px solid white",
+    paddingBottom: "30px",
+  };
+
+  const currentStock = {
+    fontSize: "20px",
+    textAlign: "center",
+  };
+
+  const buySellDiv = {
+    display: "inline-block",
+    position: "absolute",
+    top: "617px",
+    left: "1171px",
+    width: "348px",
+  };
+
+  const sellPopup = {
+    display: "inline-block",
+    border: "1px solid white",
+    textAlign: "center",
+    backgroundColor: "black",
+    width: "500px",
+    height: "500px",
+    margin: "0",
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    zIndex: "1",
+    fontSize: "23px",
+  };
+
+  const sellPopupInnerDiv = {
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "row",
+    position: "relative",
+    left: "50%",
+    transform: "translate(-50%)",
+    marginTop: "0",
+    width: "300px",
+    height: "44px",
+    border: "1px solid white",
+    marginBottom: "30px",
+  };
+
+  const sellPopupPMBtn = {
+    color: "white",
+    backgroundColor: "black",
+    border: "none",
+    fontSize: "22px",
+    width: "44px",
+    height: "42px",
+    cursor: "pointer",
+  };
+
+  const sellPopupInput = {
+    border: "none",
+    margin: "0 10px",
+    width: "50%",
+    height: "100%",
+    textAlign: "center",
   };
 
   function companyBtnClick(companyName) {
     setSelectedCompanyName(companyName);
     setIsDiv2Visible(!isDiv2Visible);
+    setCount(selectedCompany[29].stockCount);
+    setPrice(selectedCompany[29].stck_oprc);
   }
 
   // 회사 이름을 추출하여 버튼 생성
@@ -270,9 +364,14 @@ const GraphCpt = () => {
         (company) => company[29].name === selectedCompanyName
       );
       setSelectedCompany(company);
-      console.log("selectedCompany 최종본 : ", selectedCompany);
     }
   }, [selectedCompanyName, realGroupedCompanies]);
+
+  // 매수, 매도창에 쓸 shares 주식 수와 price 가격 state관리
+  useEffect(() => {
+    setCount(selectedCompany[29].stockCount);
+    setPrice(selectedCompany[29].stck_oprc);
+  }, [selectedCompany]);
 
   const lis = realGroupedCompanies.map((company) => (
     <li style={lisStyle}>
@@ -295,15 +394,88 @@ const GraphCpt = () => {
     </li>
   ));
 
+  const currentStockList = userInfo
+    ? Object.entries(userInfo.havestock).map(([companyId, stockCount]) => {
+        if (realGroupedCompanies[companyId]) {
+          const company = realGroupedCompanies[companyId - 1][29];
+          const { name, stck_oprc, stck_clpr } = company;
+          const profit =
+            stck_oprc > stck_clpr ? (
+              <span style={{ color: "#E94560" }}>
+                <img src={upImg} style={upDownImg}></img>
+                {stck_oprc - stck_clpr}
+              </span>
+            ) : (
+              <span style={{ color: "#006DEE" }}>
+                <img src={downImg} style={upDownImg}></img>
+                {stck_clpr - stck_oprc}
+              </span>
+            );
+
+          return (
+            <div key={companyId}>
+              <span style={{ borderBottom: "1px solid white" }}>
+                {name} {stockCount}주 {profit}
+              </span>
+            </div>
+          );
+        } else {
+          return (
+            <div key={companyId}>
+              <span>해당 회사가 없습니다.</span>
+            </div>
+          );
+        }
+      })
+    : [];
+
+  const handleCountChange = (e) => {
+    setCount(parseInt(e.target.value));
+  };
+
+  const handlePriceChange = (e) => {
+    setPrice(parseInt(e.target.value));
+  };
+
+  const handleCountIncrement = (e) => {
+    e.preventDefault();
+    setCount(Math.min(count + 1, selectedCompany[29].stockCount));
+  };
+
+  const handleCountDecrement = (e) => {
+    e.preventDefault();
+    setCount(Math.max(count - 1, 0));
+  };
+
+  const handlePriceIncrement = (e) => {
+    e.preventDefault();
+    setPrice(Math.min(price + 100, selectedCompany[29].stck_oprc));
+  };
+
+  const handlePriceDecrement = (e) => {
+    e.preventDefault();
+    setPrice(Math.max(price - 100, 0));
+  };
+
+  const handleBuyBtn = () => {
+    setIsDiv1Visible(!isDiv1Visible);
+  };
+
+  const handleSellBtn = () => {
+    setIsDiv3Visible(!isDiv3Visible);
+  };
+
   return (
     <div style={{ margin: "0" }}>
       <button onClick={handleButtonClick} style={companiesSelectBtn}>
         <img src={btnImg} style={{ width: "22px" }} />
       </button>
       <span style={graphCompanyName}>{selectedCompany[29].name}</span>
-      <div style={divStyle}>
-        {isDiv2Visible && <div style={hideCompanyBtn}>{buttons}</div>}
-      </div>
+      <CSSTransition in={isDiv2Visible} classNames="slide" timeout={500}>
+        <div style={divStyle}>
+          {isDiv2Visible && <div style={hideCompanyBtn}>{buttons}</div>}
+        </div>
+      </CSSTransition>
       <div style={graphDiv}>
         <BarChart
           data={selectedCompany}
@@ -348,6 +520,279 @@ const GraphCpt = () => {
           <ul style={ulStyle}>{lis}</ul>
         </div>
       </div>
+      <div style={userInfoCurrentStock}>
+        {userInfo ? (
+          <div>
+            <div style={userInfoDiv}>
+              <div>
+                <p style={{ textAlign: "center", color: "#546865" }}>내 정보</p>
+                <span style={{ marginLeft: "20px", marginRight: "39px" }}>
+                  닉네임{" "}
+                </span>
+                <span style={{ borderBottom: "1px solid white" }}>
+                  {userInfo.usernickname}
+                </span>
+              </div>
+              <div>
+                <span style={{ marginLeft: "20px", marginRight: "20px" }}>
+                  현재 자산
+                </span>
+                <span style={{ borderBottom: "1px solid white" }}>
+                  {userInfo.money}
+                </span>
+              </div>
+            </div>
+            <div style={currentStock}>
+              <p style={{ fontSize: "30px" }}>나의 현재 주식 현황</p>
+              {currentStockList}
+            </div>
+          </div>
+        ) : (
+          <p>로딩중입니다...</p>
+        )}
+      </div>
+      <div style={buySellDiv}>
+        <from>
+          <input
+            style={{ display: "none" }}
+            value={selectedCompany[29].name}
+            name="company"
+          />
+          <button
+            style={{
+              backgroundColor: "black",
+              border: "1px solid white",
+              padding: "20px 51px",
+              color: "white",
+              fontSize: "25px",
+              marginLeft: "10px",
+              marginRight: "10px",
+            }}
+            onClick={handleBuyBtn}
+          >
+            매수
+          </button>
+        </from>
+        <from>
+          <input
+            style={{ display: "none" }}
+            value={selectedCompany[29].name}
+            name="graphCompanyName"
+          />
+          <button
+            style={{
+              backgroundColor: "black",
+              border: "1px solid white",
+              padding: "20px 51px",
+              color: "white",
+              fontSize: "25px",
+              marginLeft: "10px",
+            }}
+            onClick={handleSellBtn}
+          >
+            매도
+          </button>
+        </from>
+      </div>
+      {isDiv1Visible && (
+        <div style={sellPopup}>
+          <form method="POST" action={`/buy/${userInfo.usernickname}`}>
+            <p style={{ color: "white", marginTop: "40px" }}>지정가</p>
+            <div style={sellPopupInnerDiv}>
+              <button
+                type="button"
+                style={sellPopupPMBtn}
+                onClick={handleCountDecrement}
+              >
+                -
+              </button>
+              <input
+                type="text"
+                name="stock"
+                value={count + "주"}
+                onChange={handleCountChange}
+                style={sellPopupInput}
+              />
+              <button
+                type="button"
+                style={sellPopupPMBtn}
+                onClick={handleCountIncrement}
+              >
+                +
+              </button>
+            </div>
+            <div style={sellPopupInnerDiv}>
+              <button
+                type="button"
+                style={sellPopupPMBtn}
+                onClick={handlePriceDecrement}
+              >
+                -
+              </button>
+              <input
+                type="text"
+                name="price"
+                value={formatter.format(price) + "원"}
+                onChange={handlePriceChange}
+                style={sellPopupInput}
+                readOnly
+              />
+              <button
+                type="button"
+                style={sellPopupPMBtn}
+                onClick={handlePriceIncrement}
+              >
+                +
+              </button>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-evenly",
+                alignItems: "center",
+                flexDirection: "row",
+                marginBottom: "30px",
+              }}
+            >
+              <span style={{ color: "white" }}>신용가능(예상)</span>
+              <input
+                type="text"
+                value="0원"
+                style={{
+                  border: "none",
+                  textAlign: "center",
+                  fontSize: "25px",
+                }}
+                readOnly
+              />
+            </div>
+            <div style={sellPopupInnerDiv}>
+              <span style={{ color: "white", marginLeft: "10px" }}>
+                주문금액
+              </span>
+              <input
+                type="text"
+                value={
+                  formatter.format(parseInt(price) * parseInt(count)) + "원"
+                }
+                style={{ width: "150px", border: "none", textAlign: "center" }}
+                readOnly
+              />
+            </div>
+            <div>
+              <button
+                type="submit"
+                style={{
+                  backgroundColor: "black",
+                  border: "1px solid white",
+                  padding: "20px 51px",
+                  color: "white",
+                  fontSize: "25px",
+                  marginLeft: "10px",
+                }}
+              >
+                매수
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+      {isDiv3Visible && (
+        <div style={sellPopup}>
+          <form method="POST" action={`/ 개sell/${userInfo.usernickname}`}>
+            <p style={{ color: "white", marginTop: "40px" }}>지정가</p>
+            <div style={sellPopupInnerDiv}>
+              <button
+                type="button"
+                style={sellPopupPMBtn}
+                onClick={handleCountDecrement}
+              >
+                -
+              </button>
+              <input
+                type="text"
+                name="stock"
+                value={count + "주"}
+                onChange={handleCountChange}
+                style={sellPopupInput}
+              />
+              <button
+                type="button"
+                style={sellPopupPMBtn}
+                onClick={handleCountIncrement}
+              >
+                +
+              </button>
+            </div>
+            <div>
+              <button
+                style={{
+                  backgroundColor: "black",
+                  border: "1px solid white",
+                  padding: "15px 30px",
+                  color: "white",
+                  fontSize: "15px",
+                  marginBottom: "30px",
+                }}
+              >
+                잔고
+              </button>
+            </div>
+            <div style={sellPopupInnerDiv}>
+              <button
+                type="button"
+                style={sellPopupPMBtn}
+                onClick={handlePriceDecrement}
+              >
+                -
+              </button>
+              <input
+                type="text"
+                name="price"
+                value={formatter.format(price) + "원"}
+                onChange={handlePriceChange}
+                style={sellPopupInput}
+                readOnly
+              />
+              <button
+                type="button"
+                style={sellPopupPMBtn}
+                onClick={handlePriceIncrement}
+              >
+                +
+              </button>
+            </div>
+            <div style={sellPopupInnerDiv}>
+              <span style={{ color: "white", marginLeft: "10px" }}>
+                주문금액
+              </span>
+              <input
+                type="text"
+                value={
+                  formatter.format(parseInt(price) * parseInt(count)) + "원"
+                }
+                style={{ width: "150px", border: "none", textAlign: "center" }}
+                readOnly
+              />
+            </div>
+            <div>
+              <button
+                type="submit"
+                style={{
+                  backgroundColor: "black",
+                  border: "1px solid white",
+                  padding: "20px 51px",
+                  color: "white",
+                  fontSize: "25px",
+                  marginLeft: "10px",
+                }}
+              >
+                매도
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   );
 };

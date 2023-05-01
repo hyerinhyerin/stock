@@ -88,8 +88,8 @@ app.use((err, req, res, next) => {
   res.status(err.status || 500).send(err.message);
 });
 
-const findPW = require("./Router/findPW");
-app.use("/findPW", findPW);
+// const findPW = require("./Router/findPW");
+// app.use("/findPW", findPW);
 
 const select = require("./Router/selectPW");
 app.use("/select", select);

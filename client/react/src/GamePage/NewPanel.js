@@ -33,21 +33,38 @@ const NewPanel = () => {
   };
 
   const [situation, setSituation] = useState({}); // 상황 데이터
-  const randomIdx = Math.floor(Math.random() * 49); // 0 ~ 48 random Index
+  const [randomSituation, setRandomSituation] = useState("로딩중입니다...");
+  const earlyRandomIdx = Math.floor(Math.random() * 49); // 0 ~ 48 random Index
+  const randomSecond = Math.floor(Math.random() * (40001 - 20000) + 20000); // 20000 ~ 400000
 
   const getSituation = async () => {
     const situationData = await axios.get("/api/situation");
     setSituation(situationData.data.situation);
+    setRandomSituation(situationData.data.situation[earlyRandomIdx].situation);
+  };
+
+  const randomSituationFun = () => {
+    const randomIdx = Math.floor(Math.random() * 49); // 0 ~ 48 random Index
+    setRandomSituation(situation[randomIdx].situation);
   };
 
   useEffect(() => {
     getSituation();
   }, []);
 
+  useEffect(() => {
+    const intervalId = setInterval(randomSituationFun, randomSecond);
+    return () => clearInterval(intervalId);
+  }, []);
+
   return (
     <div style={divStyle}>
       <span style={newsFlashStyle}>속보 </span>
-      <span style={newsContent}>{situation[randomIdx]?.situation}</span>
+      {randomSituation ? (
+        <span style={newsContent}>{randomSituation}</span>
+      ) : (
+        <span style={newsContent}>로딩중입니다...</span>
+      )}
     </div>
   );
 };

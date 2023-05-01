@@ -1,0 +1,41 @@
+.slide-enter {
+  opacity: 0;
+  transform: translateX(-100%);
+}
+
+.slide-enter-active {
+  opacity: 1;
+  transform: translateX(0%);
+  transition: all 500ms ease-in-out;
+}
+
+.slide-exit {
+  opacity: 1;
+  transform: translateX(0%);
+}
+
+.slide-exit-active {
+  opacity: 0;
+  transform: translateX(-100%);
+  transition: all 500ms ease-in-out;
+}
+
+/* 스크롤바 기본 스타일 */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* 스크롤바 트랙 스타일 */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* 스크롤바 쓰임 스타일 */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* 스크롤바 쓰임 위로 마우스를 가져갔을 때 스타일 */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

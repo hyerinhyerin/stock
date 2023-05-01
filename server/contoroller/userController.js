@@ -1,11 +1,10 @@
 const passport = require("passport");
 const path = require("path");
-const { async } = require("rxjs");
 const { User } = require("../models");
 const { Company } = require("../models");
 const { Situation } = require("../models");
+const { GameTable } = require("../models");
 const { Op } = require("sequelize");
-const { default: axios } = require("axios");
 
 module.exports.getLogin = (req, res) => {
   return res.redirect("/");
@@ -35,7 +34,8 @@ module.exports.postLogin = async (req, res, next) => {
         console.error(loginError);
         return next(loginError);
       }
-      return res.redirect("/"); // 로그인 성공시 날릴 라우터 부분
+
+      return res.redirect("http://localhost:3000/gamePage"); // 로그인 성공시 날릴 라우터 부분
     });
   })(req, res, next);
 };
@@ -58,7 +58,7 @@ module.exports.chart = async (req, res) => {
   const companys = await Company.findAll({
     where: {
       stockprice: {
-        [Op.gte]: 100,
+        [Op.gte]: 0,
       },
     },
     raw: true,
@@ -98,8 +98,20 @@ module.exports.getCurrentPrice = async (req, res) => {
     } else {
       row.stockprice = companiesObjArr[i][29].stck_oprc;
       row.save();
-      console.log("데이터베이스 업데이트 완료");
     }
   }
   return res.status(200).send("Data received successfully");
+};
+
+// 세션 정보 날리는거
+module.exports.postSession = async (req, res) => {
+  const nickname = req.session.passport.user.nickname;
+  const exUser = await GameTable.findOne({
+    where: {
+      usernickname: nickname,
+    },
+  });
+  if (exUser) {
+    return res.send({ sessionUser: exUser });
+  }
 };
