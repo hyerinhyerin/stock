@@ -23,7 +23,6 @@ const App = () => {
   <div> 
     <PC>
       {/* <LogoCP/> */}
-      <p style={{color:'white', alignItems:'center'}}>{data}</p>
       <Mypage/>
     </PC>
     <Mobile>
