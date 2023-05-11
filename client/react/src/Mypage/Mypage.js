@@ -1,4 +1,4 @@
-import React,{useState} from 'react';
+import React,{useState,useEffect} from 'react';
 import JoinComponent from '../components/JoinComponent';
 import ProfileImage from './ProfileImage';
 import Drop from './Drop';
@@ -37,6 +37,14 @@ const Mypage = () => {
       fontSize:'15pt',
       color:'white',
 }
+
+const backimg={
+  width:'40px',
+  height:'45px',
+  position:'absolute',
+  left:'20px',
+  top:'30px',
+}
 //탈퇴창에서 잘못누름을 택했을 때 view를 받아 탈퇴창 사라짐을 해당 컴포넌트에도 알려줌. 
 const getData=(v)=>{
   setViewDrop(v);
@@ -60,7 +68,7 @@ if (nickname) {
 }
   return(
     <div>  
-      {/* <PC> */}
+      <img src="back.png" style={backimg}></img>
         <ProfileImage/>
         <div style={divStyle}>
           <JoinComponent name="nickname" JoinP="닉네임" ipType="text" readTF={editType} Udata={nickname}/>
@@ -69,7 +77,10 @@ if (nickname) {
           <JoinComponent name="email" JoinP="이메일" ipType="email" readTF={editType} Udata={nickname}/>
         </div> 
         <div style={editStyle}>
-          <button style={btnStyle} onClick={()=>{setEditType(!editType)}}>수정</button>
+          {editType ? 
+          <button style={btnStyle} onClick={()=>{setEditType(!editType)}}>수정</button>:
+          <button style={btnStyle} onClick={()=>{setEditType(!editType)}}>확인</button>}
+          {/* <button style={btnStyle} onClick={()=>{setEditType(!editType)}}>수정</button> */}
           {/* <Button btnStyle={btnStyle} btnText='수정'/> */}
         </div>
         <div style={outStyle}>
@@ -77,7 +88,6 @@ if (nickname) {
           {/* <Button btnStyle={btnStyle} btnText='탈퇴'/> */}
         </div>
         {viewDrop?<Drop view={viewDrop} getData={getData}/>:''}
-      {/* </PC>     */}
     </div>
   );
 };
