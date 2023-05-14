@@ -29,10 +29,10 @@ app.use(
 app.use(cp());
 //app.use(cors());
 
-app.use('/', (req, res, next) => { // url에서 /api 빼줌.
-  req.url = req.url.slice(4);
-  next();
-});
+// app.use('/', (req, res, next) => { // url에서 /api 빼줌.
+//   req.url = req.url.slice(4);
+//   next();
+// });
 
 app.get('/', function (req, res) {
   console.log(req.url);
