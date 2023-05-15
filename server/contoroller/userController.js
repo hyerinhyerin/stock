@@ -1,6 +1,10 @@
 const passport = require("passport");
 const path = require("path");
 const { User } = require("../models");
+const { Company } = require("../models");
+const { Situation } = require("../models");
+const { GameTable } = require("../models");
+const { Op } = require("sequelize");
 
 module.exports.getLogin = (req, res) => {
   return res.redirect("/");
@@ -30,7 +34,8 @@ module.exports.postLogin = async (req, res, next) => {
         console.error(loginError);
         return next(loginError);
       }
-      return res.redirect("/"); // 로그인 성공시 날릴 라우터 부분
+
+      return res.redirect("http://localhost:3000/gamePage"); // 로그인 성공시 날릴 라우터 부분
     });
   })(req, res, next);
 };
@@ -46,5 +51,67 @@ module.exports.postMypage = async (req, res) => {
   });
   if (exUser) {
     return exUser;
+  }
+};
+
+module.exports.chart = async (req, res) => {
+  const companys = await Company.findAll({
+    where: {
+      stockprice: {
+        [Op.gte]: 0,
+      },
+    },
+    raw: true,
+  });
+
+  if (companys) {
+    return res.send({ companys: companys });
+  } else {
+    console.log("회사가 찾아지지 않습니다.");
+  }
+};
+
+module.exports.situation = async (req, res) => {
+  const situation = await Situation.findAll();
+
+  if (situation) {
+    return res.send({ situation: situation });
+  } else {
+    console.log("상황이 찾아지지 않습니다.");
+  }
+};
+
+let companiesObjArr = null;
+
+module.exports.getCurrentPrice = async (req, res) => {
+  companiesObjArr = req.body;
+
+  for (let i = 0; i < companiesObjArr.length; i++) {
+    const row = await Company.findOne({
+      where: {
+        companyname: companiesObjArr[i][29].name,
+      },
+    });
+
+    if (!row) {
+      res.status(404).send("Not found");
+    } else {
+      row.stockprice = companiesObjArr[i][29].stck_oprc;
+      row.save();
+    }
+  }
+  return res.status(200).send("Data received successfully");
+};
+
+// 세션 정보 날리는거
+module.exports.postSession = async (req, res) => {
+  const nickname = req.session.passport.user.nickname;
+  const exUser = await GameTable.findOne({
+    where: {
+      usernickname: nickname,
+    },
+  });
+  if (exUser) {
+    return res.send({ sessionUser: exUser });
   }
 };
