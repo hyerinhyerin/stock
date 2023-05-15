@@ -2,20 +2,24 @@ const express = require("express");
 const router = express.Router();
 const User = require('../models/User');
 
-router.post('/', async (req, res) => {
+router.post('/', async (req, res) => { // 마이페이지 수정
     const session = req.session;
-    const inputValue = req.body.value;
+    const { id, email, nickname } = req.body;
 
-    session.isLogined = true;
-    session.nickname = inputValue;
-    res.send("성공");
+    try {
+        await User.update({
+            email: email,
+            nickname: nickname
+        }, { where: { id: id } })
+        res.send("마이페이지 수정 완료");
+    } catch (err) {
+        res.send(err);
+    }
 })
 
-router.get('/', async (req, res) => {
-    const { email, id } = req.body;
+router.get('/', async (req, res) => { // 마이페이지 정보 보냄
     const session = req.session;
     try {
-        console.log(session.nickname);
         if (session.isLogined == true) {
             await User.findOne({ raw: true, where: { nickname: session.nickname } })
                 .then((result) => {
