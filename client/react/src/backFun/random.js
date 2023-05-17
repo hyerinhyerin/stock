@@ -13,5 +13,13 @@ var randomOperation = () => {
   return operation[Math.floor(Math.random() * operation.length)];
 };
 
+const randomHighLow = () => {
+  let randNum = Math.floor(Math.random() * (2500 - 1500 + 1)) + 1500;
+  randNum = parseInt(randNum);
+
+  return randNum;
+};
+
 module.exports.startNum = randomNum;
 module.exports.startOp = randomOperation;
+module.exports.highLowNum = randomHighLow;
