@@ -14,7 +14,6 @@ import {
   CartesianGrid,
   Tooltip,
   Cell,
-  Line,
 } from "recharts";
 
 const backfun = require("../backFun/random");
@@ -208,7 +207,7 @@ const GraphCpt = () => {
 
   // 새로운 데이터를 일정시간마다 realGroupedCompanies state에 추가
   useEffect(() => {
-    const intervalId = setInterval(updateCompanies, 18000);
+    const intervalId = setInterval(updateCompanies, 4000);
     return () => clearInterval(intervalId);
   }, [updateCompanies]);
 
@@ -583,7 +582,7 @@ const GraphCpt = () => {
               );
             })}
           </Bar>
-          <Bar
+          {/* <Bar
             dataKey={(data) => {
               const range = [data.stck_high, data.stck_low];
               return range;
@@ -596,7 +595,7 @@ const GraphCpt = () => {
                 <Cell fill={data.prdy_vrss_sign > 3 ? "#006DEE" : "#E94560"} />
               );
             })}
-          </Bar>
+          </Bar> */}
         </BarChart>
 
         <BarChart
