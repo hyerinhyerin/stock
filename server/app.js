@@ -62,9 +62,12 @@ app.use(
 app.use(passport.initialize()); // passport 초기화 미들웨어
 app.use(passport.session()); // 앱에서 영구 로그인을 사용한다면 추가하자
 
+<<<<<<< HEAD
+=======
 // router
 app.use("/api", indexRouter);
 app.use("/auth", authRouter);
+>>>>>>> jaeyoon
 // app.use('/', (req, res, next) => { // url에서 /api 빼줌.
 //   req.url = req.url.slice(4);
 //   next();
