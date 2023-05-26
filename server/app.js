@@ -85,8 +85,8 @@ app.use('/buy', buy);
 const mypage = require("./Router/mypage");
 app.use('/mypage', mypage);
 
-// const findStock = require("./Router/findStock");
-// app.use('/findStock', findStock);
+const stockprice = require("./Router/stockprice");
+app.use("/stockprice", stockprice);
 
 // 에러 처리 미들웨어
 app.use((err, req, res, next) => {
