@@ -1,5 +1,4 @@
 import React,{useState,Component} from "react";
-import Button from "../components/Button";
 import StartPopup from "./StartPopup";
 import './Start.css';
 const Start = (props) => {
@@ -38,7 +37,7 @@ const Start = (props) => {
                 <p className="P2">닉네임 <pre>        </pre></p>
                 <p className="P2">총 자산 <pre>        </pre></p>
                 <p className="P2">랭킹 순위 <pre>        </pre></p>
-                <Button btnText={'로그아웃'} btnStyle={btnlogout}/>
+                <button style={btnlogout}>로그아웃</button>
             </div>
             <button style={btnStyle} onClick={()=>setViewPopup(true)}>게임 시작</button>
             {/* <Button btnText={'게임 시작'} btnStyle={btnStyle}/> */}
