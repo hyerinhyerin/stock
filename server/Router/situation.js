@@ -1,13 +1,32 @@
+const express = require("express");
+const router = express.Router();
+
 const Company = require('../models/Company');
 const Situation = require('../models/Situation');
 const { Op } = require("sequelize");
-const random = require('./random');
+
+router.get('/', async function (req, res, next) {
+    try {
+        var randomNum = Math.floor(Math.random() * 49) + 1;
+
+        await Situation.findOne({ raw: true, where: { num: randomNum } })
+            .then((result) => {
+                res.send(result);
+            })
+
+        await situationDB(randomNum);
+
+
+    } catch (err) {
+        console.log(err);
+        res.send(404);
+    }
+});
 
 var numList = [];
 var opList = [];
 
 // 상황에 따른 주가 변경 기능
-
 function situationDB(num) {
     Situation.findOne({ raw: true, where: { num: num } })
         .then((result) => {
@@ -51,16 +70,12 @@ function situationDB(num) {
                     opList.push("+");
                 }
             }
-            else {
-
-            }
         })
         .then(() => {
             if (opList.length > 1) {
                 for (var i = 0; i < numList.length; i++) {
                     for (var j = 0; j < opList.length; j++) {
                         findDB(numList[i], opList[j]);
-
                     }
                 }
             } else {
@@ -69,7 +84,6 @@ function situationDB(num) {
                 }
             }
             randStock(numList);
-
         })
         .catch((err) => {
             console.log(err);
@@ -108,7 +122,5 @@ function randStock(sitNum) { // 상황 때문에 주가 변동되는 회사빼�
         });
 }
 
-situationDB(1);
-module.exports.startSituation = function () {
-    situationDB(1);
-}
+
+module.exports = router;

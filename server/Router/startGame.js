@@ -7,12 +7,12 @@ const GameTable = require('../models/GameTable');
 router.get('/', async function (req, res, next) {
     try {
         const session = req.session;
-        session.usernick = 'hello';
+        session.nickname = 'hello';
 
         const startTime = await new Date(new Date() * 1 + 3600000 * 9).toISOString().replace("T", " ").replace(/\..*/, "");
 
         await User.findOne({
-            raw: true, where: { nickname: session.usernick }
+            raw: true, where: { nickname: session.nickname }
         }).then(result => {
             GameTable.create({
                 usernickname: result.nickname,
