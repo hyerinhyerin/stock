@@ -7,8 +7,8 @@ const morgan = require("morgan"); // 작업 수행시 로깅
 const passport = require("passport"); // passport 미들웨어 가져오기
 const cookieParser = require("cookie-parser"); // 쿠키 파싱 미들웨어
 
-// const dotenv = require("dotenv"); // .env SECRET 정보 가져오기
-// dotenv.config();
+const dotenv = require("dotenv"); // .env SECRET 정보 가져오기
+dotenv.config();
 
 const indexRouter = require("./Router/index");
 const authRouter = require("./Router/auth");
@@ -33,21 +33,22 @@ app.use(cors());
 //     console.log(err);
 //   });
 
-app.set("port", process.env.PORT || 3001);
+app.set("port", process.env.PORT || 4000);
 
 app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: false }));
 
 // cookieParser 설정에 비밀키를 넣어주자.
 // cookieParser를 사용하게되면 req.cookies로 접근이 가능하다.
-// app.use(cookieParser(process.env.COOKIE_SECRET));
+app.use(cookieParser(process.env.COOKIE_SECRET));
 
-// 세션(미들웨어)
+// session 설정
 app.use(
   session({
-    secret: "loginData",
-    resave: false,
-    saveUninitialized: true,
+    // 메모리 세션을 활성화하는 코드
+    resave: false, // 세션 객체에 수정사항이 없어도 저장할까를 정하는 코드
+    saveUninitialized: false, // 처음의 빈 세션 객체라도 저장을 할지말지 정하는 코드
+    secret: process.env.COOKIE_SECRET,
     cookie: {
       httpOnly: true,
       secure: false, // https를 쓸것인가?
@@ -85,9 +86,6 @@ app.use('/buy', buy);
 const mypage = require("./Router/mypage");
 app.use('/mypage', mypage);
 
-const stockprice = require("./Router/stockprice");
-app.use("/stockprice", stockprice);
-
 // 에러 처리 미들웨어
 app.use((err, req, res, next) => {
   console.error(err);
@@ -95,5 +93,5 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(app.get("port"), () => {
-  console.log("연결되었습니다.");
+  console.log(`Example app listening on port ${process.env.PORT}`);
 });
