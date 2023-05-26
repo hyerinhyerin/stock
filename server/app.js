@@ -65,26 +65,29 @@ app.get('/', function (req, res) {
   res.send("완료");
 });
 
+app.use("/api", indexRouter);
+app.use("/auth", authRouter);
+
 const stockprice = require("./Router/stockprice");
-app.use('/stockprice', stockprice);
+app.use('/api/stockprice', stockprice);
 
 const startGame = require("./Router/startGame");
-app.use('/startGame', startGame);
+app.use('/api/startGame', startGame);
 
 const findPW = require("./Router/findPW");
-app.use('/findPW', findPW);
+app.use('/api/findPW', findPW);
 
 const select = require("./Router/selectPW");
-app.use('/select', select);
+app.use('/api/select', select);
 
 const sell = require("./Router/sellStock");
-app.use('/sell', sell);
+app.use('/api/sell', sell);
 
 const buy = require("./Router/buyStock");
-app.use('/buy', buy);
+app.use('/api/buy', buy);
 
 const mypage = require("./Router/mypage");
-app.use('/mypage', mypage);
+app.use('/api/mypage', mypage);
 
 // 에러 처리 미들웨어
 app.use((err, req, res, next) => {

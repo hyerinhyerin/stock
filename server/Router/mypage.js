@@ -18,18 +18,14 @@ router.post('/', async (req, res) => { // 마이페이지 수정
 })
 
 router.get('/', async (req, res) => { // 마이페이지 정보 보냄
-    const session = req.session;
     try {
-        if (session.isLogined == true) {
-            await User.findOne({ raw: true, where: { nickname: session.nickname } })
-                .then((result) => {
-                    res.send(result);
-                }).catch((err) => {
-                    res.send(err);
-                })
-        } else {
-            res.send("로그인 안함");
-        }
+        const nickname = req.session.passport.user.nickname;
+        await User.findOne({ raw: true, where: { nickname: nickname } })
+            .then((result) => {
+                res.send({ userData: result });
+            }).catch((err) => {
+                res.send(err);
+            })
     } catch (err) {
         res.send(err);
     }

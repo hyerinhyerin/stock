@@ -3,6 +3,8 @@ import Mypage from "./Mypage/Mypage";
 import Chart from "./GamePage/stockChart";
 import GamePage from "./GamePage/gamePage";
 import Start from "./Login after/Start";
+import Join from "./Join/Join";
+import GameMain from "./Login after/Start";
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
@@ -24,6 +26,9 @@ const Main = () => {
       </form>
       <a href="/auth/logout">
         <button>로그아웃</button>
+      </a>
+      <a href="/join">
+        <button>회원가입</button>
       </a>
       <a href="/auth/kakao">
         <button>카카오로그인</button>
@@ -47,6 +52,8 @@ const App = () => {
         <Route path="/chart" element={<Chart />} />
         <Route path="/mypage" element={<Mypage />} />
         <Route path="/gamePage" element={<GamePage />} />
+        <Route path="/join" element={<Join />} />
+        <Route path="/gameMain" element={<GameMain />} />
       </Routes>
     </Router>
   );
