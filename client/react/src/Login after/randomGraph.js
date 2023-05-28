@@ -187,7 +187,7 @@ const GraphCpt = () => {
   const graphDiv = {
     display: "inline-block",
     position: "absolute",
-    top: "150px",
+    top: "53px",
     left: "76px",
     width: "1000px",
     height: "641px",
