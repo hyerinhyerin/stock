@@ -35,7 +35,7 @@ module.exports.postLogin = async (req, res, next) => {
         return next(loginError);
       }
 
-      return res.redirect("http://localhost:3000/gamePage"); // 로그인 성공시 날릴 라우터 부분
+      return res.redirect("http://localhost:3000/gameMain"); // 로그인 성공시 날릴 라우터 부분
     });
   })(req, res, next);
 };

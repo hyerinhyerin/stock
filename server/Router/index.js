@@ -18,10 +18,10 @@ const router = express.Router();
 
 router.route("/chart").get(userController.chart).post(userController.chart);
 
-router
-  .route("/mypage")
-  .get(userController.postMypage)
-  .post(userController.postMypage);
+// router
+//   .route("/mypage")
+//   .get(userController.postMypage)
+//   .post(userController.postMypage);
 
 router.route("/situation").get(userController.situation);
 
