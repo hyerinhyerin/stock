@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import btnImg from "../img/btn.png";
 import backBtnImg from "../img/backBtn.png";
 import upImg from "../img/up.png";
@@ -26,16 +26,12 @@ const GraphCpt = () => {
   const [userInfo, setUserInfo] = useState(null);
   const [count, setCount] = useState(1);
   const [holdingStock, setHoldingStock] = useState(null);
-  const [time, setTime] = useState("20:00");
-  const [color, setColor] = useState("white");
 
   const [price, setPrice] = useState(0);
   const [isDiv1Visible, setIsDiv1Visible] = useState(false);
   const [isDiv2Visible, setIsDiv2Visible] = useState(false);
   const [isDiv3Visible, setIsDiv3Visible] = useState(false);
   const [isButtonMoved, setIsButtonMoved] = useState(false);
-
-  const popupRef = useRef(null);
 
   const formatter = new Intl.NumberFormat("en-US");
 
@@ -194,7 +190,7 @@ const GraphCpt = () => {
   };
 
   // 새롭게 지속적으로 업데이트될 각 회사데이터 공정 과정 함수화2
-  const updateCompanies = useCallback(() => {
+  const updateCompanies = () => {
     setRealGroupedCompanies((prevCompanies) => {
       const newCompanies = prevCompanies.map((companyData) => {
         const newCompanyData = createNewCompanyData(companyData[29]);
@@ -207,54 +203,13 @@ const GraphCpt = () => {
       companyPriceUpdate();
       return newCompanies;
     });
-  }, [setRealGroupedCompanies]);
+  };
 
   // 새로운 데이터를 일정시간마다 realGroupedCompanies state에 추가
   useEffect(() => {
     const intervalId = setInterval(updateCompanies, 4000);
     return () => clearInterval(intervalId);
   }, [updateCompanies]);
-
-  // 타이머
-  useEffect(() => {
-    const timerInterval = setInterval(() => {
-      setTime((prevTime) => {
-        const [minutes, seconds] = prevTime.split(":");
-        let newSeconds = Number(seconds) - 1;
-        let newMinutes = Number(minutes);
-
-        // 초가 0보다 작아지면 분을 감소시키고 초를 59로 설정합니다.
-        if (newSeconds < 0) {
-          newSeconds = 59;
-          newMinutes -= 1;
-        }
-
-        // 분이 0보다 작아지면 타이머를 멈춥니다.
-        if (newMinutes < 0) {
-          clearInterval(timerInterval);
-          return "00:00";
-        }
-
-        // 분과 초가 한 자리 숫자일 경우 앞에 0을 붙입니다.
-        const newMinutesString = String(newMinutes).padStart(2, "0");
-        const newSecondsString = String(newSeconds).padStart(2, "0");
-
-        // 시간이 01:00부터는 색상을 빨간색으로 변경합니다.
-        if (newMinutes >= 5) {
-          setColor("white");
-        } else {
-          setColor("red");
-        }
-
-        return `${newMinutesString}:${newSecondsString}`;
-      });
-    }, 1000);
-
-    return () => {
-      // 컴포넌트가 언마운트될 때 타이머를 정리합니다.
-      clearInterval(timerInterval);
-    };
-  }, []);
 
   const companiseBtnStyle = {
     width: "176px",
@@ -364,12 +319,12 @@ const GraphCpt = () => {
     display: "inline-block",
     border: "1px solid white",
     width: "317px",
-    height: "465px",
+    height: "590px",
     marginLeft: "20px",
     marginTop: "0",
     position: "absolute",
     left: "1161px",
-    top: "151px",
+    top: "20px",
     color: "white",
   };
 
@@ -451,30 +406,6 @@ const GraphCpt = () => {
     width: "50%",
     height: "100%",
     textAlign: "center",
-  };
-
-  const buySellCloseBtn = {
-    position: "relative",
-    left: "233px",
-    top: "1px",
-    width: "32px",
-    height: "31px",
-    fontSize: "26px",
-    color: "white",
-    background: "black",
-    border: "none",
-    cursor: "pointer",
-  };
-
-  const timerDiv = {
-    display: "inline-block",
-    color: "white",
-    position: "absolute",
-    left: "1178px",
-    top: "0px",
-    fontSize: "50px",
-    padding: "25px 95px",
-    border: "1px solid white",
   };
 
   function companyBtnClick(companyName, index) {
@@ -600,27 +531,6 @@ const GraphCpt = () => {
     setIsDiv3Visible(!isDiv3Visible);
   };
 
-  const closePopup = () => {
-    setIsDiv1Visible(false);
-    setIsDiv3Visible(false);
-  };
-
-  useEffect(() => {
-    const handleOutsideClick = (event) => {
-      if (popupRef.current && !popupRef.current.contains(event.target)) {
-        closePopup();
-      }
-    };
-
-    if (isDiv1Visible || isDiv3Visible) {
-      document.addEventListener("mousedown", handleOutsideClick);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
-    };
-  }, [isDiv1Visible, isDiv3Visible]);
-
   const getStockCount = () => {
     const input = document.getElementById("holdingStockInput");
     console.log("hodingSotkc : ", (selectedCompanyIndex + 1).toString());
@@ -711,7 +621,6 @@ const GraphCpt = () => {
           <ul style={ulStyle}>{lis}</ul>
         </div>
       </div>
-      <div style={({ color }, timerDiv)}>{time}</div>
       <div style={userInfoCurrentStock}>
         {userInfo ? (
           <div>
@@ -787,10 +696,7 @@ const GraphCpt = () => {
         </from>
       </div>
       {isDiv1Visible && (
-        <div ref={popupRef} style={sellPopup}>
-          <button onClick={handleBuyBtn} style={buySellCloseBtn}>
-            X
-          </button>
+        <div style={sellPopup}>
           <form method="POST" action={`/buy/${userInfo.usernickname}`}>
             <p style={{ color: "white", marginTop: "40px" }}>지정가</p>
             <div style={sellPopupInnerDivFlex}>
@@ -879,10 +785,7 @@ const GraphCpt = () => {
         </div>
       )}
       {isDiv3Visible && (
-        <div ref={popupRef} style={sellPopup}>
-          <button onClick={handleSellBtn} style={buySellCloseBtn}>
-            X
-          </button>
+        <div style={sellPopup}>
           <form method="POST" action={`/ 개sell/${userInfo.usernickname}`}>
             <p style={{ color: "white", marginTop: "40px" }}>지정가</p>
             <div style={sellPopupInnerDivFlex}>
