@@ -29,7 +29,6 @@ const Join = () => {
           <JoinComponent name="pwcheck" JoinP="비밀번호 확인" ipType="password"/>
           <JoinComponent name="email" JoinP="이메일" ipType="email"/>
           <button style={btnStyle}>확인</button>
-          {/* <Button btnStyle={btnStyle} btnText={'확인'}/> */}
       </form>
     </div>
   );

@@ -1,5 +1,5 @@
 import React, { useState, Component } from "react";
-import Button from "../Component/Button";
+import {Link} from "react-router-dom";
 import StartPopup from "./StartPopup";
 import Graph from "./randomGraph";
 import "./Start.css";
@@ -34,9 +34,11 @@ const Start = (props) => {
       <div>
         <Graph />
       </div>
-      <div className="circle">
-        <img className="profileImg" src={"profile_2.png"}></img>
-      </div>
+      <Link to="/mypage">
+        <div className="circle">
+          <img className="profileImg" src={"profile_2.png"}></img>
+        </div>
+      </Link>
       <div className="balloon">
         <p className="P1">내 정보</p>
         <p className="P2">
@@ -48,7 +50,7 @@ const Start = (props) => {
         <p className="P2">
           랭킹 순위 <pre> </pre>
         </p>
-        <Button btnText={"로그아웃"} btnStyle={btnlogout} />
+        <button style={btnlogout}>로그아웃</button>
       </div>
       <button style={btnStyle} onClick={() => setViewPopup(true)}>
         게임 시작

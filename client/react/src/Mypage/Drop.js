@@ -1,10 +1,23 @@
 import React,{useEffect, useState} from 'react';
+import axios from 'axios';
 import './Drop.css';
 const Drop = (props) => {
     // useEffect(()=>{
     //     setView(props.view);
     //     console.log(props.view);
     // },[props.view]);
+
+    const handleDrop=async(e)=>{
+        e.preventDefault();
+    
+        try{
+          const response=await axios.post("/api/mypage", props.formData);
+          console.log("탈퇴중");
+        }catch(e){
+          console.error(e);
+        }
+      };
+
     const divStyle={
         position:'fixed',
         left:'33%',
@@ -54,8 +67,10 @@ const Drop = (props) => {
   return(
     <div style={divStyle}>
         <p className='drop'>진짜 정말 진심으로 탈퇴하시겠습니까?</p>
-        <button style={btnYes}>네. 안녕히 계세요.</button>
-        <button style={btnNo} onClick={clickBack}>아뇨. 잘못 눌렀어요.</button>
+        <form onSubmit={handleDrop}>
+            <button type='submit' style={btnYes}>네. 안녕히 계세요.</button>
+            <button style={btnNo} onClick={clickBack}>아뇨. 잘못 눌렀어요.</button>
+        </form>
     </div>
       
   );
