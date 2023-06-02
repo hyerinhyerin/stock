@@ -1,8 +1,9 @@
-import React, { useState, Component } from "react";
+import React, { useState, useEffect } from "react";
 import Button from "../Component/Button";
 import StartPopup from "./StartPopup";
 import Graph from "./randomGraph";
 import "./Start.css";
+import axios from "axios";
 const Start = (props) => {
   const [viewPopup, setViewPopup] = useState(false);
 
@@ -29,6 +30,22 @@ const Start = (props) => {
     color: "black",
     fontSize: "17pt",
   };
+
+  const [userData, setUserData] = useState({});
+
+  const getUserData = async () => {
+    const userDBData = await axios.get("/api/mypage");
+    console.log("확인 : ", userDBData.data.userData);
+    setUserData(userDBData.data.userData);
+  };
+
+  useEffect(() => {
+    getUserData();
+  }, []);
+
+  const nickname = userData?.nickname;
+  const money = userData?.money;
+
   return (
     <div>
       <div>
@@ -39,16 +56,15 @@ const Start = (props) => {
       </div>
       <div className="balloon">
         <p className="P1">내 정보</p>
-        <p className="P2">
-          닉네임 <pre> </pre>
-        </p>
-        <p className="P2">
-          총 자산 <pre> </pre>
-        </p>
-        <p className="P2">
-          랭킹 순위 <pre> </pre>
-        </p>
-        <Button btnText={"로그아웃"} btnStyle={btnlogout} />
+        <div id="ballon_div">
+          <span className="P2">닉네임</span>
+          <span className="P2">{nickname}</span>
+          <span className="P2"> 총 자산 </span>
+          <span className="P2">{money}</span>
+          <span className="P2"> 랭킹 순위 </span>
+          <span> </span>
+        </div>
+        <Button btnText={"로그아웃"} type="button" btnStyle={btnlogout} onClick={LogoutBtn} />
       </div>
       <button style={btnStyle} onClick={() => setViewPopup(true)}>
         게임 시작
@@ -58,5 +74,11 @@ const Start = (props) => {
     </div>
   );
 };
+
+function LogoutBtn() {
+  console.log("클릭");
+  window.location.href = "http://localhost:4000/auth/logout"
+}
+
 
 export default Start;

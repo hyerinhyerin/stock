@@ -23,7 +23,7 @@ module.exports.postLogin = async (req, res, next) => {
       // user가 없을 경우 !user에서 걸리도록
       //req.flash('loginError',info.message);
       console.log("login Error");
-      return res.redirect("/auth");
+      return res.redirect("/");
     }
     // 그 외에는 req.login(user) 코드를 작성하여 로그인을 성공
     // req.login()메서드는 passport가 추가해준 메서드로, 사용자의 정보를 세션에 저장해주는 메서드

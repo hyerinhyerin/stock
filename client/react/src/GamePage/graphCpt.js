@@ -62,9 +62,8 @@ const GraphCpt = () => {
         const bsopDate = new Date(
           startDate.getTime() + newIdx * 24 * 60 * 60 * 1000
         ); // stck_bsop_date를 계산하여 날짜 설정
-        const formattedDate = `${
-          bsopDate.getMonth() + 1
-        }/${bsopDate.getDate()}`;
+        const formattedDate = `${bsopDate.getMonth() + 1
+          }/${bsopDate.getDate()}`;
         let stck_oprc = 50000; // 종가
         let acml_vol = 50; // 거래량
         let prdy_vrss_sign = 0; // 음봉 양봉 기준
@@ -198,7 +197,7 @@ const GraphCpt = () => {
         return newDataArray;
       });
       const companyPriceUpdate = async () => {
-        await axios.post("/api/curentdata", newCompanies).then((res) => {});
+        await axios.post("/api/curentdata", newCompanies).then((res) => { });
       };
       companyPriceUpdate();
       return newCompanies;
@@ -472,37 +471,37 @@ const GraphCpt = () => {
 
   const currentStockList = userInfo
     ? Object.entries(userInfo.havestock).map(([companyId, stockCount]) => {
-        if (realGroupedCompanies[companyId]) {
-          const company = realGroupedCompanies[companyId - 1][29];
-          const { name, stck_oprc, stck_clpr } = company;
-          const profit =
-            stck_oprc > stck_clpr ? (
-              <span style={{ color: "#E94560" }}>
-                <img src={upImg} style={upDownImg}></img>
-                {stck_oprc - stck_clpr}
-              </span>
-            ) : (
-              <span style={{ color: "#006DEE" }}>
-                <img src={downImg} style={upDownImg}></img>
-                {stck_clpr - stck_oprc}
-              </span>
-            );
+      if (realGroupedCompanies[companyId]) {
+        const company = realGroupedCompanies[companyId - 1][29];
+        const { name, stck_oprc, stck_clpr } = company;
+        const profit =
+          stck_oprc > stck_clpr ? (
+            <span style={{ color: "#E94560" }}>
+              <img src={upImg} style={upDownImg}></img>
+              {stck_oprc - stck_clpr}
+            </span>
+          ) : (
+            <span style={{ color: "#006DEE" }}>
+              <img src={downImg} style={upDownImg}></img>
+              {stck_clpr - stck_oprc}
+            </span>
+          );
 
-          return (
-            <div key={companyId}>
-              <span style={{ borderBottom: "1px solid white" }}>
-                {name} {stockCount}주 {profit}
-              </span>
-            </div>
-          );
-        } else {
-          return (
-            <div key={companyId}>
-              <span>해당 회사가 없습니다.</span>
-            </div>
-          );
-        }
-      })
+        return (
+          <div key={companyId}>
+            <span style={{ borderBottom: "1px solid white" }}>
+              {name} {stockCount}주 {profit}
+            </span>
+          </div>
+        );
+      } else {
+        return (
+          <div key={companyId}>
+            <span>해당 회사가 없습니다.</span>
+          </div>
+        );
+      }
+    })
     : [];
 
   const handleCountChange = (e) => {
@@ -786,7 +785,10 @@ const GraphCpt = () => {
       )}
       {isDiv3Visible && (
         <div style={sellPopup}>
-          <form method="POST" action={`/ 개sell/${userInfo.usernickname}`}>
+          <form
+            method="POST"
+            action={`http://localhost:4000/api/sell?usernick=${userInfo.usernickname}`}
+          >
             <p style={{ color: "white", marginTop: "40px" }}>지정가</p>
             <div style={sellPopupInnerDivFlex}>
               <button
@@ -849,6 +851,12 @@ const GraphCpt = () => {
                 }
                 style={{ width: "150px", border: "none", textAlign: "center" }}
                 readOnly
+              />
+              <input
+                type="text"
+                value={selectedCompanyIndex}
+                name="company"
+                style={{ display: "none" }}
               />
             </div>
             <div>

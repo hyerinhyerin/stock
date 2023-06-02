@@ -41,11 +41,13 @@ const Mypage = () => {
   const getData = (v) => {
     setViewDrop(v);
   };
+
   const [userData, setUserData] = useState({});
 
   const getUserData = async () => {
-    const res = await axios.get("/api/mypage");
-    setUserData(res.data.test);
+    const userDBData = await axios.get("/api/mypage");
+    console.log("확인 : ", userDBData.data.userData);
+    setUserData(userDBData.data.userData);
   };
 
   useEffect(() => {
@@ -53,15 +55,15 @@ const Mypage = () => {
   }, []);
 
   const nickname = userData?.nickname;
+  const id = userData?.id;
   const email = userData?.email;
 
-  if (nickname) {
-    console.log("nickname : ", nickname);
-  }
   return (
     <div>
       {/* <PC> */}
-      <ProfileImage />
+      <ProfileImage
+        id={id}
+      />
       <div style={divStyle}>
         <JoinComponent
           name="nickname"
@@ -77,7 +79,7 @@ const Mypage = () => {
           JoinP="이메일"
           ipType="email"
           readTF={editType}
-          Udata={nickname}
+          Udata={email}
         />
       </div>
       <div style={editStyle}>
