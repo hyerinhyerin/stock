@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
-import Button from "../Component/Button";
+import React, { useState, Component } from "react";
+import {Link} from "react-router-dom";
 import StartPopup from "./StartPopup";
 import Graph from "./randomGraph";
 import "./Start.css";
-import axios from "axios";
 const Start = (props) => {
   const [viewPopup, setViewPopup] = useState(false);
 
@@ -30,41 +29,28 @@ const Start = (props) => {
     color: "black",
     fontSize: "17pt",
   };
-
-  const [userData, setUserData] = useState({});
-
-  const getUserData = async () => {
-    const userDBData = await axios.get("/api/mypage");
-    console.log("확인 : ", userDBData.data.userData);
-    setUserData(userDBData.data.userData);
-  };
-
-  useEffect(() => {
-    getUserData();
-  }, []);
-
-  const nickname = userData?.nickname;
-  const money = userData?.money;
-
   return (
     <div>
       <div>
         <Graph />
       </div>
-      <div className="circle">
-        <img className="profileImg" src={"profile_2.png"}></img>
-      </div>
+      <Link to="/mypage">
+        <div className="circle">
+          <img className="profileImg" src={"profile_2.png"}></img>
+        </div>
+      </Link>
       <div className="balloon">
         <p className="P1">내 정보</p>
-        <div id="ballon_div">
-          <span className="P2">닉네임</span>
-          <span className="P2">{nickname}</span>
-          <span className="P2"> 총 자산 </span>
-          <span className="P2">{money}</span>
-          <span className="P2"> 랭킹 순위 </span>
-          <span> </span>
-        </div>
-        <Button btnText={"로그아웃"} type="button" btnStyle={btnlogout} onClick={LogoutBtn} />
+        <p className="P2">
+          닉네임 <pre> </pre>
+        </p>
+        <p className="P2">
+          총 자산 <pre> </pre>
+        </p>
+        <p className="P2">
+          랭킹 순위 <pre> </pre>
+        </p>
+        <button style={btnlogout}>로그아웃</button>
       </div>
       <button style={btnStyle} onClick={() => setViewPopup(true)}>
         게임 시작
@@ -74,11 +60,5 @@ const Start = (props) => {
     </div>
   );
 };
-
-function LogoutBtn() {
-  console.log("클릭");
-  window.location.href = "http://localhost:4000/auth/logout"
-}
-
 
 export default Start;

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Button from "../Component/Button";
 
 const StartPopup = () => {
   const divStyle = {
@@ -38,8 +37,8 @@ const StartPopup = () => {
   };
   return (
     <div style={divStyle}>
-      <Button btnStyle={btnNowStyle} btnText="현생" />
-      <Button btnStyle={btnNextStyle} btnText="환생" />
+      <button style={btnNowStyle} >현생</button>
+      <button style={btnNextStyle}>환생</button>
     </div>
   );
 };

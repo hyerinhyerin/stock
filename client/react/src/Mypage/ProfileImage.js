@@ -68,21 +68,20 @@ const ProfileImage =(props)=>{
         fontSize:'15pt',
     }
 
-        
-        return (
-            <div>
-                <div className="circle" style={circleStyle}>
-                    <img style={imgStyle} className="myimg" src={item.image}></img>
-                    <img style={editImgStyle} className="editimg" src="edit.png" onMouseOver={overMouse} onMouseOut={outMouse}
-                    onClick={()=>{setPopview(true);}}></img>
-                </div>
-                <p style={idstyle}>I'm ID</p>
-                <div>
-                    {popview? <ProfilePopup popShow={popview} datas={datas} item={item} onView={onView} getData={getData}/> : ''}
-                </div>
+    return (
+        <div>
+            <div className="circle" style={circleStyle}>
+                <img style={imgStyle} className="myimg" src={item.image}></img>
+                <img style={editImgStyle} className="editimg" src="edit.png" onMouseOver={overMouse} onMouseOut={outMouse}
+                onClick={()=>{setPopview(true);}}></img>
             </div>
+            <p style={idstyle}>{props.id}</p>
+            <div>
+                {popview? <ProfilePopup popShow={popview} datas={datas} item={item} onView={onView} getData={getData}/> : ''}
+            </div>
+        </div>
 
-        );
+    );
     }
 export default ProfileImage;
 
