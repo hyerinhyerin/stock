@@ -1,8 +1,6 @@
 import React from "react";
 import Mypage from "./Mypage/Mypage";
-import Chart from "./GamePage/stockChart";
 import GamePage from "./GamePage/gamePage";
-import Start from "./Login after/Start";
 import Join from "./Join/Join";
 import GameMain from "./Login after/Start";
 import Main from "./Main/Main";
@@ -13,12 +11,10 @@ const App = () => {
     <Router>
       <Routes>
         <Route path="/" element={<Main />} />
-        <Route path="/start" element={<Start />} />
-        <Route path="/chart" element={<Chart />} />
+        <Route path="/gameMain" element={<GameMain />} />
         <Route path="/mypage" element={<Mypage />} />
         <Route path="/gamePage" element={<GamePage />} />
         <Route path="/join" element={<Join />} />
-        <Route path="/gameMain" element={<GameMain />} />
       </Routes>
     </Router>
   );
