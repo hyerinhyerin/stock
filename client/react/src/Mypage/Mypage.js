@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import JoinComponent from "../Component/JoinComponent";
+import JoinComponent from "../components/JoinComponent";
 import ProfileImage from "./ProfileImage";
 import Drop from "./Drop";
 // import {Mobile, PC} from '../components/Responsive';

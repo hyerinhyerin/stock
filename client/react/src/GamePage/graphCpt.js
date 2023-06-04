@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useRef, useCallback, memo } from "react";
 import btnImg from "../img/btn.png";
 import backBtnImg from "../img/backBtn.png";
 import upImg from "../img/up.png";
@@ -28,6 +28,7 @@ const GraphCpt = () => {
   const [holdingStock, setHoldingStock] = useState(null);
   const [time, setTime] = useState("20:00");
   const [color, setColor] = useState("white");
+  const [gameTime, setGameTime] = useState(0);
 
   const [price, setPrice] = useState(0);
   const [isDiv1Visible, setIsDiv1Visible] = useState(false);
@@ -211,9 +212,18 @@ const GraphCpt = () => {
 
   // 새로운 데이터를 일정시간마다 realGroupedCompanies state에 추가
   useEffect(() => {
-    const intervalId = setInterval(updateCompanies, 4000);
+    const intervalId = setInterval(() => {
+      setGameTime((prevTime) => prevTime + 1); // 데이터 업데이트마다 타임 증가
+      updateCompanies();
+    }, 10000);
+
+    if (gameTime >= 119) {
+      // 게임 시간인 20분 10초 * 120번 = 1200초 -> 20분 되면 그래프 멈춤
+      clearInterval(intervalId);
+    }
+
     return () => clearInterval(intervalId);
-  }, [updateCompanies]);
+  }, [updateCompanies, gameTime]);
 
   // 타이머
   useEffect(() => {
@@ -238,6 +248,8 @@ const GraphCpt = () => {
         // 분과 초가 한 자리 숫자일 경우 앞에 0을 붙입니다.
         const newMinutesString = String(newMinutes).padStart(2, "0");
         const newSecondsString = String(newSeconds).padStart(2, "0");
+
+        console.log("타이머 실시간 분 : ", newMinutes);
 
         // 시간이 01:00부터는 색상을 빨간색으로 변경합니다.
         if (newMinutes >= 5) {
@@ -382,6 +394,9 @@ const GraphCpt = () => {
   const currentStock = {
     fontSize: "20px",
     textAlign: "center",
+    overflow: "auto",
+    marginTop: "0",
+    height: "313px",
   };
 
   const buySellDiv = {
@@ -468,7 +483,6 @@ const GraphCpt = () => {
 
   const timerDiv = {
     display: "inline-block",
-    color: "white",
     position: "absolute",
     left: "1178px",
     top: "0px",
@@ -605,6 +619,65 @@ const GraphCpt = () => {
     setIsDiv3Visible(false);
   };
 
+  // 매도 데이터 처리 함수
+  const handleSellSubmit = (event) => {
+    event.preventDefault();
+
+    const form = event.target;
+    const formData = new FormData(form);
+    const data = {};
+    formData.forEach((value, key) => {
+      data[key] = value;
+    });
+
+    fetch(`http://localhost:4000/api/sell?usernick=${userInfo.usernickname}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.json())
+      .then((responseData) => {
+        // 응답 처리
+        setUserInfo(responseData);
+      })
+      .catch((error) => {
+        // 에러 처리
+        console.error(error);
+      });
+  };
+
+  // 매수 데이터 처리 함수
+  const handleBuySubmit = (event) => {
+    event.preventDefault();
+
+    const form = event.target;
+    const formData = new FormData(form);
+    const data = {};
+    formData.forEach((value, key) => {
+      data[key] = value;
+    });
+
+    fetch(`http://localhost:4000/api/buy?usernick=${userInfo.usernickname}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.json())
+      .then((responseData) => {
+        // 응답 처리
+        console.log(responseData);
+        setUserInfo(responseData);
+      })
+      .catch((error) => {
+        // 에러 처리
+        console.error(error);
+      });
+  };
+
   useEffect(() => {
     const handleOutsideClick = (event) => {
       if (popupRef.current && !popupRef.current.contains(event.target)) {
@@ -622,11 +695,42 @@ const GraphCpt = () => {
   }, [isDiv1Visible, isDiv3Visible]);
 
   const getStockCount = () => {
-    const input = document.getElementById("holdingStockInput");
-    console.log("hodingSotkc : ", (selectedCompanyIndex + 1).toString());
     if (holdingStock[selectedCompanyIndex + 1]) {
-      input.value = `${holdingStock[(selectedCompanyIndex + 1).toString()]}주`;
+      setCount(holdingStock[(selectedCompanyIndex + 1).toString()]);
+    } else {
+      setCount(0);
     }
+  };
+
+  const CustomXAxisTick = ({ x, y, payload }) => {
+    const [month, date] = payload.value.split("/");
+    const textStyle = {
+      fontSize: 12, // 원하는 크기로 설정
+    };
+    return (
+      <g transform={`translate(${x},${y})`}>
+        <text
+          x={0}
+          y={0}
+          dy={10}
+          textAnchor="middle"
+          fill="#666"
+          style={textStyle}
+        >
+          {month}
+        </text>
+        <text
+          x={0}
+          y={0}
+          dy={24}
+          textAnchor="middle"
+          fill="#666"
+          style={textStyle}
+        >
+          {date}
+        </text>
+      </g>
+    );
   };
 
   return (
@@ -655,7 +759,7 @@ const GraphCpt = () => {
           <XAxis
             dataKey="stck_bsop_date"
             interval={0}
-            tick={{ fontSize: 12 }}
+            tick={<CustomXAxisTick />}
           />
           <YAxis domain={[0, 3000]} />
           <Tooltip />
@@ -672,20 +776,6 @@ const GraphCpt = () => {
               );
             })}
           </Bar>
-          {/* <Bar
-            dataKey={(data) => {
-              const range = [data.stck_high, data.stck_low];
-              return range;
-            }}
-            fill="#E94560"
-            barSize={20}
-          >
-            {selectedCompany.map((data) => {
-              return (
-                <Cell fill={data.prdy_vrss_sign > 3 ? "#006DEE" : "#E94560"} />
-              );
-            })}
-          </Bar> */}
         </BarChart>
 
         <BarChart
@@ -698,7 +788,7 @@ const GraphCpt = () => {
           <XAxis
             dataKey="stck_bsop_date"
             interval={0}
-            tick={{ fontSize: 12 }}
+            tick={<CustomXAxisTick />}
           />
           <YAxis domain={[0, 3000]} />
           <Tooltip />
@@ -711,7 +801,20 @@ const GraphCpt = () => {
           <ul style={ulStyle}>{lis}</ul>
         </div>
       </div>
-      <div style={({ color }, timerDiv)}>{time}</div>
+      <div
+        style={{
+          display: "inline-block",
+          position: "absolute",
+          color: color,
+          left: "1178px",
+          top: "0px",
+          fontSize: "50px",
+          padding: "25px 95px",
+          border: "1px solid white",
+        }}
+      >
+        {time}
+      </div>
       <div style={userInfoCurrentStock}>
         {userInfo ? (
           <div>
@@ -791,7 +894,7 @@ const GraphCpt = () => {
           <button onClick={handleBuyBtn} style={buySellCloseBtn}>
             X
           </button>
-          <form method="POST" action={`/buy/${userInfo.usernickname}`}>
+          <form onSubmit={handleBuySubmit}>
             <p style={{ color: "white", marginTop: "40px" }}>지정가</p>
             <div style={sellPopupInnerDivFlex}>
               <button
@@ -804,10 +907,20 @@ const GraphCpt = () => {
               <input
                 type="text"
                 name="stock"
-                value={count + "주"}
+                value={count}
                 onChange={handleCountChange}
                 style={sellPopupInput}
               />
+              <span
+                style={{
+                  color: "white",
+                  fontSize: "20px",
+                  position: "relative",
+                  right: "78px",
+                }}
+              >
+                주
+              </span>
               <button
                 type="button"
                 style={sellPopupPMBtn}
@@ -820,7 +933,7 @@ const GraphCpt = () => {
               <input
                 type="text"
                 name="price"
-                value={formatter.format(price) + "원"}
+                value={formatter.format(price)}
                 onChange={handlePriceChange}
                 style={sellPopupInput}
                 readOnly
@@ -859,6 +972,12 @@ const GraphCpt = () => {
                 style={{ width: "150px", border: "none", textAlign: "center" }}
                 readOnly
               />
+              <input
+                type="text"
+                value={selectedCompanyIndex + 1}
+                name="company"
+                style={{ display: "none" }}
+              />
             </div>
             <div>
               <button
@@ -883,9 +1002,15 @@ const GraphCpt = () => {
           <button onClick={handleSellBtn} style={buySellCloseBtn}>
             X
           </button>
-          <form method="POST" action={`/ 개sell/${userInfo.usernickname}`}>
+          <form onSubmit={handleSellSubmit}>
             <p style={{ color: "white", marginTop: "40px" }}>지정가</p>
             <div style={sellPopupInnerDivFlex}>
+              <input
+                type="text"
+                style={{ display: "none" }}
+                name="usernickname"
+                value={userInfo.usernickname}
+              />
               <button
                 type="button"
                 style={sellPopupPMBtn}
@@ -897,10 +1022,20 @@ const GraphCpt = () => {
                 type="text"
                 name="stock"
                 id="holdingStockInput"
-                value={count + "주"}
+                value={count}
                 onChange={handleCountChange}
                 style={sellPopupInput}
               />
+              <span
+                style={{
+                  color: "white",
+                  fontSize: "20px",
+                  position: "relative",
+                  right: "78px",
+                }}
+              >
+                주
+              </span>
               <button
                 type="button"
                 style={sellPopupPMBtn}
@@ -929,7 +1064,7 @@ const GraphCpt = () => {
               <input
                 type="text"
                 name="price"
-                value={formatter.format(price) + "원"}
+                value={formatter.format(price)}
                 onChange={handlePriceChange}
                 style={sellPopupInput}
                 readOnly
@@ -946,6 +1081,12 @@ const GraphCpt = () => {
                 }
                 style={{ width: "150px", border: "none", textAlign: "center" }}
                 readOnly
+              />
+              <input
+                type="text"
+                value={selectedCompanyIndex + 1}
+                name="company"
+                style={{ display: "none" }}
               />
             </div>
             <div>

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Button from "../Component/Button";
+import Button from "../components/Button";
 
 const StartPopup = () => {
   const divStyle = {
