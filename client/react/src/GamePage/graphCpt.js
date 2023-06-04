@@ -249,8 +249,6 @@ const GraphCpt = () => {
         const newMinutesString = String(newMinutes).padStart(2, "0");
         const newSecondsString = String(newSeconds).padStart(2, "0");
 
-        console.log("타이머 실시간 분 : ", newMinutes);
-
         // 시간이 01:00부터는 색상을 빨간색으로 변경합니다.
         if (newMinutes >= 5) {
           setColor("white");
@@ -596,9 +594,18 @@ const GraphCpt = () => {
     setPrice(parseInt(e.target.value));
   };
 
-  const handleCountIncrement = (e) => {
+  const handleCountBuyIncrement = (e) => {
     e.preventDefault();
     setCount(Math.min(count + 1, selectedCompany[29].stockCount));
+  };
+
+  const handleCountSellIncrement = (e) => {
+    e.preventDefault();
+    if (!holdingStock[selectedCompanyIndex + 1]) {
+      setCount(1);
+    } else {
+      setCount(Math.min(count + 1, holdingStock[selectedCompanyIndex + 1]));
+    }
   };
 
   const handleCountDecrement = (e) => {
@@ -606,15 +613,18 @@ const GraphCpt = () => {
     setCount(Math.max(count - 1, 0));
   };
 
-  const handleBuyBtn = () => {
+  const handleCloseBuyBtn = () => {
     setIsDiv1Visible(!isDiv1Visible);
+    setCount(1);
   };
 
-  const handleSellBtn = () => {
+  const handleCloseSellBtn = () => {
     setIsDiv3Visible(!isDiv3Visible);
+    setCount(1);
   };
 
   const closePopup = () => {
+    setCount(1);
     setIsDiv1Visible(false);
     setIsDiv3Visible(false);
   };
@@ -863,7 +873,7 @@ const GraphCpt = () => {
               marginLeft: "10px",
               marginRight: "10px",
             }}
-            onClick={handleBuyBtn}
+            onClick={handleCloseBuyBtn}
           >
             매수
           </button>
@@ -883,7 +893,7 @@ const GraphCpt = () => {
               fontSize: "25px",
               marginLeft: "10px",
             }}
-            onClick={handleSellBtn}
+            onClick={handleCloseSellBtn}
           >
             매도
           </button>
@@ -891,7 +901,7 @@ const GraphCpt = () => {
       </div>
       {isDiv1Visible && (
         <div ref={popupRef} style={sellPopup}>
-          <button onClick={handleBuyBtn} style={buySellCloseBtn}>
+          <button onClick={handleCloseBuyBtn} style={buySellCloseBtn}>
             X
           </button>
           <form onSubmit={handleBuySubmit}>
@@ -924,7 +934,7 @@ const GraphCpt = () => {
               <button
                 type="button"
                 style={sellPopupPMBtn}
-                onClick={handleCountIncrement}
+                onClick={handleCountBuyIncrement}
               >
                 +
               </button>
@@ -999,7 +1009,7 @@ const GraphCpt = () => {
       )}
       {isDiv3Visible && (
         <div ref={popupRef} style={sellPopup}>
-          <button onClick={handleSellBtn} style={buySellCloseBtn}>
+          <button onClick={handleCloseSellBtn} style={buySellCloseBtn}>
             X
           </button>
           <form onSubmit={handleSellSubmit}>
@@ -1039,7 +1049,7 @@ const GraphCpt = () => {
               <button
                 type="button"
                 style={sellPopupPMBtn}
-                onClick={handleCountIncrement}
+                onClick={handleCountSellIncrement}
               >
                 +
               </button>
