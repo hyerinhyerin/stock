@@ -1,5 +1,6 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
+import { connect } from "react-redux";
 import btnImg from "../img/btn.png";
 import backBtnImg from "../img/backBtn.png";
 import upImg from "../img/up.png";
@@ -18,7 +19,7 @@ import {
 
 const backfun = require("../backFun/random");
 
-const GraphCpt = () => {
+const GraphCpt = ({ dataFromNewPanel }) => {
   const [selectedCompany, setSelectedCompany] = useState(Array(30).fill({})); // 선택한 회사
   const [realGroupedCompanies, setRealGroupedCompanies] = useState([]); // 2차원 배열로 회사의 정보를 관리
   const [selectedCompanyName, setSelectedCompanyName] = useState(null); // 선택한 회사 이름을 담을 state 변수
@@ -26,12 +27,17 @@ const GraphCpt = () => {
   const [userInfo, setUserInfo] = useState(null);
   const [count, setCount] = useState(1);
   const [holdingStock, setHoldingStock] = useState(null);
+  const [time, setTime] = useState("20:00");
+  const [color, setColor] = useState("white");
+  const [gameTime, setGameTime] = useState(0);
 
   const [price, setPrice] = useState(0);
   const [isDiv1Visible, setIsDiv1Visible] = useState(false);
   const [isDiv2Visible, setIsDiv2Visible] = useState(false);
   const [isDiv3Visible, setIsDiv3Visible] = useState(false);
   const [isButtonMoved, setIsButtonMoved] = useState(false);
+
+  const popupRef = useRef(null);
 
   const formatter = new Intl.NumberFormat("en-US");
 
@@ -53,8 +59,6 @@ const GraphCpt = () => {
       // 데베에서 가져온 1차 회사데이터 차트에 쓸 양식에 맞게 변환 useEffect
       const newStockDataArr = companys.data.companys.map((company) => {
         const randomNum = backfun.startNum(); // 랜덤 숫자 생성(시가, 종가)
-        let randomHigh = backfun.highLowNum(); // 랜덤 숫자 생성(고가, 저가)
-        let randomLow = backfun.highLowNum(); // 랜덤 숫자 생성(고가, 저가)
         const randomPM = backfun.startOp(); // 랜덤 부호 생성 +/-
         const stck_clpr = company.stockprice;
         const startDate = new Date(2023, 0, 1); // 시작 날짜 (예: 2023년 1월 1일)
@@ -62,43 +66,23 @@ const GraphCpt = () => {
         const bsopDate = new Date(
           startDate.getTime() + newIdx * 24 * 60 * 60 * 1000
         ); // stck_bsop_date를 계산하여 날짜 설정
-        const formattedDate = `${bsopDate.getMonth() + 1
-          }/${bsopDate.getDate()}`;
+        const formattedDate = `${
+          bsopDate.getMonth() + 1
+        }/${bsopDate.getDate()}`;
         let stck_oprc = 50000; // 종가
         let acml_vol = 50; // 거래량
         let prdy_vrss_sign = 0; // 음봉 양봉 기준
 
-        if (randomHigh < randomLow) {
-          let temp = randomHigh;
-          randomHigh = randomLow;
-          randomLow = temp;
-        }
-        while (randomHigh === randomLow) {
-          randomHigh = backfun.highLowNum(); // 랜덤 숫자 생성(고가, 저가)
-          randomLow = backfun.highLowNum(); // 랜덤 숫자 생성(고가, 저가)
-          if (randomHigh < randomLow) {
-            let temp = randomHigh;
-            randomHigh = randomLow;
-            randomLow = temp;
-          }
-        }
-
         if (randomPM === "+") {
           stck_oprc = stck_clpr + randomNum;
-          randomHigh = stck_oprc + randomHigh;
-          randomLow = stck_clpr - randomLow;
           acml_vol += randomNum;
           prdy_vrss_sign = 2;
         } else if (randomPM === "-" && stck_clpr > randomNum) {
           stck_oprc = Math.max(stck_clpr - randomNum, 0);
-          randomHigh = stck_clpr + randomHigh;
-          randomLow = stck_oprc - randomLow;
           acml_vol = Math.max(acml_vol - randomNum, 0);
           prdy_vrss_sign = 4;
         } else if (stck_clpr === 0) {
           stck_oprc = stck_clpr + randomNum;
-          randomHigh = stck_oprc + randomHigh;
-          randomLow = stck_clpr - randomLow;
           acml_vol += randomNum;
           prdy_vrss_sign = 2;
         }
@@ -109,8 +93,6 @@ const GraphCpt = () => {
           prdy_vrss_sign,
           stck_oprc,
           stck_clpr,
-          stck_high: randomHigh,
-          stck_low: randomLow,
           acml_vol,
           stockCount: company.companystock,
         };
@@ -143,8 +125,6 @@ const GraphCpt = () => {
   const createNewCompanyData = (prevData) => {
     const randomPr = backfun.startNum();
     const randomPM = backfun.startOp();
-    const randomHigh = backfun.highLowNum(); // 랜덤 숫자 생성(고가, 저가)
-    const randomLow = backfun.highLowNum(); // 랜덤 숫자 생성(고가, 저가)
 
     const bsopDate = new Date(prevData.stck_bsop_date);
     bsopDate.setDate(bsopDate.getDate() + 1); // 다음 날짜 계산
@@ -159,8 +139,6 @@ const GraphCpt = () => {
       newData.prdy_vrss_sign = 2;
       newData.stck_clpr = newData.stck_oprc;
       newData.stck_oprc += randomPr;
-      newData.stck_high = newData.stck_oprc + randomHigh;
-      newData.stck_low = newData.stck_clpr - randomLow;
       newData.acml_vol += randomPr;
     } else if (
       randomPM === "-" &&
@@ -170,8 +148,6 @@ const GraphCpt = () => {
       newData.stck_bsop_date = formattedDate;
       newData.prdy_vrss_sign = 4;
       newData.stck_clpr = newData.stck_oprc;
-      newData.stck_high = newData.stck_clpr + randomHigh;
-      newData.stck_low = newData.stck_oprc - randomLow;
       // 거래량과 종가가 0 이하로 떨어지지 않도록 함
       newData.stck_oprc = Math.max(newData.stck_oprc - randomPr, 0);
       newData.acml_vol = Math.max(newData.acml_vol - randomPr, 0);
@@ -180,16 +156,17 @@ const GraphCpt = () => {
       newData.prdy_vrss_sign = 2;
       newData.stck_clpr = newData.stck_oprc;
       newData.stck_oprc += randomPr;
-      newData.stck_high = newData.stck_oprc + randomHigh;
-      newData.stck_low = newData.stck_clpr - randomLow;
       newData.acml_vol += randomPr;
+    }
+
+    if (dataFromNewPanel != null) {
     }
 
     return newData;
   };
 
   // 새롭게 지속적으로 업데이트될 각 회사데이터 공정 과정 함수화2
-  const updateCompanies = () => {
+  const updateCompanies = useCallback(() => {
     setRealGroupedCompanies((prevCompanies) => {
       const newCompanies = prevCompanies.map((companyData) => {
         const newCompanyData = createNewCompanyData(companyData[29]);
@@ -197,18 +174,68 @@ const GraphCpt = () => {
         return newDataArray;
       });
       const companyPriceUpdate = async () => {
-        await axios.post("/api/curentdata", newCompanies).then((res) => { });
+        await axios.post("/api/curentdata", newCompanies).then((res) => {});
       };
       companyPriceUpdate();
       return newCompanies;
     });
-  };
+  }, [setRealGroupedCompanies]);
 
   // 새로운 데이터를 일정시간마다 realGroupedCompanies state에 추가
   useEffect(() => {
-    const intervalId = setInterval(updateCompanies, 4000);
+    const intervalId = setInterval(() => {
+      setGameTime((prevTime) => prevTime + 1); // 데이터 업데이트마다 타임 증가
+      updateCompanies();
+    }, 10000);
+
+    if (gameTime >= 119) {
+      // 게임 시간인 20분 10초 * 120번 = 1200초 -> 20분 되면 그래프 멈춤
+      clearInterval(intervalId);
+    }
+
     return () => clearInterval(intervalId);
-  }, [updateCompanies]);
+  }, [updateCompanies, gameTime]);
+
+  // 타이머
+  useEffect(() => {
+    const timerInterval = setInterval(() => {
+      setTime((prevTime) => {
+        const [minutes, seconds] = prevTime.split(":");
+        let newSeconds = Number(seconds) - 1;
+        let newMinutes = Number(minutes);
+
+        // 초가 0보다 작아지면 분을 감소시키고 초를 59로 설정합니다.
+        if (newSeconds < 0) {
+          newSeconds = 59;
+          newMinutes -= 1;
+        }
+
+        // 분이 0보다 작아지면 타이머를 멈춥니다.
+        if (newMinutes < 0) {
+          clearInterval(timerInterval);
+          return "00:00";
+        }
+
+        // 분과 초가 한 자리 숫자일 경우 앞에 0을 붙입니다.
+        const newMinutesString = String(newMinutes).padStart(2, "0");
+        const newSecondsString = String(newSeconds).padStart(2, "0");
+
+        // 시간이 01:00부터는 색상을 빨간색으로 변경합니다.
+        if (newMinutes >= 5) {
+          setColor("white");
+        } else {
+          setColor("red");
+        }
+
+        return `${newMinutesString}:${newSecondsString}`;
+      });
+    }, 1000);
+
+    return () => {
+      // 컴포넌트가 언마운트될 때 타이머를 정리합니다.
+      clearInterval(timerInterval);
+    };
+  }, []);
 
   const companiseBtnStyle = {
     width: "176px",
@@ -318,12 +345,12 @@ const GraphCpt = () => {
     display: "inline-block",
     border: "1px solid white",
     width: "317px",
-    height: "590px",
+    height: "465px",
     marginLeft: "20px",
     marginTop: "0",
     position: "absolute",
     left: "1161px",
-    top: "20px",
+    top: "151px",
     color: "white",
   };
 
@@ -336,6 +363,9 @@ const GraphCpt = () => {
   const currentStock = {
     fontSize: "20px",
     textAlign: "center",
+    overflow: "auto",
+    marginTop: "0",
+    height: "313px",
   };
 
   const buySellDiv = {
@@ -407,6 +437,19 @@ const GraphCpt = () => {
     textAlign: "center",
   };
 
+  const buySellCloseBtn = {
+    position: "relative",
+    left: "233px",
+    top: "1px",
+    width: "32px",
+    height: "31px",
+    fontSize: "26px",
+    color: "white",
+    background: "black",
+    border: "none",
+    cursor: "pointer",
+  };
+
   function companyBtnClick(companyName, index) {
     setSelectedCompanyName(companyName);
     setSelectedCompanyIndex(index);
@@ -471,37 +514,37 @@ const GraphCpt = () => {
 
   const currentStockList = userInfo
     ? Object.entries(userInfo.havestock).map(([companyId, stockCount]) => {
-      if (realGroupedCompanies[companyId]) {
-        const company = realGroupedCompanies[companyId - 1][29];
-        const { name, stck_oprc, stck_clpr } = company;
-        const profit =
-          stck_oprc > stck_clpr ? (
-            <span style={{ color: "#E94560" }}>
-              <img src={upImg} style={upDownImg}></img>
-              {stck_oprc - stck_clpr}
-            </span>
-          ) : (
-            <span style={{ color: "#006DEE" }}>
-              <img src={downImg} style={upDownImg}></img>
-              {stck_clpr - stck_oprc}
-            </span>
-          );
+        if (realGroupedCompanies[companyId]) {
+          const company = realGroupedCompanies[companyId - 1][29];
+          const { name, stck_oprc, stck_clpr } = company;
+          const profit =
+            stck_oprc > stck_clpr ? (
+              <span style={{ color: "#E94560" }}>
+                <img src={upImg} style={upDownImg}></img>
+                {stck_oprc - stck_clpr}
+              </span>
+            ) : (
+              <span style={{ color: "#006DEE" }}>
+                <img src={downImg} style={upDownImg}></img>
+                {stck_clpr - stck_oprc}
+              </span>
+            );
 
-        return (
-          <div key={companyId}>
-            <span style={{ borderBottom: "1px solid white" }}>
-              {name} {stockCount}주 {profit}
-            </span>
-          </div>
-        );
-      } else {
-        return (
-          <div key={companyId}>
-            <span>해당 회사가 없습니다.</span>
-          </div>
-        );
-      }
-    })
+          return (
+            <div key={companyId}>
+              <span style={{ borderBottom: "1px solid white" }}>
+                {name} {stockCount}주 {profit}
+              </span>
+            </div>
+          );
+        } else {
+          return (
+            <div key={companyId}>
+              <span>해당 회사가 없습니다.</span>
+            </div>
+          );
+        }
+      })
     : [];
 
   const handleCountChange = (e) => {
@@ -512,9 +555,18 @@ const GraphCpt = () => {
     setPrice(parseInt(e.target.value));
   };
 
-  const handleCountIncrement = (e) => {
+  const handleCountBuyIncrement = (e) => {
     e.preventDefault();
     setCount(Math.min(count + 1, selectedCompany[29].stockCount));
+  };
+
+  const handleCountSellIncrement = (e) => {
+    e.preventDefault();
+    if (!holdingStock[selectedCompanyIndex + 1]) {
+      setCount(1);
+    } else {
+      setCount(Math.min(count + 1, holdingStock[selectedCompanyIndex + 1]));
+    }
   };
 
   const handleCountDecrement = (e) => {
@@ -522,20 +574,135 @@ const GraphCpt = () => {
     setCount(Math.max(count - 1, 0));
   };
 
-  const handleBuyBtn = () => {
+  const handleCloseBuyBtn = () => {
     setIsDiv1Visible(!isDiv1Visible);
+    setCount(1);
   };
 
-  const handleSellBtn = () => {
+  const handleCloseSellBtn = () => {
     setIsDiv3Visible(!isDiv3Visible);
+    setCount(1);
   };
+
+  const closePopup = () => {
+    setCount(1);
+    setIsDiv1Visible(false);
+    setIsDiv3Visible(false);
+  };
+
+  // 매도 데이터 처리 함수
+  const handleSellSubmit = (event) => {
+    event.preventDefault();
+
+    const form = event.target;
+    const formData = new FormData(form);
+    const data = {};
+    formData.forEach((value, key) => {
+      data[key] = value;
+    });
+
+    fetch(`http://localhost:4000/api/sell?usernick=${userInfo.usernickname}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.json())
+      .then((responseData) => {
+        // 응답 처리
+        setUserInfo(responseData);
+        handleCloseSellBtn();
+      })
+      .catch((error) => {
+        // 에러 처리
+        console.error(error);
+      });
+  };
+
+  // 매수 데이터 처리 함수
+  const handleBuySubmit = (event) => {
+    event.preventDefault();
+
+    const form = event.target;
+    const formData = new FormData(form);
+    const data = {};
+    formData.forEach((value, key) => {
+      data[key] = value;
+    });
+
+    fetch(`http://localhost:4000/api/buy?usernick=${userInfo.usernickname}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.json())
+      .then((responseData) => {
+        // 응답 처리
+        setUserInfo(responseData);
+        handleCloseBuyBtn();
+      })
+      .catch((error) => {
+        // 에러 처리
+        console.error(error);
+      });
+  };
+
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (popupRef.current && !popupRef.current.contains(event.target)) {
+        closePopup();
+      }
+    };
+
+    if (isDiv1Visible || isDiv3Visible) {
+      document.addEventListener("mousedown", handleOutsideClick);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [isDiv1Visible, isDiv3Visible]);
 
   const getStockCount = () => {
-    const input = document.getElementById("holdingStockInput");
-    console.log("hodingSotkc : ", (selectedCompanyIndex + 1).toString());
     if (holdingStock[selectedCompanyIndex + 1]) {
-      input.value = `${holdingStock[(selectedCompanyIndex + 1).toString()]}주`;
+      setCount(holdingStock[(selectedCompanyIndex + 1).toString()]);
+    } else {
+      setCount(0);
     }
+  };
+
+  const CustomXAxisTick = ({ x, y, payload }) => {
+    const [month, date] = payload.value.split("/");
+    const textStyle = {
+      fontSize: 12, // 원하는 크기로 설정
+    };
+    return (
+      <g transform={`translate(${x},${y})`}>
+        <text
+          x={0}
+          y={0}
+          dy={10}
+          textAnchor="middle"
+          fill="#666"
+          style={textStyle}
+        >
+          {month}
+        </text>
+        <text
+          x={0}
+          y={0}
+          dy={24}
+          textAnchor="middle"
+          fill="#666"
+          style={textStyle}
+        >
+          {date}
+        </text>
+      </g>
+    );
   };
 
   return (
@@ -564,7 +731,7 @@ const GraphCpt = () => {
           <XAxis
             dataKey="stck_bsop_date"
             interval={0}
-            tick={{ fontSize: 12 }}
+            tick={<CustomXAxisTick />}
           />
           <YAxis domain={[0, 3000]} />
           <Tooltip />
@@ -581,20 +748,6 @@ const GraphCpt = () => {
               );
             })}
           </Bar>
-          {/* <Bar
-            dataKey={(data) => {
-              const range = [data.stck_high, data.stck_low];
-              return range;
-            }}
-            fill="#E94560"
-            barSize={20}
-          >
-            {selectedCompany.map((data) => {
-              return (
-                <Cell fill={data.prdy_vrss_sign > 3 ? "#006DEE" : "#E94560"} />
-              );
-            })}
-          </Bar> */}
         </BarChart>
 
         <BarChart
@@ -607,7 +760,7 @@ const GraphCpt = () => {
           <XAxis
             dataKey="stck_bsop_date"
             interval={0}
-            tick={{ fontSize: 12 }}
+            tick={<CustomXAxisTick />}
           />
           <YAxis domain={[0, 3000]} />
           <Tooltip />
@@ -619,6 +772,20 @@ const GraphCpt = () => {
           <span style={spanStyle}>현재시세</span>
           <ul style={ulStyle}>{lis}</ul>
         </div>
+      </div>
+      <div
+        style={{
+          display: "inline-block",
+          position: "absolute",
+          color: color,
+          left: "1178px",
+          top: "0px",
+          fontSize: "50px",
+          padding: "25px 95px",
+          border: "1px solid white",
+        }}
+      >
+        {time}
       </div>
       <div style={userInfoCurrentStock}>
         {userInfo ? (
@@ -668,7 +835,7 @@ const GraphCpt = () => {
               marginLeft: "10px",
               marginRight: "10px",
             }}
-            onClick={handleBuyBtn}
+            onClick={handleCloseBuyBtn}
           >
             매수
           </button>
@@ -688,15 +855,18 @@ const GraphCpt = () => {
               fontSize: "25px",
               marginLeft: "10px",
             }}
-            onClick={handleSellBtn}
+            onClick={handleCloseSellBtn}
           >
             매도
           </button>
         </from>
       </div>
       {isDiv1Visible && (
-        <div style={sellPopup}>
-          <form method="POST" action={`/buy/${userInfo.usernickname}`}>
+        <div ref={popupRef} style={sellPopup}>
+          <button onClick={handleCloseBuyBtn} style={buySellCloseBtn}>
+            X
+          </button>
+          <form onSubmit={handleBuySubmit}>
             <p style={{ color: "white", marginTop: "40px" }}>지정가</p>
             <div style={sellPopupInnerDivFlex}>
               <button
@@ -709,14 +879,24 @@ const GraphCpt = () => {
               <input
                 type="text"
                 name="stock"
-                value={count + "주"}
+                value={count}
                 onChange={handleCountChange}
                 style={sellPopupInput}
               />
+              <span
+                style={{
+                  color: "white",
+                  fontSize: "20px",
+                  position: "relative",
+                  right: "78px",
+                }}
+              >
+                주
+              </span>
               <button
                 type="button"
                 style={sellPopupPMBtn}
-                onClick={handleCountIncrement}
+                onClick={handleCountBuyIncrement}
               >
                 +
               </button>
@@ -725,7 +905,7 @@ const GraphCpt = () => {
               <input
                 type="text"
                 name="price"
-                value={formatter.format(price) + "원"}
+                value={formatter.format(price)}
                 onChange={handlePriceChange}
                 style={sellPopupInput}
                 readOnly
@@ -764,6 +944,12 @@ const GraphCpt = () => {
                 style={{ width: "150px", border: "none", textAlign: "center" }}
                 readOnly
               />
+              <input
+                type="text"
+                value={selectedCompanyIndex + 1}
+                name="company"
+                style={{ display: "none" }}
+              />
             </div>
             <div>
               <button
@@ -784,13 +970,19 @@ const GraphCpt = () => {
         </div>
       )}
       {isDiv3Visible && (
-        <div style={sellPopup}>
-          <form
-            method="POST"
-            action={`http://localhost:4000/api/sell?usernick=${userInfo.usernickname}`}
-          >
+        <div ref={popupRef} style={sellPopup}>
+          <button onClick={handleCloseSellBtn} style={buySellCloseBtn}>
+            X
+          </button>
+          <form onSubmit={handleSellSubmit}>
             <p style={{ color: "white", marginTop: "40px" }}>지정가</p>
             <div style={sellPopupInnerDivFlex}>
+              <input
+                type="text"
+                style={{ display: "none" }}
+                name="usernickname"
+                value={userInfo.usernickname}
+              />
               <button
                 type="button"
                 style={sellPopupPMBtn}
@@ -802,14 +994,24 @@ const GraphCpt = () => {
                 type="text"
                 name="stock"
                 id="holdingStockInput"
-                value={count + "주"}
+                value={count}
                 onChange={handleCountChange}
                 style={sellPopupInput}
               />
+              <span
+                style={{
+                  color: "white",
+                  fontSize: "20px",
+                  position: "relative",
+                  right: "78px",
+                }}
+              >
+                주
+              </span>
               <button
                 type="button"
                 style={sellPopupPMBtn}
-                onClick={handleCountIncrement}
+                onClick={handleCountSellIncrement}
               >
                 +
               </button>
@@ -834,7 +1036,7 @@ const GraphCpt = () => {
               <input
                 type="text"
                 name="price"
-                value={formatter.format(price) + "원"}
+                value={formatter.format(price)}
                 onChange={handlePriceChange}
                 style={sellPopupInput}
                 readOnly
@@ -854,7 +1056,7 @@ const GraphCpt = () => {
               />
               <input
                 type="text"
-                value={selectedCompanyIndex}
+                value={selectedCompanyIndex + 1}
                 name="company"
                 style={{ display: "none" }}
               />
@@ -881,4 +1083,8 @@ const GraphCpt = () => {
   );
 };
 
-export default GraphCpt;
+const mapStateToProps = (state) => ({
+  dataFromNewPanel: state.dataFromNewPanel,
+});
+
+export default connect(mapStateToProps)(GraphCpt);

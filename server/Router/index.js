@@ -32,6 +32,9 @@ router
   .get(userController.postSession)
   .post(userController.postSession);
 
+// 상황 테스터
+router.route("/situationTest").post(userController.postSituation);
+
 // router.get("/mypage", (req, res) => {
 //   res.send({ mypage: "ok!" });
 // });

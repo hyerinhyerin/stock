@@ -40,20 +40,6 @@ module.exports.postLogin = async (req, res, next) => {
   })(req, res, next);
 };
 
-module.exports.getMypage = (req, res) => {
-  return res.sendFile(path.join(__dirname, "../react/mypage.html"));
-};
-
-module.exports.postMypage = async (req, res) => {
-  const nickname = req.session.passport.user.nickname;
-  const exUser = await User.findOne({
-    where: nickname,
-  });
-  if (exUser) {
-    return exUser;
-  }
-};
-
 module.exports.chart = async (req, res) => {
   const companys = await Company.findAll({
     where: {
@@ -114,4 +100,9 @@ module.exports.postSession = async (req, res) => {
   if (exUser) {
     return res.send({ sessionUser: exUser });
   }
+};
+
+module.exports.postSituation = async (req, res) => {
+  const testData = { companyA: 20000 };
+  return res.json(testData);
 };
