@@ -66,9 +66,8 @@ const GraphCpt = ({ dataFromNewPanel }) => {
         const bsopDate = new Date(
           startDate.getTime() + newIdx * 24 * 60 * 60 * 1000
         ); // stck_bsop_date를 계산하여 날짜 설정
-        const formattedDate = `${
-          bsopDate.getMonth() + 1
-        }/${bsopDate.getDate()}`;
+        const formattedDate = `${bsopDate.getMonth() + 1
+          }/${bsopDate.getDate()}`;
         let stck_oprc = 50000; // 종가
         let acml_vol = 50; // 거래량
         let prdy_vrss_sign = 0; // 음봉 양봉 기준
@@ -174,7 +173,7 @@ const GraphCpt = ({ dataFromNewPanel }) => {
         return newDataArray;
       });
       const companyPriceUpdate = async () => {
-        await axios.post("/api/curentdata", newCompanies).then((res) => {});
+        await axios.post("/api/curentdata", newCompanies).then((res) => { });
       };
       companyPriceUpdate();
       return newCompanies;
@@ -514,37 +513,37 @@ const GraphCpt = ({ dataFromNewPanel }) => {
 
   const currentStockList = userInfo
     ? Object.entries(userInfo.havestock).map(([companyId, stockCount]) => {
-        if (realGroupedCompanies[companyId]) {
-          const company = realGroupedCompanies[companyId - 1][29];
-          const { name, stck_oprc, stck_clpr } = company;
-          const profit =
-            stck_oprc > stck_clpr ? (
-              <span style={{ color: "#E94560" }}>
-                <img src={upImg} style={upDownImg}></img>
-                {stck_oprc - stck_clpr}
-              </span>
-            ) : (
-              <span style={{ color: "#006DEE" }}>
-                <img src={downImg} style={upDownImg}></img>
-                {stck_clpr - stck_oprc}
-              </span>
-            );
+      if (realGroupedCompanies[companyId]) {
+        const company = realGroupedCompanies[companyId - 1][29];
+        const { name, stck_oprc, stck_clpr } = company;
+        const profit =
+          stck_oprc > stck_clpr ? (
+            <span style={{ color: "#E94560" }}>
+              <img src={upImg} style={upDownImg}></img>
+              {stck_oprc - stck_clpr}
+            </span>
+          ) : (
+            <span style={{ color: "#006DEE" }}>
+              <img src={downImg} style={upDownImg}></img>
+              {stck_clpr - stck_oprc}
+            </span>
+          );
 
-          return (
-            <div key={companyId}>
-              <span style={{ borderBottom: "1px solid white" }}>
-                {name} {stockCount}주 {profit}
-              </span>
-            </div>
-          );
-        } else {
-          return (
-            <div key={companyId}>
-              <span>해당 회사가 없습니다.</span>
-            </div>
-          );
-        }
-      })
+        return (
+          <div key={companyId}>
+            <span style={{ borderBottom: "1px solid white" }}>
+              {name} {stockCount}주 {profit}
+            </span>
+          </div>
+        );
+      } else {
+        return (
+          <div key={companyId}>
+            <span>해당 회사가 없습니다.</span>
+          </div>
+        );
+      }
+    })
     : [];
 
   const handleCountChange = (e) => {
@@ -601,7 +600,7 @@ const GraphCpt = ({ dataFromNewPanel }) => {
       data[key] = value;
     });
 
-    fetch(`http://localhost:4000/api/sell?usernick=${userInfo.usernickname}`, {
+    fetch(`http://localhost:4000/api/sell`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -631,7 +630,7 @@ const GraphCpt = ({ dataFromNewPanel }) => {
       data[key] = value;
     });
 
-    fetch(`http://localhost:4000/api/buy?usernick=${userInfo.usernickname}`, {
+    fetch(`http://localhost:4000/api/buy`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
