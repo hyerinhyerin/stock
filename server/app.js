@@ -35,8 +35,13 @@ app.use(cors());
 app.set("port", process.env.PORT || 4000);
 
 app.use(morgan("dev"));
-app.use(bodyParser.json({ limit: '100mb' }));
-app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
+app.use(express.json({
+  limit: '1mb'
+}))
+app.use(express.urlencoded({
+  limit: '1mb',
+  extended: false
+}))
 
 // cookieParser 설정에 비밀키를 넣어주자.
 // cookieParser를 사용하게되면 req.cookies로 접근이 가능하다.

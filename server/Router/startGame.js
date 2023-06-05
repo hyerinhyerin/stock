@@ -6,25 +6,35 @@ const GameTable = require('../models/GameTable');
 // 게임 시작할 때
 router.get('/', async function (req, res, next) {
     try {
-        var nickname = req.session.nickname;
-        nickname = "nickovo";
+        const startNum = req.query.startNum;
+        const nickname = req.session.passport.user.nickname;
+        const startTime = new Date(new Date() * 1 + 3600000 * 9).toISOString().replace("T", " ").replace(/\..*/, "");
 
-        const startTime = await new Date(new Date() * 1 + 3600000 * 9).toISOString().replace("T", " ").replace(/\..*/, "");
-
-        await User.findOne({
+        User.findOne({
             where: { nickname: nickname }
         }).then(result => {
-            GameTable.create({
-                usernickname: result.nickname,
-                money: result.money,
-                havestock: {},
-                created_at: startTime
-            });
+            if (startNum == 1) {
+                console.log("1.");
+                GameTable.create({
+                    usernickname: result.nickname,
+                    money: result.money,
+                    havestock: {},
+                    created_at: startTime
+                });
+                res.redirect("/gamePage");
+            } else if (startNum == 2) {
+                console.log("2.");
+                GameTable.create({
+                    usernickname: result.nickname,
+                    money: 1000000,
+                    havestock: {},
+                    created_at: startTime
+                });
+            }
+            res.redirect("/gamePage");
         }).catch(err => {
             console.log(err);
         });
-
-        res.send("startGame");
 
     } catch (err) {
         console.log(err);

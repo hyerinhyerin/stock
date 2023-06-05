@@ -9,6 +9,7 @@ const random = require('./random');
 router.get('/', async function (req, res, next) {
     try {
         var randomNum = req.query.CompanyNum;
+        console.log(randomNum);
 
         if (!randomNum) { // 상황이 없을 경우 모든 회사가 랜덤으로 주가 변동
             randomPrice();
