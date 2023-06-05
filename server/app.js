@@ -64,9 +64,6 @@ app.use(passport.session()); // 앱에서 영구 로그인을 사용한다면 �
 app.use("/api", indexRouter);
 app.use("/auth", authRouter);
 
-const stockprice = require("./Router/stockprice");
-app.use('/api/stockprice', stockprice);
-
 const startGame = require("./Router/startGame");
 app.use('/api/startGame', startGame);
 

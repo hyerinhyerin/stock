@@ -143,7 +143,7 @@ router.get("/logout", isLoggedIn, async (req, res) => {
   req.logout();
   req.session.destroy();
 
-  res.redirect("http://localhost:3000"); // 로그아웃시 보낼 주소
+  res.redirect("/"); // 로그아웃시 보낼 주소
 });
 
 module.exports = router;
