@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {Link} from "react-router-dom";
-import "../components/JoinComponent.css";
+import "../Join/JoinComponent.css";
 import ProfileImage from "./ProfileImage";
 import Drop from "./Drop";
 // import {Mobile, PC} from '../components/Responsive';
