@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
+import { connect } from "react-redux";
 import axios from "axios";
 
-const NewPanel = () => {
+const NewPanel = ({ sendDataToGraphCpt }) => {
   const divStyle = {
     textAlign: "center",
     border: "1px solid white",
@@ -36,8 +37,7 @@ const NewPanel = () => {
   const [currentSituation, setCurrentSituation] = useState(null);
   const [nextSituationTime, setNextSituationTime] = useState(0);
   const [situationNum, setSituationNum] = useState(null);
-  // const earlyRandomIdx = Math.floor(Math.random() * 49); // 0 ~ 48 random Index
-  // const randomSecond = Math.floor(Math.random() * (40001 - 20000) + 20000); // 20000 ~ 400000
+  const [testData, setTestData] = useState({});
 
   useEffect(() => {
     const axiosStockSituations = async () => {
@@ -98,11 +98,12 @@ const NewPanel = () => {
   // 서버로 회사 num값 보내기
   const postSituationNum = async (idx) => {
     const axiosSituationIdx = await axios
-      .post("url", {
+      .post("/api/situationTest", {
         num: idx,
       })
       .then((res) => {
-        console.log("resData : ", res.data);
+        console.log("상황 resData : ", res.data);
+        sendDataToGraphCpt(res.data);
       })
       .catch((error) => {
         console.log(error);
@@ -121,4 +122,9 @@ const NewPanel = () => {
   );
 };
 
-export default NewPanel;
+const mapDispatchToProps = (dispatch) => ({
+  sendDataToGraphCpt: (data) =>
+    dispatch({ type: "SET_DATA_FROM_NewPanel", payload: data }), // A 컴포넌트로 데이터 전달
+});
+
+export default connect(null, mapDispatchToProps)(NewPanel);

@@ -1,5 +1,6 @@
 import axios from "axios";
-import React, { useEffect, useState, useRef, useCallback, memo } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
+import { connect } from "react-redux";
 import btnImg from "../img/btn.png";
 import backBtnImg from "../img/backBtn.png";
 import upImg from "../img/up.png";
@@ -18,7 +19,7 @@ import {
 
 const backfun = require("../backFun/random");
 
-const GraphCpt = () => {
+const GraphCpt = ({ dataFromNewPanel }) => {
   const [selectedCompany, setSelectedCompany] = useState(Array(30).fill({})); // 선택한 회사
   const [realGroupedCompanies, setRealGroupedCompanies] = useState([]); // 2차원 배열로 회사의 정보를 관리
   const [selectedCompanyName, setSelectedCompanyName] = useState(null); // 선택한 회사 이름을 담을 state 변수
@@ -58,8 +59,6 @@ const GraphCpt = () => {
       // 데베에서 가져온 1차 회사데이터 차트에 쓸 양식에 맞게 변환 useEffect
       const newStockDataArr = companys.data.companys.map((company) => {
         const randomNum = backfun.startNum(); // 랜덤 숫자 생성(시가, 종가)
-        let randomHigh = backfun.highLowNum(); // 랜덤 숫자 생성(고가, 저가)
-        let randomLow = backfun.highLowNum(); // 랜덤 숫자 생성(고가, 저가)
         const randomPM = backfun.startOp(); // 랜덤 부호 생성 +/-
         const stck_clpr = company.stockprice;
         const startDate = new Date(2023, 0, 1); // 시작 날짜 (예: 2023년 1월 1일)
@@ -74,37 +73,16 @@ const GraphCpt = () => {
         let acml_vol = 50; // 거래량
         let prdy_vrss_sign = 0; // 음봉 양봉 기준
 
-        if (randomHigh < randomLow) {
-          let temp = randomHigh;
-          randomHigh = randomLow;
-          randomLow = temp;
-        }
-        while (randomHigh === randomLow) {
-          randomHigh = backfun.highLowNum(); // 랜덤 숫자 생성(고가, 저가)
-          randomLow = backfun.highLowNum(); // 랜덤 숫자 생성(고가, 저가)
-          if (randomHigh < randomLow) {
-            let temp = randomHigh;
-            randomHigh = randomLow;
-            randomLow = temp;
-          }
-        }
-
         if (randomPM === "+") {
           stck_oprc = stck_clpr + randomNum;
-          randomHigh = stck_oprc + randomHigh;
-          randomLow = stck_clpr - randomLow;
           acml_vol += randomNum;
           prdy_vrss_sign = 2;
         } else if (randomPM === "-" && stck_clpr > randomNum) {
           stck_oprc = Math.max(stck_clpr - randomNum, 0);
-          randomHigh = stck_clpr + randomHigh;
-          randomLow = stck_oprc - randomLow;
           acml_vol = Math.max(acml_vol - randomNum, 0);
           prdy_vrss_sign = 4;
         } else if (stck_clpr === 0) {
           stck_oprc = stck_clpr + randomNum;
-          randomHigh = stck_oprc + randomHigh;
-          randomLow = stck_clpr - randomLow;
           acml_vol += randomNum;
           prdy_vrss_sign = 2;
         }
@@ -115,8 +93,6 @@ const GraphCpt = () => {
           prdy_vrss_sign,
           stck_oprc,
           stck_clpr,
-          stck_high: randomHigh,
-          stck_low: randomLow,
           acml_vol,
           stockCount: company.companystock,
         };
@@ -149,8 +125,6 @@ const GraphCpt = () => {
   const createNewCompanyData = (prevData) => {
     const randomPr = backfun.startNum();
     const randomPM = backfun.startOp();
-    const randomHigh = backfun.highLowNum(); // 랜덤 숫자 생성(고가, 저가)
-    const randomLow = backfun.highLowNum(); // 랜덤 숫자 생성(고가, 저가)
 
     const bsopDate = new Date(prevData.stck_bsop_date);
     bsopDate.setDate(bsopDate.getDate() + 1); // 다음 날짜 계산
@@ -165,8 +139,6 @@ const GraphCpt = () => {
       newData.prdy_vrss_sign = 2;
       newData.stck_clpr = newData.stck_oprc;
       newData.stck_oprc += randomPr;
-      newData.stck_high = newData.stck_oprc + randomHigh;
-      newData.stck_low = newData.stck_clpr - randomLow;
       newData.acml_vol += randomPr;
     } else if (
       randomPM === "-" &&
@@ -176,8 +148,6 @@ const GraphCpt = () => {
       newData.stck_bsop_date = formattedDate;
       newData.prdy_vrss_sign = 4;
       newData.stck_clpr = newData.stck_oprc;
-      newData.stck_high = newData.stck_clpr + randomHigh;
-      newData.stck_low = newData.stck_oprc - randomLow;
       // 거래량과 종가가 0 이하로 떨어지지 않도록 함
       newData.stck_oprc = Math.max(newData.stck_oprc - randomPr, 0);
       newData.acml_vol = Math.max(newData.acml_vol - randomPr, 0);
@@ -186,9 +156,10 @@ const GraphCpt = () => {
       newData.prdy_vrss_sign = 2;
       newData.stck_clpr = newData.stck_oprc;
       newData.stck_oprc += randomPr;
-      newData.stck_high = newData.stck_oprc + randomHigh;
-      newData.stck_low = newData.stck_clpr - randomLow;
       newData.acml_vol += randomPr;
+    }
+
+    if (dataFromNewPanel != null) {
     }
 
     return newData;
@@ -477,16 +448,6 @@ const GraphCpt = () => {
     background: "black",
     border: "none",
     cursor: "pointer",
-  };
-
-  const timerDiv = {
-    display: "inline-block",
-    position: "absolute",
-    left: "1178px",
-    top: "0px",
-    fontSize: "50px",
-    padding: "25px 95px",
-    border: "1px solid white",
   };
 
   function companyBtnClick(companyName, index) {
@@ -1122,4 +1083,8 @@ const GraphCpt = () => {
   );
 };
 
-export default GraphCpt;
+const mapStateToProps = (state) => ({
+  dataFromNewPanel: state.dataFromNewPanel,
+});
+
+export default connect(mapStateToProps)(GraphCpt);

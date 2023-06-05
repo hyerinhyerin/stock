@@ -101,3 +101,8 @@ module.exports.postSession = async (req, res) => {
     return res.send({ sessionUser: exUser });
   }
 };
+
+module.exports.postSituation = async (req, res) => {
+  const testData = { companyA: 20000 };
+  return res.json(testData);
+};

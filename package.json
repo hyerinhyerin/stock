@@ -42,7 +42,9 @@
     "passport-local": "^1.0.0",
     "passport-naver-v2": "^2.0.8",
     "path": "^0.12.7",
+    "react-redux": "^8.0.7",
     "react-router-dom": "^6.9.0",
+    "redux": "^4.2.1",
     "sequelize": "^6.28.0",
     "session": "^0.1.0",
     "session-file-store": "^1.5.0"
