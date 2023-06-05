@@ -1,6 +1,5 @@
 const express = require("express");
 const session = require("express-session");
-const path = require("path");
 const bodyParser = require("body-parser");
 const cors = require('cors');
 const morgan = require("morgan"); // 작업 수행시 로깅
@@ -36,13 +35,8 @@ app.use(cors());
 app.set("port", process.env.PORT || 4000);
 
 app.use(morgan("dev"));
-app.use(express.json({
-  limit: '1mb'
-}))
-app.use(express.urlencoded({
-  limit: '1mb',
-  extended: false
-}))
+app.use(bodyParser.json({ limit: '100mb' }));
+app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
 
 // cookieParser 설정에 비밀키를 넣어주자.
 // cookieParser를 사용하게되면 req.cookies로 접근이 가능하다.
@@ -58,6 +52,7 @@ app.use(
     cookie: {
       httpOnly: true,
       secure: false, // https를 쓸것인가?
+      maxAge: 60 * 60 * 1000, // 세션 만료 시간 (예: 1시간)
     },
   })
 );

@@ -38,7 +38,8 @@ const NewPanel = () => {
   const randomSecond = Math.floor(Math.random() * (40001 - 20000) + 20000); // 20000 ~ 400000
 
   const getSituation = async () => {
-    const situationData = await axios.get("/api/situation");
+    const situationData = await axios.get("http://localhost:4000/api/situation");
+    console.log(situationData.data.situation);
     setSituation(situationData.data.situation);
     setRandomSituation(situationData.data.situation[earlyRandomIdx].situation);
   };

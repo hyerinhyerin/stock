@@ -23,7 +23,7 @@ router.route("/chart").get(userController.chart).post(userController.chart);
 //   .get(userController.postMypage)
 //   .post(userController.postMypage);
 
-router.route("/situation").get(userController.situation);
+// router.route("/situation").get(userController.situation);
 
 router.route("/curentdata").post(userController.getCurrentPrice); // 2. 받은거
 
