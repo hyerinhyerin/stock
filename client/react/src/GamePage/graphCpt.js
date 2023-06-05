@@ -651,6 +651,7 @@ const GraphCpt = () => {
       .then((responseData) => {
         // 응답 처리
         setUserInfo(responseData);
+        handleCloseSellBtn();
       })
       .catch((error) => {
         // 에러 처리
@@ -679,8 +680,8 @@ const GraphCpt = () => {
       .then((response) => response.json())
       .then((responseData) => {
         // 응답 처리
-        console.log(responseData);
         setUserInfo(responseData);
+        handleCloseBuyBtn();
       })
       .catch((error) => {
         // 에러 처리
