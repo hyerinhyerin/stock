@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import {Link} from "react-router-dom";
-import "../Join/JoinComponent.css";
+import { Link } from "react-router-dom";
+import "../components/JoinComponent.css";
 import ProfileImage from "./ProfileImage";
 import Drop from "./Drop";
 // import {Mobile, PC} from '../components/Responsive';
@@ -14,7 +14,7 @@ const Mypage = () => {
   const [editType, setEditType] = useState(true);
   ////// 백엔드로 수정된 결과 post하기 
   const [formData, setFormData] = useState({
-    id:'',
+    id: '',
     nickname: '',
     email: ''
   });
@@ -28,9 +28,10 @@ const Mypage = () => {
     console.log("확인 : ", userDBData.data.userData);
     setUserData(userDBData.data.userData);
     setFormData({
-      id:userDBData.data.userData.id,
-      nickname:userDBData.data.userData.nickname,
-      email:userDBData.data.userData.email});
+      id: userDBData.data.userData.id,
+      nickname: userDBData.data.userData.nickname,
+      email: userDBData.data.userData.email
+    });
   };
 
   useEffect(() => {
@@ -42,20 +43,20 @@ const Mypage = () => {
   // const email = userData?.email;
 
   ///backend로 정보 전송
-  const handleSubmit=async(e)=>{
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try{
-      const response=await axios.post("/api/mypage", formData);
+    try {
+      const response = await axios.post("/api/mypage", formData);
       console.log(response.data);
-    }catch(e){
+    } catch (e) {
       console.error(e);
     }
   };
 
   ////input창 수정되었을 경우 formdata 수정
-  const handleChange=(e)=>{
-    setFormData({...formData, [e.target.name]:e.target.value});
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
     console.log(formData);
   };
 
@@ -91,11 +92,11 @@ const Mypage = () => {
     fontSize: "15pt",
     color: "white",
   };
-  const backStyle={
-    position:"absolute",
-    width:"50px",
-    height:"50px",
-    left:"20px",
+  const backStyle = {
+    position: "absolute",
+    width: "50px",
+    height: "50px",
+    left: "20px",
   }
 
   return (
@@ -119,27 +120,27 @@ const Mypage = () => {
           </div>
         </div>
         <div style={editStyle}>
-          {editType ? 
+          {editType ?
             <button
-            style={btnStyle}
-            onClick={() => {
-              setEditType(!editType);
-            }}
-          >
-            수정
-          </button> :
-          <button
-          type="submit"
-          style={btnStyle}
-          onClick={() => {
-            setEditType(!editType);
-          }}
-        >
-          확인
-        </button>
-        }
+              style={btnStyle}
+              onClick={() => {
+                setEditType(!editType);
+              }}
+            >
+              수정
+            </button> :
+            <button
+              type="submit"
+              style={btnStyle}
+              onClick={() => {
+                setEditType(!editType);
+              }}
+            >
+              확인
+            </button>
+          }
         </div>
-      </form> 
+      </form>
       <div style={outStyle}>
         <button type="submit" style={btnStyle} onClick={() => setViewDrop(!viewDrop)}>
           탈퇴

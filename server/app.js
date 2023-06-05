@@ -1,6 +1,5 @@
 const express = require("express");
 const session = require("express-session");
-const path = require("path");
 const bodyParser = require("body-parser");
 const cors = require('cors');
 const morgan = require("morgan"); // 작업 수행시 로깅
@@ -36,7 +35,8 @@ app.use(cors());
 app.set("port", process.env.PORT || 4000);
 
 app.use(morgan("dev"));
-app.use(express.urlencoded({ extended: false }));
+app.use(bodyParser.json({ limit: '100mb' }));
+app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
 
 // cookieParser 설정에 비밀키를 넣어주자.
 // cookieParser를 사용하게되면 req.cookies로 접근이 가능하다.
@@ -52,6 +52,7 @@ app.use(
     cookie: {
       httpOnly: true,
       secure: false, // https를 쓸것인가?
+      maxAge: 60 * 60 * 1000, // 세션 만료 시간 (예: 1시간)
     },
   })
 );
@@ -59,10 +60,6 @@ app.use(
 // 아래 2개는 session 아래로 적어주자
 app.use(passport.initialize()); // passport 초기화 미들웨어
 app.use(passport.session()); // 앱에서 영구 로그인을 사용한다면 추가하자
-
-app.get('/', function (req, res) {
-  res.sendFile('../client/react/Main/MainPage.html');
-});
 
 app.use("/api", indexRouter);
 app.use("/auth", authRouter);

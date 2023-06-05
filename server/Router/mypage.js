@@ -31,4 +31,22 @@ router.get('/', async (req, res) => { // 마이페이지 정보 보냄
     }
 });
 
+router.get('/rank', async (req, res) => { // 보유자산 순위
+    const nickname = req.session.passport.user.nickname;
+    try {
+        const rank = await User.findAll({
+            order: [['money', 'DESC']],
+        });
+
+        const userRank = [];
+
+        for (const user of rank) {
+            userRank.push(user.nickname);
+        }
+        res.send({ rank: userRank.indexOf(nickname) + 1 }); // 순위 보내줌.
+    } catch (err) {
+        res.send(err);
+    }
+});
+
 module.exports = router;
