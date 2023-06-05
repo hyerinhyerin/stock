@@ -29,31 +29,6 @@ const Main = () => {
                         <label for="pw"></label>
                     </div>
 
-
-                    <div class="button-area-circle">
-                        <form action="/auth/github" method="POST">
-                            <button
-                                class="bt_circle"
-                                id="bt_ka"
-                            ></button>
-                        </form>
-                        <form action="/auth/github" method="POST">
-                            <button
-                                class="bt_circle"
-                                id="bt_gi"
-                                onClick={GoogleBtn}
-                            ></button>
-                        </form>
-                        <form action="/auth/github" method="POST">
-                            <button
-                                class="bt_circle"
-                                id="bt_go"
-                                onClick={GitBtn}
-                                method="POST'"
-                            ></button>
-                        </form>
-                    </div>
-
                     <div class="button-area">
                         <button id="btn" type="button" onClick={JoinBtn}>
                             회원가입
@@ -62,6 +37,15 @@ const Main = () => {
                     </div>
 
                 </form>
+
+                <div class="button-area-circle">
+                    <button class="bt_circle" id="bt_ka" onClick={KaKaoBtn} ></button>
+                    <button class="bt_circle" id="bt_gi" onClick={GoogleBtn} ></button>
+                    <form action="/auth/github" method="POST">
+                        <button class="bt_circle" id="bt_go"></button>
+                    </form>
+
+                </div>
 
                 <div class="ver">
                     <h3>VER.0.5.0 20's</h3>
@@ -85,10 +69,6 @@ function KaKaoBtn() {
 
 function GoogleBtn() {
     window.location.href = "http://localhost:4000/auth/google"
-}
-
-function GitBtn() {
-    window.location.href = "http://localhost:4000/auth/github"
 }
 
 export default Main;

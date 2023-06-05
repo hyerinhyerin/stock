@@ -1,4 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
+import axios from 'axios';
+
+const Start1Btn = () => {
+  axios.get("http://localhost:4000/api/startGame", { params: { startNum: 1 } });
+};
+
+function Start2Btn() {
+  axios.get("http://localhost:4000/api/startGame", { params: { startNum: 2 } });
+};
 
 const StartPopup = () => {
   const divStyle = {
@@ -23,6 +32,7 @@ const StartPopup = () => {
     fontWeight: "bold",
     color: "black",
     backgroundColor: "white",
+    cursor: "pointer"
   };
   const btnNextStyle = {
     position: "absolute",
@@ -34,11 +44,12 @@ const StartPopup = () => {
     fontWeight: "bold",
     color: "white",
     backgroundColor: "black",
+    cursor: "pointer"
   };
   return (
     <div style={divStyle}>
-      <button style={btnNowStyle} >현생</button>
-      <button style={btnNextStyle}>환생</button>
+      <button style={btnNowStyle} onClick={Start1Btn}>현생</button>
+      <button style={btnNextStyle} onClick={Start2Btn}>환생</button>
     </div>
   );
 };

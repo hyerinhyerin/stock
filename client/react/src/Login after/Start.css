@@ -53,10 +53,16 @@ div .balloon::after{
 
 .P2{
     font-size: 15pt;
-    margin-left: 50px;
-    margin-top: 40px;
+    margin-left: 15px;
+    margin-top: 20px;
     width: 80px;
     text-align: center;
+}
+.P_div{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-evenly;
 }
 
 

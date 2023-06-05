@@ -71,20 +71,21 @@ body{
   padding-top: 20px;
   text-align: center;
   flex-direction: row;
+  margin-top: 90px;
 }
 
 .fiction h3 {
   color: #ba2649;
   position: absolute;
   right: 25px;
-  margin-top: 130px;
+  margin-top: 205px;
 }
 
 .ver h3 {
   color: #ba2649;
   position: absolute;
   left: 25px;
-  margin-top: 130px;
+  margin-top: 205px;
 }
 
 #btn{
@@ -111,6 +112,7 @@ body{
   display: flex;
   justify-content: space-evenly;
   flex-direction: row;
+  margin-top: -135px;
 }
 
 .bt_circle{

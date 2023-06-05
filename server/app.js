@@ -36,7 +36,13 @@ app.use(cors());
 app.set("port", process.env.PORT || 4000);
 
 app.use(morgan("dev"));
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json({
+  limit: '1mb'
+}))
+app.use(express.urlencoded({
+  limit: '1mb',
+  extended: false
+}))
 
 // cookieParser 설정에 비밀키를 넣어주자.
 // cookieParser를 사용하게되면 req.cookies로 접근이 가능하다.
@@ -59,10 +65,6 @@ app.use(
 // 아래 2개는 session 아래로 적어주자
 app.use(passport.initialize()); // passport 초기화 미들웨어
 app.use(passport.session()); // 앱에서 영구 로그인을 사용한다면 추가하자
-
-app.get('/', function (req, res) {
-  res.sendFile('../client/react/Main/MainPage.html');
-});
 
 app.use("/api", indexRouter);
 app.use("/auth", authRouter);

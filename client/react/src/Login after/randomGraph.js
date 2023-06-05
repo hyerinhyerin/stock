@@ -35,9 +35,8 @@ const GraphCpt = () => {
         const bsopDate = new Date(
           startDate.getTime() + newIdx * 24 * 60 * 60 * 1000
         ); // stck_bsop_date를 계산하여 날짜 설정
-        const formattedDate = `${
-          bsopDate.getMonth() + 1
-        }/${bsopDate.getDate()}`;
+        const formattedDate = `${bsopDate.getMonth() + 1
+          }/${bsopDate.getDate()}`;
         let stck_oprc = 50000; // 종가
         let acml_vol = 50; // 거래량
         let prdy_vrss_sign = 0; // 음봉 양봉 기준
@@ -171,7 +170,7 @@ const GraphCpt = () => {
         return newDataArray;
       });
       const companyPriceUpdate = async () => {
-        await axios.post("/api/curentdata", newCompanies).then((res) => {});
+        await axios.post("/api/curentdata", newCompanies).then((res) => { });
       };
       companyPriceUpdate();
       return newCompanies;
@@ -187,13 +186,13 @@ const GraphCpt = () => {
   const graphDiv = {
     display: "inline-block",
     position: "absolute",
-    top: "150px",
+    top: "35px",
     left: "76px",
     width: "1000px",
     height: "641px",
     margin: "0",
     borderRight: "1px dotted white",
-    background: "white",
+    background: "black",
   };
 
   //selectedCompanyName state 변수가 변경될 때마다 선택한 회사 정보를 추출하여 selectedCompany state 변수에 저장
