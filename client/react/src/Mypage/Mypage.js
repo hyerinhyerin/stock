@@ -101,7 +101,7 @@ const Mypage = () => {
   return (
     <div>
       {/* <PC> */}
-      <Link to="/start">
+      <Link to="/gameMain">
         <img style={backStyle} src="back.png"></img>
       </Link>
       <ProfileImage id={formData.id} />

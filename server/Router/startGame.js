@@ -6,14 +6,13 @@ const GameTable = require('../models/GameTable');
 // 게임 시작할 때
 router.get('/', async function (req, res, next) {
     try {
-        const startNum = await req.query.startNum;
-        const nickname = await req.session.passport.user.nickname;
-        const startTime = await new Date(new Date() * 1 + 3600000 * 9).toISOString().replace("T", " ").replace(/\..*/, "");
+        const startNum = req.query.startNum;
+        const nickname = req.session.passport.user.nickname;
+        const startTime = new Date(new Date() * 1 + 3600000 * 9).toISOString().replace("T", " ").replace(/\..*/, "");
 
-        await User.findOne({
+        User.findOne({
             where: { nickname: nickname }
         }).then(result => {
-            console.log("여기까지옴.");
             if (startNum == 1) {
                 console.log("1.");
                 GameTable.create({

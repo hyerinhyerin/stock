@@ -2,8 +2,7 @@ const express = require("express");
 const router = express.Router();
 const User = require('../models/User');
 
-router.post('/', async (req, res) => { // 마이페이지 수정
-    const session = req.session;
+router.put('/', async (req, res) => { // 마이페이지 수정
     const { id, email, nickname } = req.body;
 
     try {
@@ -11,7 +10,7 @@ router.post('/', async (req, res) => { // 마이페이지 수정
             email: email,
             nickname: nickname
         }, { where: { id: id } })
-        res.send("마이페이지 수정 완료");
+        res.redirect("/mypage");
     } catch (err) {
         res.send(err);
     }
@@ -48,5 +47,22 @@ router.get('/rank', async (req, res) => { // 보유자산 순위
         res.send(err);
     }
 });
+
+// 탈퇴 기능
+router.delete('/', async (req, res) => {
+    try {
+        const nickname = req.session.passport.user.nickname;
+        console.log(nickname);
+
+        User.destroy({ where: { nickname: nickname } })
+            .then(() => {
+                console.log("탈퇴하였습니다.");
+                req.logout();
+                req.session.destroy();
+            });
+    } catch (err) {
+        res.send(err);
+    }
+})
 
 module.exports = router;
