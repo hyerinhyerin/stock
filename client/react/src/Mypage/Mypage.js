@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import "../components/JoinComponent.css";
+import "../Join/JoinComponent.css";
 import ProfileImage from "./ProfileImage";
 import Drop from "./Drop";
 // import {Mobile, PC} from '../components/Responsive';
@@ -12,15 +12,14 @@ const Mypage = () => {
   const [viewDrop, setViewDrop] = useState(false);
   ///////수정 버튼 클릭에 따라 input 입력 제한
   const [editType, setEditType] = useState(true);
-  ////// 백엔드로 수정된 결과 post하기 
+  ////// 백엔드로 수정된 결과 post하기
   const [formData, setFormData] = useState({
-    id: '',
-    nickname: '',
-    email: ''
+    id: "",
+    nickname: "",
+    email: "",
   });
   ///// backend에서 유저 정보 받아오기
   const [userData, setUserData] = useState({});
-
 
   ////back에서 정보 받기
   const getUserData = async () => {
@@ -30,7 +29,7 @@ const Mypage = () => {
     setFormData({
       id: userDBData.data.userData.id,
       nickname: userDBData.data.userData.nickname,
-      email: userDBData.data.userData.email
+      email: userDBData.data.userData.email,
     });
   };
 
@@ -97,7 +96,7 @@ const Mypage = () => {
     width: "50px",
     height: "50px",
     left: "20px",
-  }
+  };
 
   return (
     <div>
@@ -105,22 +104,34 @@ const Mypage = () => {
       <Link to="/start">
         <img style={backStyle} src="back.png"></img>
       </Link>
-      <ProfileImage
-        id={formData.id}
-      />
+      <ProfileImage id={formData.id} />
       <form onSubmit={handleSubmit}>
         <div style={divStyle}>
           <div>
             <p className="joinp">닉네임</p>
-            <input value={formData.nickname} name="nickname" type="text" onChange={handleChange} required readOnly={editType}></input>
+            <input
+              value={formData.nickname}
+              name="nickname"
+              type="text"
+              onChange={handleChange}
+              required
+              readOnly={editType}
+            ></input>
           </div>
           <div>
             <p className="joinp">이메일</p>
-            <input value={formData.email} name="email" type="email" onChange={handleChange} required readOnly={editType}></input>
+            <input
+              value={formData.email}
+              name="email"
+              type="email"
+              onChange={handleChange}
+              required
+              readOnly={editType}
+            ></input>
           </div>
         </div>
         <div style={editStyle}>
-          {editType ?
+          {editType ? (
             <button
               style={btnStyle}
               onClick={() => {
@@ -128,7 +139,8 @@ const Mypage = () => {
               }}
             >
               수정
-            </button> :
+            </button>
+          ) : (
             <button
               type="submit"
               style={btnStyle}
@@ -138,15 +150,23 @@ const Mypage = () => {
             >
               확인
             </button>
-          }
+          )}
         </div>
       </form>
       <div style={outStyle}>
-        <button type="submit" style={btnStyle} onClick={() => setViewDrop(!viewDrop)}>
+        <button
+          type="submit"
+          style={btnStyle}
+          onClick={() => setViewDrop(!viewDrop)}
+        >
           탈퇴
         </button>
       </div>
-      {viewDrop ? <Drop formData={formData} view={viewDrop} getData={getData} /> : ""}
+      {viewDrop ? (
+        <Drop formData={formData} view={viewDrop} getData={getData} />
+      ) : (
+        ""
+      )}
       {/* </PC>     */}
     </div>
   );
