@@ -129,15 +129,17 @@ const Mypage = () => {
             >
               수정
             </button> :
-            <button
-              type="submit"
-              style={btnStyle}
-              onClick={() => {
-                setEditType(!editType);
-              }}
-            >
-              확인
-            </button>
+            <Link to="/mypage">
+              <button
+                type="submit"
+                style={btnStyle}
+                onClick={() => {
+                  setEditType(!editType);
+                }}
+              >
+                확인
+              </button>
+            </Link>
           }
         </div>
       </form>

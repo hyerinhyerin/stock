@@ -31,7 +31,7 @@ router.get('/', async function (req, res, next) {
                     created_at: startTime
                 });
             }
-            res.redirect("/gamePage");
+
         }).catch(err => {
             console.log(err);
         });

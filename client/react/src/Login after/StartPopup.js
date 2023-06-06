@@ -1,5 +1,6 @@
 import React from "react";
 import axios from 'axios';
+import { Link } from "react-router-dom";
 
 const Start1Btn = () => {
   axios.get("http://localhost:4000/api/startGame", { params: { startNum: 1 } });
@@ -47,10 +48,16 @@ const StartPopup = () => {
     cursor: "pointer"
   };
   return (
+
     <div style={divStyle}>
-      <button style={btnNowStyle} onClick={Start1Btn}>현생</button>
-      <button style={btnNextStyle} onClick={Start2Btn}>환생</button>
+      <Link to="/gamePage">
+        <button style={btnNowStyle} onClick={Start1Btn}>현생</button>
+      </Link>
+      <Link to="/gamePage">
+        <button style={btnNextStyle} onClick={Start2Btn}>환생</button>
+      </Link>
     </div>
+
   );
 };
 

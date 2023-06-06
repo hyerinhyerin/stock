@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const User = require('../models/User');
 
-router.put('/', async (req, res) => { // 마이페이지 수정
+router.post('/', async (req, res) => { // 마이페이지 수정
     const { id, email, nickname } = req.body;
 
     try {
@@ -10,7 +10,6 @@ router.put('/', async (req, res) => { // 마이페이지 수정
             email: email,
             nickname: nickname
         }, { where: { id: id } })
-        res.redirect("/mypage");
     } catch (err) {
         res.send(err);
     }

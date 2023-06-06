@@ -10,23 +10,28 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(multer().none());
 
-// 주식 파는 기능
+// 주식 파는 기능(매도)
 router.post("/", async (req, res, next) => {
   var { price, stock, company } = req.body;
-  const usernick = req.query.usernick;
+  //const nickname = req.session.passport.user.nickname;
+  const nickname = "ovo";
+  price = price.replace(/,/g, "");
 
   try {
-    var re_price = Number(price.replace(/,/g, ""));
     var res_stock = await GameTable.findOne({
-      where: { usernickname: usernick },
+      where: { usernickname: nickname },
     });
-    var userstock = await res_stock.havestock;
+    var userstock = res_stock.havestock;
+
+    console.log(price, stock, company);
 
     // 갖고 있는 주식이 팔고 싶은 주식보다 적으면
     if (parseInt(userstock[company]) < parseInt(stock)) {
-      res.send("보유주식이 없습니다.");
+      return res.send("매도하려는 주식의 수가 소유 주식보다 많습니다.");
+    } else if (!userstock[company]) {
+      return res.send("보유 주식이 없습니다.");
     } else {
-      const sellStock = await GameTable.update(
+      await GameTable.update(
         {
           havestock: sequelize.fn(
             "JSON_MERGE_PATCH",
@@ -35,28 +40,29 @@ router.post("/", async (req, res, next) => {
               [company]: Number(res_stock.havestock[company]) - Number(stock),
             })
           ),
-          money: res_stock.money + re_price * stock,
+          money: parseInt(res_stock.money) + parseInt(price) * parseInt(stock),
         },
         {
-          where: { usernickname: usernick },
+          where: { usernickname: nickname },
         }
       ).catch((err) => {
         console.log(err);
         res.send(404);
       });
 
-      var companyStock = await Company.findOne({ where: { num: company } });
-
-      const updateDB = await Company.update(
-        {
-          companystock: companyStock.companystock + Number(stock),
-        },
-        { where: { num: company } }
-      );
+      await Company.findOne({ where: { num: company } })
+        .then((result) => {
+          Company.update(
+            {
+              companystock: result.companystock + Number(stock),
+            },
+            { where: { num: company } }
+          );
+        });
 
       const gamingUser = await GameTable.findOne({
         where: {
-          usernickname: usernick,
+          usernickname: nickname,
         },
       });
       if (gamingUser) {

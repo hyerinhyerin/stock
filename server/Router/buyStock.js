@@ -4,72 +4,58 @@ const Company = require("../models/Company");
 const sequelize = require("../models").sequelize;
 const GameTable = require("../models/GameTable");
 
-// 주식 사는 기능
+// 주식 사는 기능(매수)
 router.post("/", async (req, res) => {
-  const { stock, price, company } = req.body;
-  var usernick = req.query.usernick;
-
   try {
-    var res_user = await GameTable.findOne({
-      where: { usernickname: usernick },
-    });
+    var { stock, price, company } = req.body;
+    //const nickname = req.session.passport.user.nickname;
+    const nickname = "ovo";
+    price = price.replace(/,/g, "");
 
-    if (res_user.havestock && res_user.havestock[company] != null) {
-      // json 파일 -> key 값이 있을 때
-      console.log("있음");
-      const buySecond = await GameTable.update(
-        {
-          havestock: sequelize.fn(
-            "JSON_MERGE_PATCH",
-            sequelize.col("havestock"),
-            JSON.stringify({
-              [company]: Number(res_user.havestock[company]) + Number(stock),
-            })
-          ),
-          money: res_user.money - price * stock,
-        },
-        {
-          where: { usernickname: usernick },
-        }
-      ).catch((err) => {
-        console.log(err);
-        res.send(404);
-      });
-    } else {
-      // json 파일 -> key 값이 없을 때
-      console.log("없음");
-      await GameTable.update(
-        {
-          havestock: sequelize.fn(
-            "JSON_MERGE_PATCH",
-            sequelize.col("havestock"),
-            JSON.stringify({ [company]: Number(stock) })
-          ),
-          money: res_user.money - price * stock,
-        },
-        {
-          where: { usernickname: usernick },
-        }
-      ).catch((err) => {
-        console.log(err);
-        res.send(404);
-      });
+    var res_user = await GameTable.findOne({ where: { usernickname: nickname } });
+    var company_data = await Company.findOne({ where: { num: company } });
+
+    if (company > company_data.companystock) {
+      return res.send('해당 주식만큼 회사 주식이 없습니다.');
+    }
+    if (Number(price * stock) > res_user.money) {
+      return res.send('유저의 돈이 없습니다. 다시 확인해주세요');
     }
 
-    var companyStock = await Company.findOne({ where: { num: company } });
+    // json 파일 -> key 값이 있을 때
+    if (res_user.havestock && res_user.havestock[company] != null) {
+      await GameTable.update({
+        havestock: sequelize.fn("JSON_MERGE_PATCH", sequelize.col("havestock"), JSON.stringify({ [company]: Number(res_user.havestock[company]) + Number(stock) })),
+        money: parseInt(res_user.money) - parseInt(price) * parseInt(stock),
+      }, { where: { usernickname: nickname } })
+        .catch((err) => {
+          res.send(err);
+        });
+    } else { // json 파일 -> key 값이 없을 때
+      await GameTable.update({
+        havestock: sequelize.fn("JSON_MERGE_PATCH", sequelize.col("havestock"), JSON.stringify({ [company]: Number(stock) })),
+        money: parseInt(res_user.money) - parseInt(price) * parseInt(stock)
+      }, { where: { usernickname: nickname } })
+        .catch((err) => {
+          console.log(err);
+          res.send(404);
+        });
+    }
 
-    const updateDB = await Company.update(
-      {
-        companystock: companyStock.companystock - Number(stock),
-      },
-      { where: { num: company } }
-    );
+    await Company.findOne({ where: { num: company } })
+      .then((result) => {
+        Company.update({ companystock: parseInt(result.companystock - Number(stock)) },
+          { where: { num: company } }
+        );
+      })
 
     const gamingUser = await GameTable.findOne({
       where: {
-        usernickname: usernick,
+        usernickname: nickname,
       },
     });
+    console.log(gamingUser);
+
     if (gamingUser) {
       return res.json(gamingUser);
     } else {
