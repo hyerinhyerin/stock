@@ -48,7 +48,6 @@ router.post("/", async (req, res, next) => {
         }
       ).then(async () => {
         var user_stock = await GameTable.findOne({ where: { usernickname: nickname } });
-        console.log(user_stock.havestock[company]);
         if (Number(user_stock.havestock[company]) === 0) {
           delete user_stock.havestock[company];
 
