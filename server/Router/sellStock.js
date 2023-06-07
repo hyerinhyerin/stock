@@ -5,6 +5,7 @@ const router = express.Router();
 const sequelize = require("../models").sequelize;
 const GameTable = require("../models/GameTable");
 const Company = require("../models/Company");
+const { NUMBER } = require("sequelize");
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -45,7 +46,15 @@ router.post("/", async (req, res, next) => {
         {
           where: { usernickname: nickname },
         }
-      ).catch((err) => {
+      ).then(async () => {
+        var user_stock = await GameTable.findOne({ where: { usernickname: nickname } });
+        console.log(user_stock.havestock[company]);
+        if (Number(user_stock.havestock[company]) === 0) {
+          delete user_stock.havestock[company];
+
+          await GameTable.update({ havestock: user_stock.havestock }, { where: { usernickname: nickname } });
+        }
+      }).catch((err) => {
         console.log(err);
         res.send(404);
       });

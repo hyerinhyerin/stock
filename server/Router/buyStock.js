@@ -54,7 +54,6 @@ router.post("/", async (req, res) => {
         usernickname: nickname,
       },
     });
-    console.log(gamingUser);
 
     if (gamingUser) {
       return res.json(gamingUser);
