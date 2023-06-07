@@ -57,19 +57,20 @@ module.exports.chart = async (req, res) => {
   }
 };
 
-module.exports.situation = async (req, res) => {
-  const situation = await Situation.findAll();
+// module.exports.situation = async (req, res) => {
+//   const situation = await Situation.findAll();
 
-  if (situation) {
-    return res.send({ situation: situation });
-  } else {
-    console.log("상황이 찾아지지 않습니다.");
-  }
-};
+//   if (situation) {
+//     return res.send({ situation: situation });
+//   } else {
+//     console.log("상황이 찾아지지 않습니다.");
+//   }
+// };
 
 let companiesObjArr = null;
 
 module.exports.getCurrentPrice = async (req, res) => {
+  console.log("상황에 대한 req.body : ", req.body);
   companiesObjArr = req.body;
 
   for (let i = 0; i < companiesObjArr.length; i++) {

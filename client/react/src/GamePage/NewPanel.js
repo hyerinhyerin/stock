@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import axios from "axios";
 
-const NewPanel = ({ sendDataToGraphCpt }) => {
+const NewPanel = ({ sendDataToGraph }) => {
   const divStyle = {
     textAlign: "center",
     border: "1px solid white",
@@ -33,32 +33,8 @@ const NewPanel = ({ sendDataToGraphCpt }) => {
     marginLeft: "96px",
   };
 
-  const [stockSituations, setStockSituations] = useState([]);
   const [currentSituation, setCurrentSituation] = useState(null);
   const [nextSituationTime, setNextSituationTime] = useState(0);
-  const [situationNum, setSituationNum] = useState(null);
-  const [testData, setTestData] = useState({});
-
-  useEffect(() => {
-    const axiosStockSituations = async () => {
-      try {
-        const situationData = await axios.get("/api/situation");
-        const situationList = situationData.data.situation.map(
-          (obj) => obj.situation
-        );
-        setStockSituations(situationList);
-
-        // 초기 마운트 시 상황 설정
-        setCurrentSituation(getRandomSituation(stockSituations));
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    axiosStockSituations();
-
-    // return () => clearInterval(timer);
-  }, []);
 
   useEffect(() => {
     const fetchNextSituation = async () => {
@@ -66,15 +42,10 @@ const NewPanel = ({ sendDataToGraphCpt }) => {
 
       if (isDefault) {
         setCurrentSituation("평화로움");
-        setSituationNum(null);
-        postSituationNum(situationNum);
+        postSituationNum(null);
       } else {
-        setCurrentSituation(
-          getRandomSituation(
-            stockSituations.filter((situation) => situation !== "평화로움")
-          )
-        );
-        postSituationNum(situationNum);
+        const randomIndex = Math.floor(Math.random() * 49);
+        postSituationNum(randomIndex);
       }
 
       // 다음 상황 발생 시간 설정 (20~40초)
@@ -87,23 +58,24 @@ const NewPanel = ({ sendDataToGraphCpt }) => {
     const timer = setInterval(fetchNextSituation, nextSituationTime * 1000);
 
     return () => clearInterval(timer);
-  }, [stockSituations, nextSituationTime]);
-
-  const getRandomSituation = (situations) => {
-    const randomIndex = Math.floor(Math.random() * situations.length);
-    setSituationNum(randomIndex);
-    return situations[randomIndex];
-  };
+  }, [nextSituationTime]);
 
   // 서버로 회사 num값 보내기
   const postSituationNum = async (idx) => {
     const axiosSituationIdx = await axios
-      .post("/api/situationTest", {
-        num: idx,
+      .get("/api/situation", {
+        params: {
+          num: idx,
+        },
       })
       .then((res) => {
-        console.log("상황 resData : ", res.data);
-        sendDataToGraphCpt(res.data);
+        if (res.data.situation.situation) {
+          setCurrentSituation(res.data.situation.situation);
+          sendDataToGraph(res.data.situationJudgment);
+        } else {
+          setCurrentSituation("평화로움");
+          sendDataToGraph(res.data.situationJudgment);
+        }
       })
       .catch((error) => {
         console.log(error);
@@ -113,18 +85,14 @@ const NewPanel = ({ sendDataToGraphCpt }) => {
   return (
     <div style={divStyle}>
       <span style={newsFlashStyle}>속보 </span>
-      {currentSituation ? (
-        <span style={newsContent}>{currentSituation}</span>
-      ) : (
-        <span style={newsContent}>평화로움</span>
-      )}
+      <span style={newsContent}>{currentSituation}</span>
     </div>
   );
 };
 
 const mapDispatchToProps = (dispatch) => ({
-  sendDataToGraphCpt: (data) =>
-    dispatch({ type: "SET_DATA_FROM_NewPanel", payload: data }), // A 컴포넌트로 데이터 전달
+  sendDataToGraph: (data) =>
+    dispatch({ type: "SET_DATA_FROM_NEWPANEL", payload: data }), // A 컴포넌트로 데이터 전달
 });
 
 export default connect(null, mapDispatchToProps)(NewPanel);
