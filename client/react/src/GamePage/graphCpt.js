@@ -54,7 +54,6 @@ const GraphCpt = ({ dataFromNewPanel }) => {
   useEffect(() => {
     const axiosData = async () => {
       const companys = await axios.get("/api/chart"); // 데베에서 여러개의 회사 정보 가져오기
-      console.log("데베에서 받아온 초기 데이터 : ", companys.data.companys);
 
       // 데베에서 가져온 1차 회사데이터 차트에 쓸 양식에 맞게 변환 useEffect
       const newStockDataArr = companys.data.companys.map((company) => {
@@ -249,42 +248,6 @@ const GraphCpt = ({ dataFromNewPanel }) => {
     await companyPriceUpdate();
     setRealGroupedCompanies(newCompanies);
   }, [setRealGroupedCompanies, realGroupedCompanies, dataFromNewPanel]);
-
-  // // 새롭게 지속적으로 업데이트될 각 회사데이터 공정 과정 함수화2
-  // const updateCompanies = useCallback(async () => {
-  //   await setRealGroupedCompanies(async (prevCompanies) => {
-  //     const newCompanies = await Promise.all(
-  //       prevCompanies.map(async (companyData) => {
-  //         // 상황 발생 여부에 따라 주가를 조정하고 데이터를 업데이트
-  //         if (dataFromNewPanel) {
-  //           // 상황 발생시
-  //           console.log("여기서 더이상 못나아가는듯");
-  //           const newCompanyData = await createNewCompanyDataSituation(
-  //             companyData[29]
-  //           );
-  //           console.log("newCompanyData : ", newCompanyData);
-  //           const newDataArray = [...companyData.slice(1), newCompanyData];
-  //           console.log("성공적인 상황 함수 구현 : ", dataFromNewPanel);
-  //           console.log("네임이 어디갔니 : ", newDataArray);
-  //           return newDataArray;
-  //         } else {
-  //           // 상황X
-  //           console.log("비극적인 상황 함수 구현 : ", dataFromNewPanel);
-  //           const newCompanyData = createNewCompanyData(companyData[29]);
-  //           console.log("newCompanyData2 : ", newCompanyData);
-  //           const newDataArray = [...companyData.slice(1), newCompanyData];
-  //           return newDataArray;
-  //         }
-  //       })
-  //     );
-  //     const companyPriceUpdate = async () => {
-  //       console.log("회사 하나씩 axios : ", newCompanies);
-  //       await axios.post("/api/curentdata", newCompanies).then((res) => {});
-  //     };
-  //     await companyPriceUpdate();
-  //     return newCompanies;
-  //   });
-  // }, [setRealGroupedCompanies, dataFromNewPanel]);
 
   // 새로운 데이터를 일정시간마다 realGroupedCompanies state에 추가
   useEffect(() => {
@@ -695,7 +658,7 @@ const GraphCpt = ({ dataFromNewPanel }) => {
   };
 
   // 매도 데이터 처리 함수
-  const handleSellSubmit = (event) => {
+  const handleSellSubmit = async (event) => {
     event.preventDefault();
 
     const form = event.target;
@@ -715,7 +678,11 @@ const GraphCpt = ({ dataFromNewPanel }) => {
       .then((response) => response.json())
       .then((responseData) => {
         // 응답 처리
-        setUserInfo(responseData);
+        selectedCompany[29].stockCount =
+          parseInt(responseData.stock) +
+          parseInt(selectedCompany[29].stockCount);
+        setUserInfo(responseData.gamingUser);
+        setHoldingStock(responseData.gamingUser.havestock);
         handleCloseSellBtn();
       })
       .catch((error) => {
@@ -725,7 +692,7 @@ const GraphCpt = ({ dataFromNewPanel }) => {
   };
 
   // 매수 데이터 처리 함수
-  const handleBuySubmit = (event) => {
+  const handleBuySubmit = async (event) => {
     event.preventDefault();
 
     const form = event.target;
@@ -745,7 +712,11 @@ const GraphCpt = ({ dataFromNewPanel }) => {
       .then((response) => response.json())
       .then((responseData) => {
         // 응답 처리
-        setUserInfo(responseData);
+        selectedCompany[29].stockCount =
+          parseInt(selectedCompany[29].stockCount) -
+          parseInt(responseData.stock);
+        setUserInfo(responseData.gamingUser);
+        setHoldingStock(responseData.gamingUser.havestock);
         handleCloseBuyBtn();
       })
       .catch((error) => {

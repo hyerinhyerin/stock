@@ -53,8 +53,6 @@ const NewPanel = ({ sendDataToGraph }) => {
       setNextSituationTime(situationTime);
     };
 
-    console.log("nextSituationTime : ", nextSituationTime);
-
     const timer = setInterval(fetchNextSituation, nextSituationTime * 1000);
 
     return () => clearInterval(timer);

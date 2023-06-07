@@ -70,7 +70,6 @@ module.exports.chart = async (req, res) => {
 let companiesObjArr = null;
 
 module.exports.getCurrentPrice = async (req, res) => {
-  console.log("상황에 대한 req.body : ", req.body);
   companiesObjArr = req.body;
 
   for (let i = 0; i < companiesObjArr.length; i++) {

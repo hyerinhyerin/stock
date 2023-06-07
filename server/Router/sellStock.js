@@ -15,7 +15,7 @@ app.use(multer().none());
 router.post("/", async (req, res, next) => {
   var { price, stock, company } = req.body;
   //const nickname = req.session.passport.user.nickname;
-  const nickname = "ovo";
+  const nickname = "컴퓨터공학과 김재윤";
   price = price.replace(/,/g, "");
 
   try {
@@ -46,35 +46,44 @@ router.post("/", async (req, res, next) => {
         {
           where: { usernickname: nickname },
         }
-      ).then(async () => {
-        var user_stock = await GameTable.findOne({ where: { usernickname: nickname } });
-        if (Number(user_stock.havestock[company]) === 0) {
-          delete user_stock.havestock[company];
+      )
+        .then(async () => {
+          var user_stock = await GameTable.findOne({
+            where: { usernickname: nickname },
+          });
+          if (Number(user_stock.havestock[company]) === 0) {
+            delete user_stock.havestock[company];
 
-          await GameTable.update({ havestock: user_stock.havestock }, { where: { usernickname: nickname } });
-        }
-      }).catch((err) => {
-        console.log(err);
-        res.send(404);
-      });
-
-      await Company.findOne({ where: { num: company } })
-        .then((result) => {
-          Company.update(
-            {
-              companystock: result.companystock + Number(stock),
-            },
-            { where: { num: company } }
-          );
+            await GameTable.update(
+              { havestock: user_stock.havestock },
+              { where: { usernickname: nickname } }
+            );
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          res.send(404);
         });
+
+      await Company.findOne({
+        where: { num: company },
+      }).then((result) => {
+        Company.update(
+          {
+            companystock: result.companystock + Number(stock),
+          },
+          { where: { num: company } }
+        );
+      });
 
       const gamingUser = await GameTable.findOne({
         where: {
           usernickname: nickname,
         },
       });
+
       if (gamingUser) {
-        return res.json(gamingUser);
+        return res.json({ gamingUser, stock });
       } else {
         return res.send("세션 데이터가 존재하지 않습니다.");
       }
