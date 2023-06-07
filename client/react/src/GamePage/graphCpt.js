@@ -66,8 +66,9 @@ const GraphCpt = ({ dataFromNewPanel }) => {
         const bsopDate = new Date(
           startDate.getTime() + newIdx * 24 * 60 * 60 * 1000
         ); // stck_bsop_date를 계산하여 날짜 설정
-        const formattedDate = `${bsopDate.getMonth() + 1
-          }/${bsopDate.getDate()}`;
+        const formattedDate = `${
+          bsopDate.getMonth() + 1
+        }/${bsopDate.getDate()}`;
         let stck_oprc = 50000; // 종가
         let acml_vol = 50; // 거래량
         let prdy_vrss_sign = 0; // 음봉 양봉 기준
@@ -116,7 +117,6 @@ const GraphCpt = ({ dataFromNewPanel }) => {
       setSelectedCompanyIndex(randomIdx);
       // 초기에 랜덤한 인덱스로 회사 이름을 하나 저장해 초기 렌더링에 랜덤한 회사 데이터 차트에 표현
     };
-
     axiosData();
   }, []);
 
@@ -158,33 +158,139 @@ const GraphCpt = ({ dataFromNewPanel }) => {
       newData.acml_vol += randomPr;
     }
 
-    if (dataFromNewPanel != null) {
-    }
+    return newData;
+  };
+
+  // 새롭게 지속적으로 업데이트될 각 회사데이터 공정 과정 함수화1
+  const createNewCompanyDataSituation = async (prevData) => {
+    const companys = await axios.get("/api/chart"); // 데베에서 여러개의 회사 정보 가져오기
+    const bsopDate = new Date(prevData.stck_bsop_date);
+    bsopDate.setDate(bsopDate.getDate() + 1); // 다음 날짜 계산
+    const formattedDate = `${bsopDate.getMonth() + 1}/${bsopDate.getDate()}`;
+    const randomPr = backfun.startNum();
+    const randomPM = backfun.startOp();
+
+    const newData = {
+      ...prevData,
+      stck_bsop_date: formattedDate,
+    }; // 날짜를 "월/일" 형식으로 표현
+
+    const newStockDataArr = companys.data.companys.map((company) => {
+      if (newData.name === company.companyname) {
+        if (newData.stck_oprc < company.stockprice) {
+          newData.stck_bsop_date = formattedDate;
+          newData.prdy_vrss_sign = 2;
+          newData.stck_clpr = newData.stck_oprc;
+          newData.stck_oprc = company.stockprice;
+          newData.acml_vol += randomPr;
+        } else if (newData.stck_oprc === company.stockprice) {
+          if (randomPM === "+") {
+            newData.stck_bsop_date = formattedDate;
+            newData.prdy_vrss_sign = 2;
+            newData.stck_clpr = newData.stck_oprc;
+            newData.stck_oprc += randomPr;
+            newData.acml_vol += randomPr;
+          } else if (
+            randomPM === "-" &&
+            newData.stck_clpr > randomPr &&
+            newData.stck_clpr > randomPr
+          ) {
+            newData.stck_bsop_date = formattedDate;
+            newData.prdy_vrss_sign = 4;
+            newData.stck_clpr = newData.stck_oprc;
+            // 거래량과 종가가 0 이하로 떨어지지 않도록 함
+            newData.stck_oprc = Math.max(newData.stck_oprc - randomPr, 0);
+            newData.acml_vol = Math.max(newData.acml_vol - randomPr, 0);
+          } else if (newData.stck_oprc === 0) {
+            newData.stck_bsop_date = formattedDate;
+            newData.prdy_vrss_sign = 2;
+            newData.stck_clpr = newData.stck_oprc;
+            newData.stck_oprc += randomPr;
+            newData.acml_vol += randomPr;
+          }
+        } else {
+          newData.stck_bsop_date = formattedDate;
+          newData.prdy_vrss_sign = 4;
+          newData.stck_clpr = newData.stck_oprc;
+          // 거래량과 종가가 0 이하로 떨어지지 않도록 함
+          newData.stck_oprc = Math.max(company.stockprice, 0);
+          newData.acml_vol = Math.max(newData.acml_vol - randomPr, 0);
+        }
+      }
+    });
 
     return newData;
   };
 
-  // 새롭게 지속적으로 업데이트될 각 회사데이터 공정 과정 함수화2
-  const updateCompanies = useCallback(() => {
-    setRealGroupedCompanies((prevCompanies) => {
-      const newCompanies = prevCompanies.map((companyData) => {
-        const newCompanyData = createNewCompanyData(companyData[29]);
-        const newDataArray = [...companyData.slice(1), newCompanyData];
-        return newDataArray;
-      });
-      const companyPriceUpdate = async () => {
-        await axios.post("/api/curentdata", newCompanies).then((res) => { });
-      };
-      companyPriceUpdate();
-      return newCompanies;
-    });
-  }, [setRealGroupedCompanies]);
+  const updateCompanies = useCallback(async () => {
+    const newCompanies = await Promise.all(
+      realGroupedCompanies.map(async (companyData) => {
+        // 상황 발생 여부에 따라 주가를 조정하고 데이터를 업데이트
+        if (dataFromNewPanel) {
+          // 상황 발생 시
+          const newCompanyData = await createNewCompanyDataSituation(
+            companyData[29]
+          );
+          const newDataArray = [...companyData.slice(1), newCompanyData];
+          return newDataArray;
+        } else {
+          // 상황 X
+          const newCompanyData = createNewCompanyData(companyData[29]);
+          const newDataArray = [...companyData.slice(1), newCompanyData];
+          return newDataArray;
+        }
+      })
+    );
+
+    const companyPriceUpdate = async () => {
+      await axios.post("/api/curentdata", newCompanies).then((res) => {});
+    };
+
+    await companyPriceUpdate();
+    setRealGroupedCompanies(newCompanies);
+  }, [setRealGroupedCompanies, realGroupedCompanies, dataFromNewPanel]);
+
+  // // 새롭게 지속적으로 업데이트될 각 회사데이터 공정 과정 함수화2
+  // const updateCompanies = useCallback(async () => {
+  //   await setRealGroupedCompanies(async (prevCompanies) => {
+  //     const newCompanies = await Promise.all(
+  //       prevCompanies.map(async (companyData) => {
+  //         // 상황 발생 여부에 따라 주가를 조정하고 데이터를 업데이트
+  //         if (dataFromNewPanel) {
+  //           // 상황 발생시
+  //           console.log("여기서 더이상 못나아가는듯");
+  //           const newCompanyData = await createNewCompanyDataSituation(
+  //             companyData[29]
+  //           );
+  //           console.log("newCompanyData : ", newCompanyData);
+  //           const newDataArray = [...companyData.slice(1), newCompanyData];
+  //           console.log("성공적인 상황 함수 구현 : ", dataFromNewPanel);
+  //           console.log("네임이 어디갔니 : ", newDataArray);
+  //           return newDataArray;
+  //         } else {
+  //           // 상황X
+  //           console.log("비극적인 상황 함수 구현 : ", dataFromNewPanel);
+  //           const newCompanyData = createNewCompanyData(companyData[29]);
+  //           console.log("newCompanyData2 : ", newCompanyData);
+  //           const newDataArray = [...companyData.slice(1), newCompanyData];
+  //           return newDataArray;
+  //         }
+  //       })
+  //     );
+  //     const companyPriceUpdate = async () => {
+  //       console.log("회사 하나씩 axios : ", newCompanies);
+  //       await axios.post("/api/curentdata", newCompanies).then((res) => {});
+  //     };
+  //     await companyPriceUpdate();
+  //     return newCompanies;
+  //   });
+  // }, [setRealGroupedCompanies, dataFromNewPanel]);
 
   // 새로운 데이터를 일정시간마다 realGroupedCompanies state에 추가
   useEffect(() => {
-    const intervalId = setInterval(() => {
+    const intervalId = setInterval(async () => {
       setGameTime((prevTime) => prevTime + 1); // 데이터 업데이트마다 타임 증가
-      updateCompanies();
+      await updateCompanies();
     }, 10000);
 
     if (gameTime >= 119) {
@@ -486,7 +592,6 @@ const GraphCpt = ({ dataFromNewPanel }) => {
 
   // 매수, 매도창에 쓸 shares 주식 수와 price 가격 state관리
   useEffect(() => {
-    // setCount(selectedCompany[29].stockCount);
     setPrice(selectedCompany[29].stck_oprc);
   }, [selectedCompany]);
 
@@ -513,37 +618,37 @@ const GraphCpt = ({ dataFromNewPanel }) => {
 
   const currentStockList = userInfo
     ? Object.entries(userInfo.havestock).map(([companyId, stockCount]) => {
-      if (realGroupedCompanies[companyId]) {
-        const company = realGroupedCompanies[companyId - 1][29];
-        const { name, stck_oprc, stck_clpr } = company;
-        const profit =
-          stck_oprc > stck_clpr ? (
-            <span style={{ color: "#E94560" }}>
-              <img src={upImg} style={upDownImg}></img>
-              {stck_oprc - stck_clpr}
-            </span>
-          ) : (
-            <span style={{ color: "#006DEE" }}>
-              <img src={downImg} style={upDownImg}></img>
-              {stck_clpr - stck_oprc}
-            </span>
-          );
+        if (realGroupedCompanies[companyId]) {
+          const company = realGroupedCompanies[companyId - 1][29];
+          const { name, stck_oprc, stck_clpr } = company;
+          const profit =
+            stck_oprc > stck_clpr ? (
+              <span style={{ color: "#E94560" }}>
+                <img src={upImg} style={upDownImg}></img>
+                {stck_oprc - stck_clpr}
+              </span>
+            ) : (
+              <span style={{ color: "#006DEE" }}>
+                <img src={downImg} style={upDownImg}></img>
+                {stck_clpr - stck_oprc}
+              </span>
+            );
 
-        return (
-          <div key={companyId}>
-            <span style={{ borderBottom: "1px solid white" }}>
-              {name} {stockCount}주 {profit}
-            </span>
-          </div>
-        );
-      } else {
-        return (
-          <div key={companyId}>
-            <span>해당 회사가 없습니다.</span>
-          </div>
-        );
-      }
-    })
+          return (
+            <div key={companyId}>
+              <span style={{ borderBottom: "1px solid white" }}>
+                {name} {stockCount}주 {profit}
+              </span>
+            </div>
+          );
+        } else {
+          return (
+            <div key={companyId}>
+              <span>해당 회사가 없습니다.</span>
+            </div>
+          );
+        }
+      })
     : [];
 
   const handleCountChange = (e) => {
@@ -1083,7 +1188,7 @@ const GraphCpt = ({ dataFromNewPanel }) => {
 };
 
 const mapStateToProps = (state) => ({
-  dataFromNewPanel: state.dataFromNewPanel,
+  dataFromNewPanel: state.dataFromNewPanel, // Redux 상태에서 B 컴포넌트의 데이터를 가져옴
 });
 
 export default connect(mapStateToProps)(GraphCpt);
