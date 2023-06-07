@@ -14,8 +14,7 @@ app.use(multer().none());
 // 주식 파는 기능(매도)
 router.post("/", async (req, res, next) => {
   var { price, stock, company } = req.body;
-  //const nickname = req.session.passport.user.nickname;
-  const nickname = "컴퓨터공학과 김재윤";
+  const nickname = req.session.passport.user.nickname;
   price = price.replace(/,/g, "");
 
   try {
@@ -28,9 +27,9 @@ router.post("/", async (req, res, next) => {
 
     // 갖고 있는 주식이 팔고 싶은 주식보다 적으면
     if (parseInt(userstock[company]) < parseInt(stock)) {
-      return res.send("매도하려는 주식의 수가 소유 주식보다 많습니다.");
+      return res.write("<script>alert('매도하려는 주식의 수가 소유 주식보다 많습니다.')</script>");
     } else if (!userstock[company]) {
-      return res.send("보유 주식이 없습니다.");
+      return res.write("<script>alert('보유 주식이 없습니다.')</script>");
     } else {
       await GameTable.update(
         {

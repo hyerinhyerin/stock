@@ -8,8 +8,7 @@ const GameTable = require("../models/GameTable");
 router.post("/", async (req, res) => {
   try {
     var { stock, price, company } = req.body;
-    //const nickname = req.session.passport.user.nickname;
-    const nickname = "컴퓨터공학과 김재윤";
+    const nickname = req.session.passport.user.nickname;
     price = price.replace(/,/g, "");
 
     var res_user = await GameTable.findOne({
@@ -18,10 +17,10 @@ router.post("/", async (req, res) => {
     var company_data = await Company.findOne({ where: { num: company } });
 
     if (company > company_data.companystock) {
-      return res.send("해당 주식만큼 회사 주식이 없습니다.");
+      return res.write("<script>alert('해당 주식만큼 회사 주식이 없습니다.')");
     }
     if (Number(price * stock) > res_user.money) {
-      return res.send("유저의 돈이 없습니다. 다시 확인해주세요");
+      return res.write("<script>alert('유저의 돈이 없습니다. 다시 확인해주세요')");
     }
 
     // json 파일 -> key 값이 있을 때

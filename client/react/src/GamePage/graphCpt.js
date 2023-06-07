@@ -668,7 +668,7 @@ const GraphCpt = ({ dataFromNewPanel }) => {
       data[key] = value;
     });
 
-    fetch(`http://localhost:4000/api/sell`, {
+    fetch(`/api/sell`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -702,7 +702,7 @@ const GraphCpt = ({ dataFromNewPanel }) => {
       data[key] = value;
     });
 
-    fetch(`http://localhost:4000/api/buy`, {
+    fetch(`/api/buy`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

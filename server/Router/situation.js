@@ -9,7 +9,6 @@ const random = require("./random");
 router.get("/", async function (req, res, next) {
   try {
     var randomNum = req.query.num;
-    console.log(randomNum);
 
     if (!randomNum) {
       // 상황이 없을 경우 모든 회사가 랜덤으로 주가 변동
@@ -100,7 +99,6 @@ function situationDB(num) {
 
 // 상황에 따른 회사 찾기 기능
 function findDB(DBNum, DBop) {
-  console.log("해당 회사 찾아요", DBNum);
   var afterPrice = 0;
   Company.findOne({
     attributes: ["stockprice"],

@@ -5,6 +5,7 @@ import GraphCpt from "./GamePage/graphCpt";
 import Join from "./Join/Join";
 import GameMain from "./Login after/Start";
 import Main from "./Main/Main";
+import GameOver from "./GamePage/GameOver";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 const App = () => {
@@ -17,6 +18,7 @@ const App = () => {
         <Route path="/graphCpt" element={<GraphCpt />} />
         <Route path="/gamePage" element={<GamePage />} />
         <Route path="/join" element={<Join />} />
+        <Route path="/gameOver" element={<GameOver />} />
       </Routes>
     </Router>
   );

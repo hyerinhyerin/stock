@@ -24,7 +24,6 @@ const Mypage = () => {
   ////back에서 정보 받기
   const getUserData = async () => {
     const userDBData = await axios.get("/api/mypage");
-    console.log("확인 : ", userDBData.data.userData);
     setUserData(userDBData.data.userData);
     setFormData({
       id: userDBData.data.userData.id,
@@ -47,7 +46,6 @@ const Mypage = () => {
 
     try {
       const response = await axios.post("/api/mypage", formData);
-      console.log(response.data);
     } catch (e) {
       console.error(e);
     }

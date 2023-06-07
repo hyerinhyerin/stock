@@ -10,20 +10,23 @@ router.get('/', async function (req, res, next) {
         const nickname = req.session.passport.user.nickname;
         const startTime = new Date(new Date() * 1 + 3600000 * 9).toISOString().replace("T", " ").replace(/\..*/, "");
 
+        const gameTable = await GameTable.findOne({ where: { usernickname: nickname } });
+
+        if (gameTable) {
+            GameTable.destroy({ where: { usernickname: nickname } });
+        }
+
         User.findOne({
             where: { nickname: nickname }
         }).then(result => {
             if (startNum == 1) {
-                console.log("1.");
                 GameTable.create({
                     usernickname: result.nickname,
                     money: result.money,
                     havestock: {},
                     created_at: startTime
                 });
-                res.redirect("/gamePage");
             } else if (startNum == 2) {
-                console.log("2.");
                 GameTable.create({
                     usernickname: result.nickname,
                     money: 1000000,
@@ -31,7 +34,6 @@ router.get('/', async function (req, res, next) {
                     created_at: startTime
                 });
             }
-
         }).catch(err => {
             console.log(err);
         });

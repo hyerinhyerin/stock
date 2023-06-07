@@ -3,11 +3,11 @@ import axios from 'axios';
 import { Link } from "react-router-dom";
 
 const Start1Btn = () => {
-  axios.get("http://localhost:4000/api/startGame", { params: { startNum: 1 } });
+  axios.get("/api/startGame", { params: { startNum: 1 } });
 };
 
 function Start2Btn() {
-  axios.get("http://localhost:4000/api/startGame", { params: { startNum: 2 } });
+  axios.get("/api/startGame", { params: { startNum: 2 } });
 };
 
 const StartPopup = () => {
