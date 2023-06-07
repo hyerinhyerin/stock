@@ -90,6 +90,9 @@ app.use('/api/mypage', mypage);
 const situation = require("./Router/situation");
 app.use('/api/situation', situation);
 
+const gameOver = require("./Router/gameOver");
+app.use('/api/gameOver', gameOver);
+
 // 에러 처리 미들웨어
 app.use((err, req, res, next) => {
   console.error(err);
