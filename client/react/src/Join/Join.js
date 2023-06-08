@@ -1,34 +1,161 @@
-import React,{useEffect, useState} from 'react';
-import JoinComponent from './JoinComponent';
-import Button from '../components/Button';
-import './Join.css';
+import React, { useState } from "react";
+import JoinComponent from "./JoinComponent";
+import "./Join.css";
 
 const Join = () => {
+  const [nickname, setNickname] = useState("");
+  const [id, setId] = useState("");
+  const [message, setMessage] = useState("");
 
-  const btnStyle={
-    position:'absolute',
-    width:'120px',
-    height:'55px',
-    marginTop:'62px',
-    // marginLeft:'30px',
-    right:'62px',
-    // bottom:'60px',
-    border:'1px solid white',
-    backgroundColor:'black',
-    fontSize:'15pt',
-    color:'white',
-  }
-  return(
-      <div className="Join">
-        <form action="/auth/join" method="POST">
-          <JoinComponent name="nickname" JoinP="닉네임" ipType="text"/>
-          <button className='btnstyle'>중복 확인</button>
-          <JoinComponent name="id" JoinP="아이디" ipType="text"/>
-          <button className='btnstyle'>중복 확인</button>
-          <JoinComponent name="pw" JoinP="비밀번호" ipType="password"/>
-          <JoinComponent name="pwcheck" JoinP="비밀번호 확인" ipType="password"/>
-          <JoinComponent name="email" JoinP="이메일" ipType="email"/>
-          <button style={btnStyle}>확인</button>
+  //joincomponent에서 id, nickname 값 받아오기
+  const getData = (name, data) => {
+    if (name === "nickname") {
+      setNickname(data);
+      console.log("nickname : ", nickname);
+    } else if (name === "id") {
+      setId(data);
+      console.log("id : ", id);
+    }
+  };
+
+  const handleNickButtonClick = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("/auth/checknickname", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ nickname: nickname }),
+      });
+      const data = await response.json();
+      if (data.message === "exists") {
+        setMessage("이미 존재하는 닉네임입니다.");
+      } else {
+        setMessage("사용 가능한 닉네임임입니다.");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleIdButtonClick = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("/auth/checkid", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: id }),
+      });
+      const data = await response.json();
+      if (data.message === "exists") {
+        setMessage("이미 존재하는 아이디입니다.");
+      } else {
+        setMessage("사용 가능한 아이디입니다.");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleSignUp = (e) => {
+    const form = e.target;
+    const formData = new FormData(form);
+    const data = {};
+    formData.forEach((value, key) => {
+      data[key] = value;
+    });
+    console.log("data : ", data);
+
+    fetch(`/auth/join`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((responseData) => {
+        // 응답 처리
+        console.log("responseData : ", responseData);
+        if (responseData.redirectUrl) {
+          window.location.href = responseData.redirectUrl;
+        } else {
+          e.preventDefault();
+          setMessage(responseData.message);
+        }
+      })
+      .catch((error) => {
+        // 에러 처리
+        console.error(error);
+      });
+  };
+
+  const btnStyle = {
+    position: "absolute",
+    width: "120px",
+    height: "55px",
+    marginTop: "62px",
+    right: "62px",
+    border: "1px solid white",
+    backgroundColor: "black",
+    fontSize: "15pt",
+    color: "white",
+  };
+  return (
+    <div className="Join">
+      <div className="message" style={{ color: "white" }}>
+        {message}
+      </div>
+      <form onSubmit={handleSignUp}>
+        <JoinComponent
+          name="nickname"
+          JoinP="닉네임"
+          ipType="text"
+          getData={getData}
+        />
+        <button
+          className="btnstyle"
+          type="button"
+          onClick={handleNickButtonClick}
+        >
+          중복 확인
+        </button>
+        <JoinComponent
+          name="id"
+          JoinP="아이디"
+          ipType="text"
+          getData={getData}
+        />
+        <button
+          className="btnstyle"
+          type="button"
+          onClick={handleIdButtonClick}
+        >
+          중복 확인
+        </button>
+        <JoinComponent
+          name="pw"
+          JoinP="비밀번호"
+          ipType="password"
+          getData={getData}
+        />
+        <JoinComponent
+          name="pwcheck"
+          JoinP="비밀번호 확인"
+          ipType="password"
+          getData={getData}
+        />
+        <JoinComponent
+          name="email"
+          JoinP="이메일"
+          ipType="email"
+          getData={getData}
+        />
+        <button type="submit" style={btnStyle}>
+          확인
+        </button>
       </form>
     </div>
   );

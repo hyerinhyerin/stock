@@ -11,13 +11,13 @@ const router = express.Router();
 
 // 아이디 중복검사 라우터
 router.post("/checkid", async (req, res) => {
-  const id = req.id;
+  const id = req.body.id;
   try {
     const idUser = await User.findOne({ where: { id } });
     if (idUser) {
-      alert("이미 존재하는 아이디입니다.");
+      return res.json({ message: "exists" });
     } else {
-      alert("사용 가능한 아이디입니다.");
+      res.json({ message: "non-exists" });
     }
   } catch (err) {
     console.log(err);
@@ -26,13 +26,13 @@ router.post("/checkid", async (req, res) => {
 
 // 닉네임 중복검사 라우터
 router.post("/checknickname", async (req, res) => {
-  const nickname = req.nickname;
+  const nickname = req.body.nickname;
   try {
     const idUser = await User.findOne({ where: { nickname } });
     if (idUser) {
-      alert("이미 존재하는 닉네임입니다.");
+      return res.json({ message: "exists" });
     } else {
-      alert("사용 가능한 닉네임입니다.");
+      return res.json({ message: "non-exists" });
     }
   } catch (err) {
     console.log(err);
@@ -45,8 +45,8 @@ router.post("/join", isNotLoggedIn, async (req, res, next) => {
   try {
     const exUser = await User.findOne({ where: { id } });
     if (exUser) {
-      alert("이미 존재하는 유저 아이디 입니다.");
-      return res.redirect("/auth"); // 회원가입페이지로 리로드
+      return res.json({ message: "이미 존재하는 유저 아이디입니다." });
+      // return res.redirect("/auth"); // 회원가입페이지로 리로드
     } else {
       const hash = await bcrypt.hash(pw, 12);
       const random = Math.floor(Math.random() * 100000000);
@@ -59,6 +59,7 @@ router.post("/join", isNotLoggedIn, async (req, res, next) => {
         snsId: random,
         provider: "local",
       });
+      console.log("여까지는 옴");
       return res.redirect("/");
     }
   } catch (err) {
