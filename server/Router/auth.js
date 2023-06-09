@@ -59,8 +59,7 @@ router.post("/join", isNotLoggedIn, async (req, res, next) => {
         snsId: random,
         provider: "local",
       });
-      console.log("여까지는 옴");
-      return res.redirect("/");
+      return res.json({ redirectTo: "/" });
     }
   } catch (err) {
     console.error(err);

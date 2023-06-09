@@ -9,14 +9,18 @@ const Start = (props) => {
   const [userData, setUserData] = useState({});
   const [rankData, setRankData] = useState({});
   const [formData, setFormData] = useState({
-    id: '',
-    nickname: '',
-    email: ''
+    id: "",
+    nickname: "",
+    email: "",
   });
 
   const getUserData = async () => {
     const userDBData = await axios.get("/api/mypage");
-    setUserData(userDBData.data.userData);
+    // sessionData에서 money 값을 가져와서 천 단위 구분 기호를 포함한 형태로 변경합니다.
+    const formattedMoney = userDBData.data.userData.money.toLocaleString();
+
+    setUserData({ ...userDBData.data.userData, money: formattedMoney });
+
     setFormData({
       nickname: userDBData.data.userData.nickname,
       money: userDBData.data.userData.money,
@@ -27,7 +31,7 @@ const Start = (props) => {
   const getRank = async () => {
     const rankDB = await axios.get("/api/mypage/rank");
     setRankData(rankDB.data);
-  }
+  };
 
   useEffect(() => {
     getUserData();
@@ -79,19 +83,21 @@ const Start = (props) => {
           <p className="P2"> 랭킹 순위 </p>
           <p className="P2"> {rank}</p>
         </div>
-        <button style={btnlogout} onClick={LogoutBtn}>로그아웃</button>
+        <button style={btnlogout} onClick={LogoutBtn}>
+          로그아웃
+        </button>
       </div>
       <button style={btnStyle} onClick={() => setViewPopup(true)}>
         게임 시작
       </button>
       {/* <Button btnText={'게임 시작'} btnStyle={btnStyle}/> */}
       {viewPopup ? <StartPopup /> : ""}
-    </div >
+    </div>
   );
 };
 
 function LogoutBtn() {
-  window.location.href = "http://localhost:4000/auth/logout"
+  window.location.href = "http://localhost:4000/auth/logout";
 }
 
 export default Start;

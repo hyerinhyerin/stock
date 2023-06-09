@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import JoinComponent from "./JoinComponent";
 import "./Join.css";
 
@@ -6,6 +7,9 @@ const Join = () => {
   const [nickname, setNickname] = useState("");
   const [id, setId] = useState("");
   const [message, setMessage] = useState("");
+
+  const navigate = useNavigate();
+  const [redirectTo, setRedirectTo] = useState(null);
 
   //joincomponent에서 id, nickname 값 받아오기
   const getData = (name, data) => {
@@ -61,6 +65,7 @@ const Join = () => {
   };
 
   const handleSignUp = (e) => {
+    e.preventDefault();
     const form = e.target;
     const formData = new FormData(form);
     const data = {};
@@ -69,18 +74,23 @@ const Join = () => {
     });
     console.log("data : ", data);
 
-    fetch(`/auth/join`, {
+    fetch("/auth/join", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
     })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
       .then((responseData) => {
         // 응답 처리
-        console.log("responseData : ", responseData);
-        if (responseData.redirectUrl) {
-          window.location.href = responseData.redirectUrl;
+        if (responseData.redirectTo) {
+          setRedirectTo(responseData.redirectTo);
         } else {
           e.preventDefault();
           setMessage(responseData.message);
@@ -91,6 +101,10 @@ const Join = () => {
         console.error(error);
       });
   };
+
+  if (redirectTo) {
+    return <> {navigate(redirectTo)} </>;
+  }
 
   const btnStyle = {
     position: "absolute",

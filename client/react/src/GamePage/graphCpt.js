@@ -45,7 +45,13 @@ const GraphCpt = ({ dataFromNewPanel }) => {
     const sessionAxios = async () => {
       const sessionData = await axios.get("/api/session");
       console.log("session 정보 : ", sessionData.data.sessionUser);
-      setUserInfo(sessionData.data.sessionUser);
+
+      // sessionData에서 money 값을 가져와서 천 단위 구분 기호를 포함한 형태로 변경합니다.
+      const formattedMoney = sessionData.data.sessionUser.money.toLocaleString();
+
+      // 변경된 money 값을 포함하여 userInfo를 업데이트합니다.
+      setUserInfo({ ...sessionData.data.sessionUser, money: formattedMoney });
+      console.log("session 정보 : ", sessionData.data.sessionUser);
       setHoldingStock(sessionData.data.sessionUser.havestock); // 변경: havestock을 가져와 holdingStock state에 저장
     };
     sessionAxios();
@@ -473,7 +479,7 @@ const GraphCpt = ({ dataFromNewPanel }) => {
     marginBottom: "30px",
   };
 
-  const sellPopupInnerDivFlex = {
+  const buyPopupInnerDivFlex = {
     display: "flex",
     alignItems: "center",
     flexDirection: "row",
@@ -485,6 +491,20 @@ const GraphCpt = ({ dataFromNewPanel }) => {
     height: "44px",
     border: "1px solid white",
     marginBottom: "30px",
+  };
+
+  const sellPopupInnerDivFlex = {
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "row",
+    position: "relative",
+    left: "50%",
+    transform: "translate(-50%)",
+    marginTop: "0",
+    width: "300px",
+    height: "44px",
+    border: "1px solid white",
+    marginBottom: "20px",
   };
 
   const sellPopupPMBtn = {
@@ -681,7 +701,11 @@ const GraphCpt = ({ dataFromNewPanel }) => {
         selectedCompany[29].stockCount =
           parseInt(responseData.stock) +
           parseInt(selectedCompany[29].stockCount);
-        setUserInfo(responseData.gamingUser);
+        // sessionData에서 money 값을 가져와서 천 단위 구분 기호를 포함한 형태로 변경합니다.
+        const formattedMoney = responseData.gamingUser.money.toLocaleString();
+
+        // 변경된 money 값을 포함하여 userInfo를 업데이트합니다.
+        setUserInfo({ ...responseData.gamingUser, money: formattedMoney });
         setHoldingStock(responseData.gamingUser.havestock);
         handleCloseSellBtn();
       })
@@ -715,7 +739,11 @@ const GraphCpt = ({ dataFromNewPanel }) => {
         selectedCompany[29].stockCount =
           parseInt(selectedCompany[29].stockCount) -
           parseInt(responseData.stock);
-        setUserInfo(responseData.gamingUser);
+        // sessionData에서 money 값을 가져와서 천 단위 구분 기호를 포함한 형태로 변경합니다.
+        const formattedMoney = responseData.gamingUser.money.toLocaleString();
+
+        // 변경된 money 값을 포함하여 userInfo를 업데이트합니다.
+        setUserInfo({ ...responseData.gamingUser, money: formattedMoney });
         setHoldingStock(responseData.gamingUser.havestock);
         handleCloseBuyBtn();
       })
@@ -943,7 +971,7 @@ const GraphCpt = ({ dataFromNewPanel }) => {
           </button>
           <form onSubmit={handleBuySubmit}>
             <p style={{ color: "white", marginTop: "40px" }}>지정가</p>
-            <div style={sellPopupInnerDivFlex}>
+            <div style={buyPopupInnerDivFlex}>
               <button
                 type="button"
                 style={sellPopupPMBtn}
@@ -1007,7 +1035,7 @@ const GraphCpt = ({ dataFromNewPanel }) => {
                 readOnly
               />
             </div>
-            <div style={sellPopupInnerDivFlex}>
+            <div style={buyPopupInnerDivFlex}>
               <span style={{ color: "white", marginLeft: "10px" }}>
                 주문금액
               </span>
