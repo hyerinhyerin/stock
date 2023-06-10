@@ -66,7 +66,7 @@ const Start = (props) => {
       </div>
       <Link to="/mypage">
         <div className="circle">
-          <img className="profileImg" src={"profile_2.png"}></img>
+          <img className="profileImg" src={"profile_" + (userData.img + 2) + ".png"}></img>
         </div>
       </Link>
       <div className="balloon">

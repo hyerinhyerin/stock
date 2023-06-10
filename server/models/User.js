@@ -36,6 +36,9 @@ module.exports = class User extends (
           type: Sequelize.STRING(100),
           allowNull: false,
         },
+        img: {
+          type: Sequelize.INTEGER()
+        }
       },
       {
         sequelize,

@@ -58,6 +58,7 @@ router.post("/join", isNotLoggedIn, async (req, res, next) => {
         money: 1000000,
         snsId: random,
         provider: "local",
+        img: 0
       });
       return res.redirect("/");
     }

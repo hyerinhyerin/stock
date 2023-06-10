@@ -51,14 +51,36 @@ router.get('/rank', async (req, res) => { // 보유자산 순위
 router.delete('/', async (req, res) => {
     try {
         const nickname = req.session.passport.user.nickname;
-        console.log(nickname);
 
         User.destroy({ where: { nickname: nickname } })
             .then(() => {
-                console.log("탈퇴하였습니다.");
                 req.logout();
                 req.session.destroy();
             });
+    } catch (err) {
+        res.send(err);
+    }
+})
+
+router.get('/img', async (req, res) => {
+    try {
+        const nickname = req.session.passport.user.nickname;
+
+        const img = await User.findOne({ attributes: ["img"], where: { nickname: nickname } });
+        res.json({ img: img.img });
+    } catch (err) {
+        res.send(err);
+    }
+})
+
+router.post('/img', async (req, res) => {
+    try {
+        const nickname = req.session.passport.user.nickname;
+        const imgNum = req.query.imgNum;
+
+        await User.update({
+            img: Number(imgNum) - 1
+        }, { where: { nickname: nickname } });
     } catch (err) {
         res.send(err);
     }
