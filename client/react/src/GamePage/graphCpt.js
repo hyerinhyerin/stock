@@ -16,6 +16,8 @@ import {
   Tooltip,
   Cell,
 } from "recharts";
+import GameOver from "./GameOver";
+import LimitAlert from "./LimitAlert";
 
 const backfun = require("../backFun/random");
 
@@ -30,6 +32,7 @@ const GraphCpt = ({ dataFromNewPanel }) => {
   const [time, setTime] = useState("20:00");
   const [color, setColor] = useState("white");
   const [gameTime, setGameTime] = useState(0);
+  const [stopView, setStopView]=useState(false);
 
   const [price, setPrice] = useState(0);
   const [isDiv1Visible, setIsDiv1Visible] = useState(false);
@@ -256,7 +259,7 @@ const GraphCpt = ({ dataFromNewPanel }) => {
       await updateCompanies();
     }, 10000);
 
-    if (gameTime >= 119) {
+    if (gameTime >= 119) { 
       // 게임 시간인 20분 10초 * 120번 = 1200초 -> 20분 되면 그래프 멈춤
       clearInterval(intervalId);
     }
@@ -691,6 +694,19 @@ const GraphCpt = ({ dataFromNewPanel }) => {
       });
   };
 
+  //매수 버튼 클릭시 주문금액과 자산을 비교해 매수 가능한지 확인
+  const handleBuyCheck=()=>{
+    console.log("buybuttonclick");
+    if((parseInt(price) * parseInt(count))>userInfo.money)
+    {
+      setStopView(true);
+      console.log(stopView);
+      setTimeout(() => {
+        setStopView(false);
+      }, 3000);
+    }
+  };
+
   // 매수 데이터 처리 함수
   const handleBuySubmit = async (event) => {
     event.preventDefault();
@@ -754,6 +770,7 @@ const GraphCpt = ({ dataFromNewPanel }) => {
     const textStyle = {
       fontSize: 12, // 원하는 크기로 설정
     };
+
     return (
       <g transform={`translate(${x},${y})`}>
         <text
@@ -1037,9 +1054,11 @@ const GraphCpt = ({ dataFromNewPanel }) => {
                   fontSize: "25px",
                   marginLeft: "10px",
                 }}
+                onClick={handleBuyCheck}
               >
                 매수
               </button>
+              {stopView && <LimitAlert />}
             </div>
           </form>
         </div>
@@ -1154,6 +1173,7 @@ const GraphCpt = ({ dataFromNewPanel }) => {
           </form>
         </div>
       )}
+      {gameTime >=119 ? <GameOver/> : ""} 
     </div>
   );
 };

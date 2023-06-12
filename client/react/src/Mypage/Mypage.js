@@ -6,7 +6,6 @@ import Drop from "./Drop";
 // import {Mobile, PC} from '../components/Responsive';
 // import StartPopup from "../Login after/StartPopup";
 import axios from "axios";
-
 const Mypage = () => {
   //탈퇴창 view 여부
   const [viewDrop, setViewDrop] = useState(false);

@@ -6,7 +6,8 @@ class JoinComponent extends Component{
         super(props);
         this.state={
             name:'',
-            value:''
+            value:'',
+            inputValue:''
         }
     }
     static propTypes={
@@ -14,15 +15,19 @@ class JoinComponent extends Component{
         ipType:PropTypes.string.isRequired
     };
     
-    
+    //input 값 받기 
+    handleInputChange=(e)=>{
+        this.setState({inputValue:e.target.value});
+    };
     
     
     render() {
-        const {JoinP, ipType, name, readTF}=this.props;
+        const {JoinP, ipType, name, getData}=this.props;
+        const {inputValue}=this.state;
         return (
              <div>
                 <p className="joinp">{JoinP}</p>
-                <input name={name} type={ipType} required readOnly={readTF}></input>
+                <input name={name} type={ipType} value={inputValue} onChange={this.handleInputChange} getData={getData(name,inputValue)} required></input>
              </div>
         );
     }

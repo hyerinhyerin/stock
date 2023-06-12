@@ -7,7 +7,9 @@ const GameOver = (props) => {
   return (
     <div className="popupDiv">
       <p className="overP">Game Over</p>
-      <button className="rankBtn">랭킹보기</button>
+      <Link to="/rank">
+        <button className="rankBtn">랭킹보기</button>
+      </Link>
     </div>
   );
 };
