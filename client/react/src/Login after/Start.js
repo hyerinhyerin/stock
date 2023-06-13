@@ -4,6 +4,7 @@ import StartPopup from "./StartPopup";
 import Graph from "./randomGraph";
 import axios from "axios";
 import "./Start.css";
+
 const Start = (props) => {
   const [viewPopup, setViewPopup] = useState(false);
   const [userData, setUserData] = useState({});
