@@ -36,6 +36,7 @@ module.exports = () => {
               money: 1000000,
               snsId: profile.id,
               provider: "github",
+              img: 0,
             });
             const tokenUser = {
               user: newUser,

@@ -79,8 +79,8 @@ router.post("/github", passport.authenticate("github"));
 
 router.get(
   "/github/callback",
-  passport.authenticate("github", { failureRedirect: "/" }),
-  (req, res) => res.redirect("/")
+  passport.authenticate("github", { failureRedirect: "http://localhost:3000" }),
+  (req, res) => res.redirect("http://localhost:3000/gameMain")
 );
 
 // local 로그인 라우터
@@ -96,12 +96,12 @@ router.get(
   "/kakao/callback",
   //? 그리고 passport 로그인 전략에 의해 kakaoStrategy로 가서 카카오계정 정보와 DB를 비교해서 회원가입시키거나 로그인 처리하게 한다.
   passport.authenticate("kakao", {
-    failureRedirect: "/", // kakaoStrategy에서 실패한다면 실행
+    failureRedirect: "http://localhost:3000", // kakaoStrategy에서 실패한다면 실행
   }),
   // kakaoStrategy에서 성공한다면 콜백 실행
   (req, res) => {
     // return res.status(200).json({ kakaoLogin: true });
-    res.redirect("/");
+    res.redirect("http://localhost:3000/gameMain");
   }
 );
 
@@ -115,9 +115,9 @@ router.get(
 //? 위에서 구글 서버 로그인이 되면, 네이버 redirect url 설정에 따라 이쪽 라우터로 오게 된다. 인증 코드를 박게됨
 router.get(
   "/google/callback",
-  passport.authenticate("google", { failureRedirect: "/" }), //? 그리고 passport 로그인 전략에 의해 googleStrategy로 가서 구글계정 정보와 DB를 비교해서 회원가입시키거나 로그인 처리하게 한다.
+  passport.authenticate("google", { failureRedirect: "http://localhost:3000" }), //? 그리고 passport 로그인 전략에 의해 googleStrategy로 가서 구글계정 정보와 DB를 비교해서 회원가입시키거나 로그인 처리하게 한다.
   (req, res) => {
-    res.redirect("/");
+    res.redirect("http://localhost:3000/gameMain");
   }
 );
 
@@ -126,8 +126,6 @@ router.get("/logout", isLoggedIn, async (req, res) => {
   try {
     const ACCESS_TOKEN = req.user.accessToken;
     if (ACCESS_TOKEN) {
-      console.log("nickname위치", req.session.passport.user.nickname);
-
       let logout = await axios({
         method: "post",
         url: "https://kapi.kakao.com/v1/user/unlink",
@@ -143,6 +141,7 @@ router.get("/logout", isLoggedIn, async (req, res) => {
   // 세션 정리
   req.logout();
   req.session.destroy();
+  console.log("로그아웃 후 ", req.session);
 
   res.redirect("http://localhost:3000"); // 로그아웃시 보낼 주소
 });

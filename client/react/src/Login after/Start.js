@@ -17,6 +17,7 @@ const Start = (props) => {
 
   const getUserData = async () => {
     const userDBData = await axios.get("/api/mypage");
+    console.log(userDBData);
     // sessionData에서 money 값을 가져와서 천 단위 구분 기호를 포함한 형태로 변경합니다.
     const formattedMoney = userDBData.data.userData.money.toLocaleString();
 
@@ -78,7 +79,7 @@ const Start = (props) => {
         <p className="P1">내 정보</p>
         <div className="P_div">
           <p className="P2">닉네임 </p>
-          <p className="P2"> {userData.id} </p>
+          <p className="P2"> {userData.nickname} </p>
           <p className="P2"> 총 자산 </p>
           <p className="P2"> {userData.money}</p>
           <p className="P2"> 랭킹 순위 </p>

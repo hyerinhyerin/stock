@@ -7,7 +7,9 @@ const GameTable = require('../models/GameTable');
 router.get('/', async function (req, res, next) {
     try {
         const startNum = req.query.startNum;
-        const nickname = req.session.passport.user.nickname;
+        const id = req.session.passport.user.id;
+        const user = await User.findOne({ attributes: ["nickname"], where: { id: id } });
+        const nickname = user.nickname;
         const startTime = new Date(new Date() * 1 + 3600000 * 9).toISOString().replace("T", " ").replace(/\..*/, "");
 
         const gameTable = await GameTable.findOne({ where: { usernickname: nickname } });
