@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState, useRef, useCallback } from "react";
+import GameOver from "./GameOver";
 import { connect } from "react-redux";
 import btnImg from "../img/btn.png";
 import backBtnImg from "../img/backBtn.png";
@@ -29,7 +30,6 @@ const GraphCpt = ({ dataFromNewPanel }) => {
   const [holdingStock, setHoldingStock] = useState(null);
   const [time, setTime] = useState("20:00");
   const [color, setColor] = useState("white");
-  const [gameTime, setGameTime] = useState(0);
 
   const [price, setPrice] = useState(0);
   const [isDiv1Visible, setIsDiv1Visible] = useState(false);
@@ -255,20 +255,32 @@ const GraphCpt = ({ dataFromNewPanel }) => {
     setRealGroupedCompanies(newCompanies);
   }, [setRealGroupedCompanies, realGroupedCompanies, dataFromNewPanel]);
 
+  // 타이머 식별자를 저장할 변수
+  let timerId = null;
+
   // 새로운 데이터를 일정시간마다 realGroupedCompanies state에 추가
   useEffect(() => {
-    const intervalId = setInterval(async () => {
-      setGameTime((prevTime) => prevTime + 1); // 데이터 업데이트마다 타임 증가
-      await updateCompanies();
-    }, 10000);
-
-    if (gameTime >= 119) {
-      // 게임 시간인 20분 10초 * 120번 = 1200초 -> 20분 되면 그래프 멈춤
-      clearInterval(intervalId);
+    // 이전 타이머 정리
+    if (timerId) {
+      clearInterval(timerId);
     }
 
-    return () => clearInterval(intervalId);
-  }, [updateCompanies, gameTime]);
+    timerId = setInterval(async () => {
+      await updateCompanies();
+    }, 9000);
+
+    if (time == "00:00") {
+      // 게임 시간인 20분 10초 * 120번 = 1200초 -> 20분 되면 그래프 멈춤
+      clearInterval(timerId);
+    }
+
+    return () => clearInterval(timerId);
+  }, [
+    updateCompanies,
+    updateCompanies,
+    realGroupedCompanies,
+    dataFromNewPanel,
+  ]);
 
   // 타이머
   useEffect(() => {
@@ -810,6 +822,7 @@ const GraphCpt = ({ dataFromNewPanel }) => {
 
   return (
     <div style={{ margin: "0" }}>
+      {time == "00:00" && <GameOver />}
       <button onClick={handleButtonClick} style={companiesSelectBtn}>
         {isButtonMoved ? (
           <img src={backBtnImg} style={{ width: "22px" }} />
