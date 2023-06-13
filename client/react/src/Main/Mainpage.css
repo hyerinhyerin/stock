@@ -186,3 +186,169 @@ body{
     text-align: center;
     position: relative;
 } */
+
+
+/* *{margin :0; padding:0; box-sizing: border-box;}
+
+body {
+  font-family: 'Arita4.0', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image: url(/client/react/public/mainbd.png);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+  background-color: black;
+  padding-top: 90px;
+}
+
+.Main-page
+{
+  position: relative; z-index: 2;
+}
+
+.int-area{
+  width: 370px;
+  position: relative;
+  padding-top: 10px;
+}
+
+
+.int-area input {
+  width: 100%;
+  padding: 20px 10px 10px;
+  margin-top: 55px;
+  background-color: transparent;
+  border: none;
+  border-bottom: 1px solid #999;
+  font-size: 17px; color: #fff;
+  outline: none;
+}
+
+.button-area {margin-top: 82px; margin-left:60px;}
+
+.button-area button
+{
+ width: 40%; height: 35px;
+ border: none;
+ border-radius: 25px;
+ background: #c5c1c2;
+ color: #ba2649;
+ font-size: 13px;
+ cursor : pointer
+}
+
+.caption a {
+  margin-top: 80px;
+  font-size: 15px; color: #999;
+  text-decoration: none;
+}
+
+.fiction h3 {
+  color:  #ba2649;
+  position: absolute;
+  right: 25px;
+  margin-top: 200px;
+}
+
+.ver h3 {
+  color: #ba2649;
+  position: absolute;
+  left: 25px;
+  margin-top: 200px;
+}
+
+.modal {
+  position: fixed;
+  background-color: rgba(0, 0, 0, 0.4);
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 2500px;
+  display: none;
+}
+.modal-content {
+  background-color: #fff;
+  width: 500px;
+  border-radius: 10px;
+  position: absolute;
+  top: 50%;
+  left: 10%;
+  transform: translate(50%, -50%);
+  padding: 40px;
+  box-shadow: 0,0,15px,white;
+  text-align: center;
+}
+
+.close {
+  position: absolute;
+  top: 5px;
+  right: 15px;
+}
+
+.caption a {
+  margin-top: 8px;
+  font-size: 15px;
+  color: #999;
+  text-decoration: none;
+}
+
+.modal-content input {
+  width: 80%;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  border: none;
+  border-bottom: 1px solid #999;
+  font-size: 15px; color: #fff;
+  outline: none;
+}
+
+
+.next {
+  background-color: #ba2649;
+  color: white;
+  border-radius: 5px;
+  font-size: 14px;
+  padding: 7px;
+  width: 150px;
+  display: block;
+  margin-left: 150px;
+}
+
+
+
+/*
+.ver h3 {
+  color: #ba2649;
+  position: absolute;
+  left: 25px;
+  margin-top: 130px;
+}
+
+.fiction h3 {
+  color: #ba2649;
+  position: absolute;
+  right: 25px;
+  margin-top: 130px;
+}
+
+.img-area {
+  padding-left: 135px;
+  padding-top: 20px;
+
+}
+
+.img-area img{
+    width: 6%;
+    height: 6%;
+}
+ */
+
+/* .api-area {
+    margin-top: 10px;
+    padding-bottom: 10px;
+    padding-top: 20px;
+    text-align: center;
+    position: relative;
+} */  
