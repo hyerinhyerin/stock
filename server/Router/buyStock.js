@@ -3,13 +3,18 @@ const router = express.Router();
 const Company = require("../models/Company");
 const sequelize = require("../models").sequelize;
 const GameTable = require("../models/GameTable");
+const User = require("../models/User");
+const { where } = require("sequelize");
 
 // 주식 사는 기능(매수)
 router.post("/", async (req, res) => {
   try {
     var { stock, price, company } = req.body;
-    const nickname = req.session.passport.user.nickname;
+    const id = req.session.passport.user.id;
     price = price.replace(/,/g, "");
+
+    const user = await User.findOne({ attributes: ["nickname"], where: { id: id } });
+    const nickname = user.nickname;
 
     var res_user = await GameTable.findOne({
       where: { usernickname: nickname },

@@ -58,7 +58,7 @@ router.post("/join", isNotLoggedIn, async (req, res, next) => {
         money: 1000000,
         snsId: random,
         provider: "local",
-        img: 0,
+        img: 0
       });
       return res.json({ redirectTo: "/" });
     }
@@ -124,12 +124,8 @@ router.get(
 // 로그아웃 라우터
 router.get("/logout", isLoggedIn, async (req, res) => {
   try {
-    console.log("nickname위치1", req.session.passport.user.nickname);
     const ACCESS_TOKEN = req.user.accessToken;
-    console.log("ACCESS_TOKEN", req.session);
     if (ACCESS_TOKEN) {
-      console.log("nickname위치2", req.session.passport.user.nickname);
-
       let logout = await axios({
         method: "post",
         url: "https://kapi.kakao.com/v1/user/unlink",
@@ -145,8 +141,7 @@ router.get("/logout", isLoggedIn, async (req, res) => {
   // 세션 정리
   req.logout();
   req.session.destroy();
-
-  console.log("파괴후 : ", req.session);
+  console.log("로그아웃 후 ", req.session);
 
   res.redirect("http://localhost:3000"); // 로그아웃시 보낼 주소
 });
