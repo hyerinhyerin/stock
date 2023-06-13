@@ -14,10 +14,12 @@ router.post("/checkid", async (req, res) => {
   const id = req.body.id;
   try {
     const idUser = await User.findOne({ where: { id } });
-    if (idUser) {
+    if (!id) {
+      return res.json({ message: null });
+    } else if (idUser) {
       return res.json({ message: "exists" });
     } else {
-      res.json({ message: "non-exists" });
+      return res.json({ message: "non-exists" });
     }
   } catch (err) {
     console.log(err);
@@ -27,9 +29,12 @@ router.post("/checkid", async (req, res) => {
 // 닉네임 중복검사 라우터
 router.post("/checknickname", async (req, res) => {
   const nickname = req.body.nickname;
+  console.log("nickname : ", req.body.nickname);
   try {
     const idUser = await User.findOne({ where: { nickname } });
-    if (idUser) {
+    if (!nickname) {
+      return res.json({ message: null });
+    } else if (idUser) {
       return res.json({ message: "exists" });
     } else {
       return res.json({ message: "non-exists" });
@@ -58,7 +63,7 @@ router.post("/join", isNotLoggedIn, async (req, res, next) => {
         money: 1000000,
         snsId: random,
         provider: "local",
-        img: 0
+        img: 0,
       });
       return res.json({ redirectTo: "/" });
     }
@@ -141,7 +146,6 @@ router.get("/logout", isLoggedIn, async (req, res) => {
   // 세션 정리
   req.logout();
   req.session.destroy();
-  console.log("로그아웃 후 ", req.session);
 
   res.redirect("http://localhost:3000"); // 로그아웃시 보낼 주소
 });

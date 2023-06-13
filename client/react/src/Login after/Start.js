@@ -19,6 +19,7 @@ const Start = (props) => {
     const userDBData = await axios.get("/api/mypage");
     console.log(userDBData);
     // sessionData에서 money 값을 가져와서 천 단위 구분 기호를 포함한 형태로 변경합니다.
+    console.log("userDBData : ", userDBData);
     const formattedMoney = userDBData.data.userData.money.toLocaleString();
 
     setUserData({ ...userDBData.data.userData, money: formattedMoney });
@@ -72,7 +73,10 @@ const Start = (props) => {
       </div>
       <Link to="/mypage">
         <div className="circle">
-          <img className="profileImg" src={"profile_" + (userData.img + 2) + ".png"}></img>
+          <img
+            className="profileImg"
+            src={"profile_" + (userData.img + 2) + ".png"}
+          ></img>
         </div>
       </Link>
       <div className="balloon">

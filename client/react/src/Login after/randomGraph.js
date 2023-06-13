@@ -21,7 +21,6 @@ const GraphCpt = () => {
   useEffect(() => {
     const axiosData = async () => {
       const companys = await axios.get("/api/chart"); // 데베에서 여러개의 회사 정보 가져오기
-      console.log("데베에서 받아온 초기 데이터 : ", companys.data.companys);
 
       // 데베에서 가져온 1차 회사데이터 차트에 쓸 양식에 맞게 변환 useEffect
       const newStockDataArr = companys.data.companys.map((company) => {
@@ -35,8 +34,9 @@ const GraphCpt = () => {
         const bsopDate = new Date(
           startDate.getTime() + newIdx * 24 * 60 * 60 * 1000
         ); // stck_bsop_date를 계산하여 날짜 설정
-        const formattedDate = `${bsopDate.getMonth() + 1
-          }/${bsopDate.getDate()}`;
+        const formattedDate = `${
+          bsopDate.getMonth() + 1
+        }/${bsopDate.getDate()}`;
         let stck_oprc = 50000; // 종가
         let acml_vol = 50; // 거래량
         let prdy_vrss_sign = 0; // 음봉 양봉 기준
@@ -170,7 +170,7 @@ const GraphCpt = () => {
         return newDataArray;
       });
       const companyPriceUpdate = async () => {
-        await axios.post("/api/curentdata", newCompanies).then((res) => { });
+        await axios.post("/api/curentdata", newCompanies).then((res) => {});
       };
       companyPriceUpdate();
       return newCompanies;
@@ -235,20 +235,6 @@ const GraphCpt = () => {
               );
             })}
           </Bar>
-          {/* <Bar
-            dataKey={(data) => {
-              const range = [data.stck_high, data.stck_low];
-              return range;
-            }}
-            fill="#E94560"
-            barSize={20}
-          >
-            {selectedCompany.map((data) => {
-              return (
-                <Cell fill={data.prdy_vrss_sign > 3 ? "#006DEE" : "#E94560"} />
-              );
-            })}
-          </Bar> */}
         </BarChart>
 
         <BarChart

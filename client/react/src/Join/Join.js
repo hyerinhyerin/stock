@@ -33,7 +33,9 @@ const Join = () => {
         body: JSON.stringify({ nickname: nickname }),
       });
       const data = await response.json();
-      if (data.message === "exists") {
+      if (!data.message) {
+        setMessage("닉네임을 입력해주세요.");
+      } else if (data.message === "exists") {
         setMessage("이미 존재하는 닉네임입니다.");
       } else {
         setMessage("사용 가능한 닉네임임입니다.");
@@ -54,7 +56,9 @@ const Join = () => {
         body: JSON.stringify({ id: id }),
       });
       const data = await response.json();
-      if (data.message === "exists") {
+      if (!data.message) {
+        setMessage("아이디을 입력해주세요.");
+      } else if (data.message === "exists") {
         setMessage("이미 존재하는 아이디입니다.");
       } else {
         setMessage("사용 가능한 아이디입니다.");

@@ -8,6 +8,7 @@ import upImg from "../img/up.png";
 import downImg from "../img/down.png";
 import { CSSTransition } from "react-transition-group";
 import "./cssTransition.css";
+import LimitAlert from "./LimitAlert";
 import {
   BarChart,
   Bar,
@@ -30,6 +31,7 @@ const GraphCpt = ({ dataFromNewPanel }) => {
   const [holdingStock, setHoldingStock] = useState(null);
   const [time, setTime] = useState("20:00");
   const [color, setColor] = useState("white");
+  const [stopView, setStopView] = useState(false);
 
   const [price, setPrice] = useState(0);
   const [isDiv1Visible, setIsDiv1Visible] = useState(false);
@@ -44,14 +46,12 @@ const GraphCpt = ({ dataFromNewPanel }) => {
   useEffect(() => {
     const sessionAxios = async () => {
       const sessionData = await axios.get("/api/session");
-      console.log("session 정보 : ", sessionData.data.sessionUser);
 
       // sessionData에서 money 값을 가져와서 천 단위 구분 기호를 포함한 형태로 변경합니다.
       const formattedMoney = sessionData.data.sessionUser.money.toLocaleString();
 
       // 변경된 money 값을 포함하여 userInfo를 업데이트합니다.
       setUserInfo({ ...sessionData.data.sessionUser, money: formattedMoney });
-      console.log("session 정보 : ", sessionData.data.sessionUser);
       setHoldingStock(sessionData.data.sessionUser.havestock); // 변경: havestock을 가져와 holdingStock state에 저장
     };
     sessionAxios();
@@ -689,6 +689,18 @@ const GraphCpt = ({ dataFromNewPanel }) => {
     setIsDiv3Visible(false);
   };
 
+  // 매수 버튼 클릭시 주문 금액과 자신을 비교해 매수 가능한지 확인
+  const handleBuyCheck = () => {
+    console.log("buybuttonclcik : ", userInfo.money);
+    if (parseInt(price) * parseInt(count) > parseInt(userInfo.money)) {
+      setStopView(true);
+      console.log(stopView);
+      setTimeout(() => {
+        setStopView(false);
+      }, 3000);
+    }
+  };
+
   // 매도 데이터 처리 함수
   const handleSellSubmit = async (event) => {
     event.preventDefault();
@@ -1078,9 +1090,11 @@ const GraphCpt = ({ dataFromNewPanel }) => {
                   fontSize: "25px",
                   marginLeft: "10px",
                 }}
+                onClick={handleBuyCheck}
               >
                 매수
               </button>
+              {stopView && <LimitAlert />}
             </div>
           </form>
         </div>
