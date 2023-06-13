@@ -1,22 +1,22 @@
-@font-face{
+@font-face {
   font-family: "AritaB";
-  src: url('../font/Arita4.0_B.ttf');
+  src: url("../font/Arita4.0_B.ttf");
 }
 
-body{
+body {
   overflow: hidden;
 }
 
-#body_div{
+#body_div {
   font-family: "AritaB", sans-serif;
-  display: flex;  
+  display: flex;
   align-items: center;
   background-attachment: fixed;
   background-position: center;
   position: relative;
 }
 
-#body_img{
+#body_img {
   background-image: url(../../public/mainbd.png);
   background-attachment: fixed;
   background-position: center;
@@ -25,12 +25,11 @@ body{
   height: 500px;
   z-index: 1;
   opacity: 0.5;
-} 
+}
 
 .Mainpage {
   margin-top: -415px;
   z-index: 2;
-  
 }
 
 .int-area {
@@ -88,55 +87,55 @@ body{
   margin-top: 205px;
 }
 
-#btn{
+#btn {
   outline: 1px solid;
-    border: 0;
-    background: none;
-    color: white;
-    width: 130px;
-    height: 35px;
-    font-size: 20px;
+  border: 0;
+  background: none;
+  color: white;
+  width: 130px;
+  height: 35px;
+  font-size: 20px;
 }
 
-#btnn{
+#btnn {
   outline: 1px solid;
-    border: 0;
-    background: none;
-    color: white;
-    width: 130px;
-    height: 35px;
-    font-size: 20px;
+  border: 0;
+  background: none;
+  color: white;
+  width: 130px;
+  height: 35px;
+  font-size: 20px;
 }
 
-.button-area-circle{
+.button-area-circle {
   display: flex;
   justify-content: space-evenly;
   flex-direction: row;
   margin-top: -135px;
 }
 
-.bt_circle{
+.bt_circle {
   margin-top: 15px;
   width: 50px;
   height: 50px;
   border-radius: 50%;
 }
 
-#bt_ka{
+#bt_ka {
   background-image: url(../../public/kakao.png);
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
 }
 
-#bt_go{
+#bt_go {
   background-image: url(../../public/github.png);
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
 }
 
-#bt_gi{
+#bt_gi {
   background-image: url(../../public/google.png);
   background-repeat: no-repeat;
   background-position: center;
@@ -186,7 +185,6 @@ body{
     text-align: center;
     position: relative;
 } */
-
 
 /* *{margin :0; padding:0; box-sizing: border-box;}
 
@@ -351,4 +349,4 @@ body {
     padding-top: 20px;
     text-align: center;
     position: relative;
-} */  
+} */

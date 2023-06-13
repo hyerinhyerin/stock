@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Link } from "react";
 import axios from "axios";
 import "./gameover.css";
 const GameOver = (props) => {

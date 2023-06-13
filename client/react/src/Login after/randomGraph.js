@@ -235,20 +235,6 @@ const GraphCpt = () => {
               );
             })}
           </Bar>
-          {/* <Bar
-            dataKey={(data) => {
-              const range = [data.stck_high, data.stck_low];
-              return range;
-            }}
-            fill="#E94560"
-            barSize={20}
-          >
-            {selectedCompany.map((data) => {
-              return (
-                <Cell fill={data.prdy_vrss_sign > 3 ? "#006DEE" : "#E94560"} />
-              );
-            })}
-          </Bar> */}
         </BarChart>
 
         <BarChart

@@ -18,7 +18,6 @@ module.exports = () => {
   passport.deserializeUser((user, done) => {
     // deserializeUser의 매개변수 user는 serializeUser가 보내는 데이터
     // user = { id: user.user.id, accessToken: user.accessToken }
-    console.log("디시리얼라이즈 유저", user);
     User.findOne({ where: { id: user.id } })
       .then((result) => {
         // db에서 가져온 유저데이터 result
