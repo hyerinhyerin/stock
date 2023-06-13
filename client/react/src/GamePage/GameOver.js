@@ -1,6 +1,6 @@
-import React, { Link } from "react";
-import axios from "axios";
+import React from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 import "./gameover.css";
 const GameOver = (props) => {
   axios.get("/api/gameOver");
