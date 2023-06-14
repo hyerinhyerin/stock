@@ -73,10 +73,10 @@ const Main = () => {
           <div
             id="modal-notice"
             class="modal"
-            style={isModalOpen ? {} : "display:none"}
+            style={isModalOpen ? {} : { display: "none" }}
           >
             <div class="modal-content">
-              <a class="close" href="#none" onClick={fadeOut()}>
+              <a class="close" href="#none" onClick={fadeOut}>
                 X
               </a>
               <img src="/client/react/public/logomin.png" />
