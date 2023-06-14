@@ -1,21 +1,22 @@
-import React,{Component} from "react";
+import React, { Component } from "react";
+import axios from 'axios';
 const ImageCP = (props) => {
 
-    const imgDivStyle={
-        display:'inline-block',
+    const imgDivStyle = {
+        display: 'inline-block',
         position: 'relative',
         zIndex: '5',
         height: '150px',
         width: '150px',
-        marginTop:'30px',
-        marginLeft:'50px',
+        marginTop: '30px',
+        marginLeft: '50px',
         // borderRadius: '50%',
         // border: '1px solid white',
 
     }
 
-    return(
-        <div style={imgDivStyle} onClick={()=>{props.onView(props.id); props.getData(!props.popShow);}}>
+    return (
+        <div style={imgDivStyle} onClick={() => { props.onView(props.id); props.getData(!props.popShow); axios.post("/api/mypage/img?imgNum=" + props.id); }}>
             <img style={props.imgstyle} src={props.imgsrc}></img>
         </div>
     );
@@ -30,7 +31,7 @@ export default ImageCP;
 //     constructor(props){
 //         super(props);
 //         // this.state={
-//         //   imgClick:0,  
+//         //   imgClick:0,
 //         // };
 //     }
 

@@ -57,16 +57,6 @@ module.exports.chart = async (req, res) => {
   }
 };
 
-// module.exports.situation = async (req, res) => {
-//   const situation = await Situation.findAll();
-
-//   if (situation) {
-//     return res.send({ situation: situation });
-//   } else {
-//     console.log("상황이 찾아지지 않습니다.");
-//   }
-// };
-
 let companiesObjArr = null;
 
 module.exports.getCurrentPrice = async (req, res) => {
@@ -91,7 +81,12 @@ module.exports.getCurrentPrice = async (req, res) => {
 
 // 세션 정보 날리는거
 module.exports.postSession = async (req, res) => {
-  const nickname = req.session.passport.user.nickname;
+  const id = req.session.passport.user.id;
+  const user = await User.findOne({
+    attributes: ["nickname"],
+    where: { id: id },
+  });
+  const nickname = user.nickname;
   const exUser = await GameTable.findOne({
     where: {
       usernickname: nickname,

@@ -4,19 +4,26 @@ import StartPopup from "./StartPopup";
 import Graph from "./randomGraph";
 import axios from "axios";
 import "./Start.css";
+
 const Start = (props) => {
   const [viewPopup, setViewPopup] = useState(false);
   const [userData, setUserData] = useState({});
   const [rankData, setRankData] = useState({});
   const [formData, setFormData] = useState({
-    id: '',
-    nickname: '',
-    email: ''
+    id: "",
+    nickname: "",
+    email: "",
   });
 
   const getUserData = async () => {
     const userDBData = await axios.get("/api/mypage");
-    setUserData(userDBData.data.userData);
+    console.log(userDBData);
+    // sessionData에서 money 값을 가져와서 천 단위 구분 기호를 포함한 형태로 변경합니다.
+    console.log("userDBData : ", userDBData);
+    const formattedMoney = userDBData.data.userData.money.toLocaleString();
+
+    setUserData({ ...userDBData.data.userData, money: formattedMoney });
+
     setFormData({
       nickname: userDBData.data.userData.nickname,
       money: userDBData.data.userData.money,
@@ -27,7 +34,7 @@ const Start = (props) => {
   const getRank = async () => {
     const rankDB = await axios.get("/api/mypage/rank");
     setRankData(rankDB.data);
-  }
+  };
 
   useEffect(() => {
     getUserData();
@@ -66,32 +73,37 @@ const Start = (props) => {
       </div>
       <Link to="/mypage">
         <div className="circle">
-          <img className="profileImg" src={"profile_2.png"}></img>
+          <img
+            className="profileImg"
+            src={"profile_" + (userData.img + 2) + ".png"}
+          ></img>
         </div>
       </Link>
       <div className="balloon">
         <p className="P1">내 정보</p>
         <div className="P_div">
           <p className="P2">닉네임 </p>
-          <p className="P2"> {userData.id} </p>
+          <p className="P2"> {userData.nickname} </p>
           <p className="P2"> 총 자산 </p>
           <p className="P2"> {userData.money}</p>
           <p className="P2"> 랭킹 순위 </p>
           <p className="P2"> {rank}</p>
         </div>
-        <button style={btnlogout} onClick={LogoutBtn}>로그아웃</button>
+        <button style={btnlogout} onClick={LogoutBtn}>
+          로그아웃
+        </button>
       </div>
       <button style={btnStyle} onClick={() => setViewPopup(true)}>
         게임 시작
       </button>
       {/* <Button btnText={'게임 시작'} btnStyle={btnStyle}/> */}
       {viewPopup ? <StartPopup /> : ""}
-    </div >
+    </div>
   );
 };
 
 function LogoutBtn() {
-  window.location.href = "http://localhost:4000/auth/logout"
+  window.location.href = "http://localhost:4000/auth/logout";
 }
 
 export default Start;

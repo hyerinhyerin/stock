@@ -1,5 +1,6 @@
 import React,{Component, useEffect,useState} from "react";
 import ProfilePopup from './ProfilePopup';
+import axios from 'axios';
 import ImageCP from "./ImageCP";
 import PropTypes from 'prop-types';
 const ProfileImage =(props)=>{
@@ -11,7 +12,18 @@ const ProfileImage =(props)=>{
         {id:3, image:'profile_4.png'},
         {id:4, image:'profile_5.png'},
     ]);
-    const [item, setItem]=useState(datas[1]); //유저 프로필 이미지
+    
+    const [item, setItem]=useState({}); //유저 프로필 이미지
+
+    const getItem = async () => {
+        var imgNum = await axios.get("/api/mypage/img");
+        setItem(datas[imgNum.data.img]);
+        };
+    
+    useEffect(() => {
+        getItem();
+    }, []);
+
     //배열에서 클릭 이미지 찾기->ImageCP.js 파일에서 사용. 
     const onView=(id)=>{
         setItem(datas.find(item=>item.id===id));

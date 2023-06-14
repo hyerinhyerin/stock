@@ -9,7 +9,7 @@ router.post('/', async (req, res) => { // 마이페이지 수정
         await User.update({
             email: email,
             nickname: nickname
-        }, { where: { id: id } })
+        }, { where: { id: id } });
     } catch (err) {
         res.send(err);
     }
@@ -17,8 +17,9 @@ router.post('/', async (req, res) => { // 마이페이지 수정
 
 router.get('/', async (req, res) => { // 마이페이지 정보 보냄
     try {
-        const nickname = req.session.passport.user.nickname;
-        await User.findOne({ raw: true, where: { nickname: nickname } })
+        const id = req.session.passport.user.id;
+        console.log("session정보 : ", req.session);
+        await User.findOne({ raw: true, where: { id: id } })
             .then((result) => {
                 res.send({ userData: result });
             }).catch((err) => {
@@ -30,7 +31,7 @@ router.get('/', async (req, res) => { // 마이페이지 정보 보냄
 });
 
 router.get('/rank', async (req, res) => { // 보유자산 순위
-    const nickname = req.session.passport.user.nickname;
+    const id = req.session.passport.user.id;
     try {
         const rank = await User.findAll({
             order: [['money', 'DESC']],
@@ -39,9 +40,9 @@ router.get('/rank', async (req, res) => { // 보유자산 순위
         const userRank = [];
 
         for (const user of rank) {
-            userRank.push(user.nickname);
+            userRank.push(user.id);
         }
-        res.send({ rank: userRank.indexOf(nickname) + 1 }); // 순위 보내줌.
+        res.send({ rank: userRank.indexOf(id) + 1 }); // 순위 보내줌.
     } catch (err) {
         res.send(err);
     }
@@ -50,15 +51,37 @@ router.get('/rank', async (req, res) => { // 보유자산 순위
 // 탈퇴 기능
 router.delete('/', async (req, res) => {
     try {
-        const nickname = req.session.passport.user.nickname;
-        console.log(nickname);
+        const id = req.session.passport.user.id;
 
-        User.destroy({ where: { nickname: nickname } })
+        User.destroy({ where: { id: id } })
             .then(() => {
-                console.log("탈퇴하였습니다.");
                 req.logout();
                 req.session.destroy();
             });
+    } catch (err) {
+        res.send(err);
+    }
+})
+
+router.get('/img', async (req, res) => {
+    try {
+        const id = req.session.passport.user.id;
+
+        const img = await User.findOne({ attributes: ["img"], where: { id: id } });
+        res.json({ img: img.img });
+    } catch (err) {
+        res.send(err);
+    }
+})
+
+router.post('/img', async (req, res) => {
+    try {
+        const id = req.session.passport.user.id;
+        const imgNum = req.query.imgNum;
+
+        await User.update({
+            img: Number(imgNum) - 1
+        }, { where: { id: id } });
     } catch (err) {
         res.send(err);
     }

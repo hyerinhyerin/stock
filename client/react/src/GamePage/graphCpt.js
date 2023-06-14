@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState, useRef, useCallback } from "react";
+import GameOver from "./GameOver";
 import { connect } from "react-redux";
 import btnImg from "../img/btn.png";
 import backBtnImg from "../img/backBtn.png";
@@ -7,6 +8,7 @@ import upImg from "../img/up.png";
 import downImg from "../img/down.png";
 import { CSSTransition } from "react-transition-group";
 import "./cssTransition.css";
+import LimitAlert from "./LimitAlert";
 import {
   BarChart,
   Bar,
@@ -29,7 +31,7 @@ const GraphCpt = ({ dataFromNewPanel }) => {
   const [holdingStock, setHoldingStock] = useState(null);
   const [time, setTime] = useState("20:00");
   const [color, setColor] = useState("white");
-  const [gameTime, setGameTime] = useState(0);
+  const [stopView, setStopView] = useState(false);
 
   const [price, setPrice] = useState(0);
   const [isDiv1Visible, setIsDiv1Visible] = useState(false);
@@ -44,8 +46,12 @@ const GraphCpt = ({ dataFromNewPanel }) => {
   useEffect(() => {
     const sessionAxios = async () => {
       const sessionData = await axios.get("/api/session");
-      console.log("session 정보 : ", sessionData.data.sessionUser);
-      setUserInfo(sessionData.data.sessionUser);
+
+      // sessionData에서 money 값을 가져와서 천 단위 구분 기호를 포함한 형태로 변경합니다.
+      const formattedMoney = sessionData.data.sessionUser.money.toLocaleString();
+
+      // 변경된 money 값을 포함하여 userInfo를 업데이트합니다.
+      setUserInfo({ ...sessionData.data.sessionUser, money: formattedMoney });
       setHoldingStock(sessionData.data.sessionUser.havestock); // 변경: havestock을 가져와 holdingStock state에 저장
     };
     sessionAxios();
@@ -249,20 +255,32 @@ const GraphCpt = ({ dataFromNewPanel }) => {
     setRealGroupedCompanies(newCompanies);
   }, [setRealGroupedCompanies, realGroupedCompanies, dataFromNewPanel]);
 
+  // 타이머 식별자를 저장할 변수
+  let timerId = null;
+
   // 새로운 데이터를 일정시간마다 realGroupedCompanies state에 추가
   useEffect(() => {
-    const intervalId = setInterval(async () => {
-      setGameTime((prevTime) => prevTime + 1); // 데이터 업데이트마다 타임 증가
-      await updateCompanies();
-    }, 10000);
-
-    if (gameTime >= 119) {
-      // 게임 시간인 20분 10초 * 120번 = 1200초 -> 20분 되면 그래프 멈춤
-      clearInterval(intervalId);
+    // 이전 타이머 정리
+    if (timerId) {
+      clearInterval(timerId);
     }
 
-    return () => clearInterval(intervalId);
-  }, [updateCompanies, gameTime]);
+    timerId = setInterval(async () => {
+      await updateCompanies();
+    }, 9000);
+
+    if (time == "00:00") {
+      // 게임 시간인 20분 10초 * 120번 = 1200초 -> 20분 되면 그래프 멈춤
+      clearInterval(timerId);
+    }
+
+    return () => clearInterval(timerId);
+  }, [
+    updateCompanies,
+    updateCompanies,
+    realGroupedCompanies,
+    dataFromNewPanel,
+  ]);
 
   // 타이머
   useEffect(() => {
@@ -473,7 +491,7 @@ const GraphCpt = ({ dataFromNewPanel }) => {
     marginBottom: "30px",
   };
 
-  const sellPopupInnerDivFlex = {
+  const buyPopupInnerDivFlex = {
     display: "flex",
     alignItems: "center",
     flexDirection: "row",
@@ -485,6 +503,20 @@ const GraphCpt = ({ dataFromNewPanel }) => {
     height: "44px",
     border: "1px solid white",
     marginBottom: "30px",
+  };
+
+  const sellPopupInnerDivFlex = {
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "row",
+    position: "relative",
+    left: "50%",
+    transform: "translate(-50%)",
+    marginTop: "0",
+    width: "300px",
+    height: "44px",
+    border: "1px solid white",
+    marginBottom: "20px",
   };
 
   const sellPopupPMBtn = {
@@ -657,6 +689,18 @@ const GraphCpt = ({ dataFromNewPanel }) => {
     setIsDiv3Visible(false);
   };
 
+  // 매수 버튼 클릭시 주문 금액과 자신을 비교해 매수 가능한지 확인
+  const handleBuyCheck = () => {
+    console.log("buybuttonclcik : ", userInfo.money);
+    if (parseInt(price) * parseInt(count) > parseInt(userInfo.money)) {
+      setStopView(true);
+      console.log(stopView);
+      setTimeout(() => {
+        setStopView(false);
+      }, 3000);
+    }
+  };
+
   // 매도 데이터 처리 함수
   const handleSellSubmit = async (event) => {
     event.preventDefault();
@@ -681,7 +725,11 @@ const GraphCpt = ({ dataFromNewPanel }) => {
         selectedCompany[29].stockCount =
           parseInt(responseData.stock) +
           parseInt(selectedCompany[29].stockCount);
-        setUserInfo(responseData.gamingUser);
+        // sessionData에서 money 값을 가져와서 천 단위 구분 기호를 포함한 형태로 변경합니다.
+        const formattedMoney = responseData.gamingUser.money.toLocaleString();
+
+        // 변경된 money 값을 포함하여 userInfo를 업데이트합니다.
+        setUserInfo({ ...responseData.gamingUser, money: formattedMoney });
         setHoldingStock(responseData.gamingUser.havestock);
         handleCloseSellBtn();
       })
@@ -715,7 +763,11 @@ const GraphCpt = ({ dataFromNewPanel }) => {
         selectedCompany[29].stockCount =
           parseInt(selectedCompany[29].stockCount) -
           parseInt(responseData.stock);
-        setUserInfo(responseData.gamingUser);
+        // sessionData에서 money 값을 가져와서 천 단위 구분 기호를 포함한 형태로 변경합니다.
+        const formattedMoney = responseData.gamingUser.money.toLocaleString();
+
+        // 변경된 money 값을 포함하여 userInfo를 업데이트합니다.
+        setUserInfo({ ...responseData.gamingUser, money: formattedMoney });
         setHoldingStock(responseData.gamingUser.havestock);
         handleCloseBuyBtn();
       })
@@ -782,6 +834,7 @@ const GraphCpt = ({ dataFromNewPanel }) => {
 
   return (
     <div style={{ margin: "0" }}>
+      {time == "00:00" && <GameOver />}
       <button onClick={handleButtonClick} style={companiesSelectBtn}>
         {isButtonMoved ? (
           <img src={backBtnImg} style={{ width: "22px" }} />
@@ -943,7 +996,7 @@ const GraphCpt = ({ dataFromNewPanel }) => {
           </button>
           <form onSubmit={handleBuySubmit}>
             <p style={{ color: "white", marginTop: "40px" }}>지정가</p>
-            <div style={sellPopupInnerDivFlex}>
+            <div style={buyPopupInnerDivFlex}>
               <button
                 type="button"
                 style={sellPopupPMBtn}
@@ -1007,7 +1060,7 @@ const GraphCpt = ({ dataFromNewPanel }) => {
                 readOnly
               />
             </div>
-            <div style={sellPopupInnerDivFlex}>
+            <div style={buyPopupInnerDivFlex}>
               <span style={{ color: "white", marginLeft: "10px" }}>
                 주문금액
               </span>
@@ -1037,9 +1090,11 @@ const GraphCpt = ({ dataFromNewPanel }) => {
                   fontSize: "25px",
                   marginLeft: "10px",
                 }}
+                onClick={handleBuyCheck}
               >
                 매수
               </button>
+              {stopView && <LimitAlert />}
             </div>
           </form>
         </div>

@@ -14,6 +14,7 @@ const Main = () => {
   };
 
   return (
+
     <div id="body_div">
       <div id="body_img"></div>
       <section class="Mainpage">
@@ -49,6 +50,12 @@ const Main = () => {
           </div>
         </form>
 
+        <div id="findPW" >
+          <a href="#" onClick={() => fadeIn()}>
+            비밀번호 찾기
+          </a>
+        </div>
+
         <div class="button-area-circle">
           <button class="bt_circle" id="bt_ka" onClick={KaKaoBtn}></button>
           <button class="bt_circle" id="bt_gi" onClick={GoogleBtn}></button>
@@ -66,20 +73,18 @@ const Main = () => {
         </div>
 
         <div class="caption">
-          <a href="#none" onClick={fadeIn}>
-            비밀번호 찾기
-          </a>
+
 
           <div
             id="modal-notice"
             class="modal"
-            style={isModalOpen ? {} : { display: "none" }}
+            style={isModalOpen ? {} : { display: 'none' }}
           >
             <div class="modal-content">
-              <a class="close" href="#none" onClick={fadeOut}>
+              <a class="close" style={{ marginTop: '15px' }} href="/" onClick={() => fadeOut()}>
                 X
               </a>
-              <img src="/client/react/public/logomin.png" />
+              <img src="logomin.png" />
               <p>비밀번호를 찾고자하는 아이디를 입력해주세요.</p>
               <input
                 class="ID_input"

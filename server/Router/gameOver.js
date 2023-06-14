@@ -6,7 +6,10 @@ const User = require("../models/User");
 
 router.get('/', async (req, res) => {
     try {
-        const nickname = req.session.passport.user.nickname;
+        const id = req.session.passport.user.id;
+        const user = await User.findOne({ attributes: ["nickname"], where: { id: id } });
+        const nickname = user.nickname;
+
         var gameTable = await GameTable.findOne({ where: { usernickname: nickname } });
 
         await User.update({ money: gameTable.money }, { where: { nickname: nickname } })

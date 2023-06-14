@@ -1,7 +1,7 @@
 const express = require("express");
 const session = require("express-session");
 const bodyParser = require("body-parser");
-const cors = require('cors');
+const cors = require("cors");
 const morgan = require("morgan"); // 작업 수행시 로깅
 const passport = require("passport"); // passport 미들웨어 가져오기
 const cookieParser = require("cookie-parser"); // 쿠키 파싱 미들웨어
@@ -23,25 +23,20 @@ app.use(express.json());
 app.use(cors());
 // 이 코드 넣고 시작하셔야 리액트와 nodejs 서버간 ajax 요청 잘됩니다.
 
-// sequelize
-//   .sync({ force: false })
-//   .then(() => {
-//     console.log("데이터베이스 연결 성공");
-//   })
-//   .catch((err) => {
-//     console.log(err);
-//   });
-
 app.set("port", process.env.PORT || 4000);
 
 app.use(morgan("dev"));
-app.use(express.json({
-  limit: '1mb'
-}))
-app.use(express.urlencoded({
-  limit: '1mb',
-  extended: false
-}))
+app.use(
+  express.json({
+    limit: "1mb",
+  })
+);
+app.use(
+  express.urlencoded({
+    limit: "1mb",
+    extended: false,
+  })
+);
 
 // cookieParser 설정에 비밀키를 넣어주자.
 // cookieParser를 사용하게되면 req.cookies로 접근이 가능하다.
@@ -70,28 +65,28 @@ app.use("/api", indexRouter);
 app.use("/auth", authRouter);
 
 const startGame = require("./Router/startGame");
-app.use('/api/startGame', startGame);
+app.use("/api/startGame", startGame);
 
 const findPW = require("./Router/findPW");
-app.use('/api/findPW', findPW);
+app.use("/api/findPW", findPW);
 
 const select = require("./Router/selectPW");
-app.use('/api/select', select);
+app.use("/api/select", select);
 
 const sell = require("./Router/sellStock");
-app.use('/api/sell', sell);
+app.use("/api/sell", sell);
 
 const buy = require("./Router/buyStock");
-app.use('/api/buy', buy);
+app.use("/api/buy", buy);
 
 const mypage = require("./Router/mypage");
-app.use('/api/mypage', mypage);
+app.use("/api/mypage", mypage);
 
 const situation = require("./Router/situation");
-app.use('/api/situation', situation);
+app.use("/api/situation", situation);
 
 const gameOver = require("./Router/gameOver");
-app.use('/api/gameOver', gameOver);
+app.use("/api/gameOver", gameOver);
 
 // 에러 처리 미들웨어
 app.use((err, req, res, next) => {
